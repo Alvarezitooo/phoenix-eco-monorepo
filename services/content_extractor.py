@@ -86,7 +86,7 @@ def extract_annonce_content(uploaded_annonce_file) -> str:
     Extrait le contenu textuel d'un fichier annonce uploadé (TXT).
     Effectue des validations de taille, de type MIME et de contenu.
     """
-    mime_type = _validate_file(uploaded_annonce_file, ["text/plain"], 5) # Annonce TXT seulement, même limite de taille
+    mime_type = _validate_file(uploaded_annonce_file, ["text/plain", "application/pdf"], 5) # Annonce TXT et PDF, même limite de taille
     extractor = ContentExtractorFactory.get_extractor(mime_type)
     annonce_content = extractor.extract(uploaded_annonce_file)
 

@@ -152,7 +152,7 @@ def main():
 
     uploaded_annonce = st.file_uploader(
         "2. Chargez l'annonce",
-        type=['txt'],
+        type=['txt', 'pdf'],
         help="Un simple fichier texte avec le contenu de l'annonce."
     )
 
