@@ -1043,8 +1043,7 @@ def render_generator_tab(user_tier):
                         except Exception as e:
                             st.error("🚨 Une erreur inattendue est survenue. L'ingénieur est sur le coup !")
                             logging.exception("Erreur critique inattendue dans l'app Streamlit.")
-                        else:
-                            st.warning("⚠️ Veuillez charger votre CV et l'annonce avant de continuer.")
+                        
 
                 with col_buttons_2:
                     if st.button("🔄 Réinitialiser"):
