@@ -1998,27 +1998,11 @@ def render_generator_tab(user_tier):
                     )
                 
                 with col2:
-                    # Initialisation des variables pour éviter UnboundLocalError
-        est_reconversion = False
-        ancien_domaine = ""
-        nouveau_domaine = ""
-        competences_transferables = ""
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            ton_choisi = st.selectbox(
-                " Ton souhaité",
-                ["formel", "dynamique", "sobre", "créatif", "startup", "associatif"],
-                help="Le ton influence le style d'écriture de l'IA."
-            )
-
-        with col2:
-            est_reconversion = st.checkbox(
-                " C'est une reconversion",
-                value=True,
-                help="Cochez cette case si vous changez de carrière. L'IA adaptera son discours pour valoriser votre parcours."
-            )
+                    est_reconversion = st.checkbox(
+                        " C'est une reconversion",
+                        value=True,
+                        help="Cochez cette case si vous changez de carrière. L'IA adaptera son discours pour valoriser votre parcours."
+                    )
                 
                 if est_reconversion:
                     # Initialisation de suggested_competences ici pour garantir qu'elle existe toujours
