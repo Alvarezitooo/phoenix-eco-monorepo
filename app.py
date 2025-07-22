@@ -1429,6 +1429,287 @@ def test_premium_features():
     
     return test_results
 
+# ===== 10. MÉTA TAGS SEO POUR PHOENIX LETTERS =====
+
+def setup_seo_meta_tags():
+    """Configure les méta tags SEO optimisés pour Phoenix Letters"""
+    
+    # Configuration page principale avec méta tags intégrés
+    st.set_page_config(
+        page_title="Générateur lettre motivation IA reconversion - Phoenix Letters",
+        page_icon="",
+        layout="wide",
+        initial_sidebar_state="collapsed",
+        menu_items={
+            'Get Help': 'https://github.com/Alvarezitooo/Phoenix-Letters',
+            'Report a bug': 'mailto:contact.phoenixletters@gmail.com',
+            'About': 'Phoenix Letters - Premier générateur IA spécialisé reconversion professionnelle'
+        }
+    )
+
+def inject_advanced_meta_tags():
+    """Injecte les méta tags avancés dans le <head> de la page"""
+    
+    meta_tags_html = """
+    <!--  MÉTA TAGS SEO FONDAMENTAUX -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!--  DESCRIPTION ET MOTS-CLÉS -->
+    <meta name="description" content="Outil gratuit pour rédiger instantanément vos lettres de motivation en reconversion professionnelle. IA spécialisée, simple, rapide, efficace. Transformez votre parcours atypique en atout.">
+    
+    <meta name="keywords" content="lettre motivation reconversion, générateur IA, changement carrière, reconversion professionnelle, outil gratuit, CV, emploi, aide soignant cybersécurité, 40 ans, compétences transférables, Phoenix Letters">
+    
+    <meta name="author" content="Phoenix Letters - Matthieu Alvarez">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <meta name="googlebot" content="index, follow">
+    
+    <!--  LANGUE ET GÉOLOCALISATION -->
+    <meta name="language" content="fr-FR">
+    <meta name="geo.region" content="FR">
+    <meta name="geo.placename" content="France">
+    
+    <!--  OPEN GRAPH (Facebook, LinkedIn, WhatsApp) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Phoenix Letters">
+    <meta property="og:title" content="Phoenix Letters - Générateur IA lettre motivation reconversion">
+    <meta property="og:description" content="Transformez votre reconversion en atout avec notre IA spécialisée. Générez une lettre de motivation personnalisée en 3 minutes. 100% gratuit.">
+    <meta property="og:url" content="https://phoenix-letters.streamlit.app">
+    <meta property="og:image" content="https://phoenix-letters.streamlit.app/assets/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Phoenix Letters - IA spécialisée reconversion professionnelle">
+    <meta property="og:locale" content="fr_FR">
+    
+    <!--  TWITTER CARDS -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@PhoenixLetters">
+    <meta name="twitter:creator" content="@AlvarezMatthieu">
+    <meta name="twitter:title" content="Phoenix Letters - Générateur IA lettre motivation reconversion">
+    <meta name="twitter:description" content="Transformez votre reconversion en atout avec notre IA spécialisée. 100% gratuit, résultat en 3 minutes.">
+    <meta name="twitter:image" content="https://phoenix-letters.streamlit.app/assets/twitter-card.png">
+    <meta name="twitter:image:alt" content="Interface Phoenix Letters - génération lettre IA">
+    
+    <!--  DONNÉES STRUCTURÉES (Schema.org) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Phoenix Letters",
+        "description": "Générateur de lettres de motivation propulsé par IA, spécialisé pour les reconversions professionnelles",
+        "url": "https://phoenix-letters.streamlit.app",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR",
+            "description": "Gratuit avec options premium"
+        },
+        "creator": {
+            "@type": "Person",
+            "name": "Matthieu Alvarez",
+            "jobTitle": "Fondateur Phoenix Letters"
+        },
+        "audience": {
+            "@type": "Audience",
+            "audienceType": "Personnes en reconversion professionnelle"
+        },
+        "featureList": [
+            "Génération instantanée lettre motivation",
+            "IA spécialisée reconversion",
+            "Analyse compétences transférables", 
+            "Optimisation ATS",
+            "Interface intuitive"
+        ]
+    }
+    </script>
+    
+    <!--  PRÉCHARGEMENT RESSOURCES CRITIQUES -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" as="style">
+    
+    <!--  VÉRIFICATION MOTEURS DE RECHERCHE -->
+    <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE">
+    <meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE">
+    
+    <!--  COULEUR THÈME NAVIGATEUR -->
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="msapplication-TileColor" content="#ff6b35">
+    
+    <!--  APPLE TOUCH ICONS -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+    
+    <!--  LIENS CANONIQUES -->
+    <link rel="canonical" href="https://phoenix-letters.streamlit.app">
+    
+    <!-- ️ SITEMAP -->
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    """
+    
+    # Injection dans Streamlit
+    st.markdown(meta_tags_html, unsafe_allow_html=True)
+
+def create_page_specific_meta(page_type="home"):
+    """Méta tags spécifiques selon la page"""
+    
+    meta_configs = {
+        "home": {
+            "title": "Phoenix Letters - Générateur IA lettre motivation reconversion gratuit",
+            "description": "Transformez votre reconversion en atout ! Générateur gratuit de lettres de motivation propulsé par IA, spécialisé pour les parcours atypiques. Résultat en 3 minutes."
+        },
+        "generator": {
+            "title": "Générateur lettre motivation IA - Phoenix Letters",
+            "description": "Créez votre lettre de motivation personnalisée en 3 minutes. IA spécialisée reconversion, analyse CV, optimisation ATS. 100% gratuit."
+        },
+        "examples": {
+            "title": "Exemples lettres motivation reconversion - Phoenix Letters", 
+            "description": "Découvrez des exemples concrets de lettres générées par Phoenix Letters : aide-soignant → cybersécurité, commercial → développeur, prof → chef de projet."
+        },
+        "faq": {
+            "title": "FAQ reconversion professionnelle - Conseils lettre motivation IA",
+            "description": "Toutes vos questions sur la reconversion et les lettres de motivation. Comment valoriser un parcours atypique ? Conseils d'experts et exemples concrets."
+        },
+        "about": {
+            "title": "À propos Phoenix Letters - IA spécialisée reconversion",
+            "description": "Phoenix Letters révolutionne l'accompagnement des reconversions professionnelles grâce à l'intelligence artificielle. Notre mission, notre équipe, notre vision."
+        }
+    }
+    
+    config = meta_configs.get(page_type, meta_configs["home"])
+    
+    page_meta_html = f"""
+    <title>{config['title']}</title>
+    <meta name="description" content="{config['description']}">
+    <meta property="og:title" content="{config['title']}">
+    <meta property="og:description" content="{config['description']}">
+    <meta name="twitter:title" content="{config['title']}">
+    <meta name="twitter:description" content="{config['description']}">
+    """
+    
+    st.markdown(page_meta_html, unsafe_allow_html=True)
+
+#  MONITORING SEO
+def track_seo_performance():
+    """Fonctions pour suivre les performances SEO"""
+    
+    seo_metrics = {
+        'meta_tags_present': True,
+        'page_load_speed': 'Good',  # À mesurer avec Google PageSpeed
+        'mobile_friendly': True,
+        'structured_data': True,
+        'canonical_url': True,
+        'sitemap_submitted': False  # À faire manuellement
+    }
+    
+    return seo_metrics
+
+def render_faq_page():
+    """Page FAQ pour Phoenix Letters"""
+    st.markdown("""
+    <div style="text-align: center; margin: 2rem 0;">
+        <h2 style="color: var(--phoenix-primary); font-family: 'Inter', sans-serif;">
+             QUESTIONS FRÉQUENTES
+        </h2>
+        <p style="color: var(--phoenix-text-secondary); font-size: 1.1rem;">
+            Tout ce que vous devez savoir sur Phoenix Letters et la reconversion
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    ##  Qu'est-ce que Phoenix Letters ?
+    
+    Phoenix Letters est un **générateur de lettres de motivation basé sur l'IA**, spécialement conçu pour les **personnes en reconversion professionnelle**. Notre objectif est de vous aider à valoriser votre parcours atypique et vos compétences transférables pour décrocher le poste de vos rêves.
+    
+    ##  Comment ça marche ?
+    
+    1.  **Uploadez votre CV** et l'offre d'emploi.
+    2.  **Configurez l'IA** (ton, reconversion, etc.).
+    3.  **Générez votre lettre** en quelques secondes.
+    4.  **Optimisez-la** grâce à nos analyses ATS et Smart Coach.
+    
+    ##  Est-ce vraiment gratuit ?
+    
+    Oui, la **génération de lettres de base est 100% gratuite** et le restera. Nous proposons des fonctionnalités Premium (analyse culture entreprise, coaching IA avancé, plans de reconversion) pour ceux qui souhaitent aller plus loin.
+    
+    ##  Mes données sont-elles sécurisées ?
+    
+    **Absolument.** Nous traitons vos données (CV, lettre) **uniquement en mémoire** et elles sont **supprimées immédiatement** après la génération. Aucune donnée personnelle n'est stockée sur nos serveurs. Pour les fonctionnalités Premium nécessitant une conservation (historique), vos données sont anonymisées et chiffrées avec votre consentement explicite.
+    
+    ##  L'IA peut-elle vraiment comprendre ma reconversion ?
+    
+    Oui ! Notre IA est entraînée spécifiquement sur des scénarios de reconversion. Elle excelle à identifier les **compétences transférables** et à les formuler de manière pertinente pour votre nouveau domaine. C'est notre spécialité !
+    
+    ##  Combien de temps pour générer une lettre ?
+    
+    **2-3 minutes** en moyenne :
+    1. Upload CV + annonce (30 secondes)
+    2. Configuration IA (1 minute)  
+    3. Génération (30 secondes)
+    4. Personnalisation optionnelle (1 minute)
+    
+    ##  Mes données sont-elles sécurisées ?
+    
+    **Sécurité maximale** :
+    - ✅ Anonymisation automatique des données personnelles (PII)
+    - ✅ Traitement en mémoire uniquement (pas de stockage par défaut)
+    - ✅ Chiffrement des données Premium avec consentement explicite
+    - ✅ Conformité RGPD intégrale
+    - ✅ Droit à l'oubli respecté (suppression sur demande)
+    
+    ---
+    
+    ** Autre question ?** Contactez-nous : contact.phoenixletters@gmail.com
+    """)
+
+def render_about_page():
+    """Page À Propos pour Phoenix Letters"""
+    st.markdown("""
+    <div style="text-align: center; margin: 2rem 0;">
+        <h2 style="color: var(--phoenix-primary); font-family: 'Inter', sans-serif;">
+             À PROPOS DE PHOENIX LETTERS
+        </h2>
+        <p style="color: var(--phoenix-text-secondary); font-size: 1.1rem;">
+            Notre mission : Révolutionner la reconversion professionnelle
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    ##  Notre Mission
+    
+    Chez Phoenix Letters, nous croyons que chaque parcours professionnel est unique et mérite d'être valorisé. La reconversion est un acte de courage et d'ambition. Notre mission est de **démocratiser l'accès à des outils d'IA de pointe** pour aider chacun à transformer son expérience passée en un atout pour son futur.
+    
+    Nous voulons que la lettre de motivation devienne un levier de succès, et non plus un obstacle, pour les personnes en transition de carrière.
+    
+    ##  Notre Histoire
+    
+    Phoenix Letters est né de l'observation d'un besoin criant : les outils de rédaction de lettres de motivation classiques peinent à s'adapter aux profils en reconversion. Les parcours atypiques sont souvent mal compris par les algorithmes traditionnels et les recruteurs. 
+    
+    C'est pourquoi nous avons développé une IA spécifiquement entraînée pour identifier, analyser et valoriser les **compétences transférables**, transformant ainsi chaque expérience en une force pour le nouveau projet professionnel.
+    
+    ##  Notre Équipe
+    
+    Nous sommes une équipe passionnée par l'IA, la psychologie du travail et l'accompagnement professionnel. Nous mettons notre expertise au service de votre succès.
+    
+    *   **Matthieu Alvarez** : Fondateur & Architecte IA
+    
+    ##  Notre Vision
+    
+    Nous imaginons un monde où la reconversion professionnelle est perçue comme une richesse, où chaque individu peut se réinventer et s'épanouir pleinement. Phoenix Letters est votre allié dans cette transformation.
+    
+    Nous continuerons à innover pour vous offrir les meilleurs outils, toujours dans le respect de votre vie privée et de vos données.
+    
+    ---
+    
+    ** Contactez-nous :** contact.phoenixletters@gmail.com
+    """)
+
 # CSS pour la nouvelle interface
 def inject_futuristic_css():
     st.markdown("""
@@ -2006,8 +2287,8 @@ def render_generator_tab(user_tier):
                 
                 if est_reconversion:
                     # Initialisation de suggested_competences ici pour garantir qu'elle existe toujours
-        if 'suggested_competences' not in st.session_state:
-            st.session_state.suggested_competences = ""
+                    if 'suggested_competences' not in st.session_state:
+                        st.session_state.suggested_competences = ""
 
         if est_reconversion:
             ancien_domaine = st.text_input(
@@ -2860,8 +3141,19 @@ def main():
         page_title="Phoenix Letters - Générateur de Lettres IA",
         page_icon="",
         layout="wide",
-        initial_sidebar_state="collapsed"
+        initial_sidebar_state="collapsed",
+        menu_items={
+            'Get Help': 'https://github.com/Alvarezitooo/Phoenix-Letters',
+            'Report a bug': 'mailto:contact.phoenixletters@gmail.com',
+            'About': 'Phoenix Letters - Premier générateur IA spécialisé reconversion professionnelle'
+        }
     )
+    
+    # 1. Configuration page avec méta tags de base
+    # setup_seo_meta_tags() # Déjà fait par st.set_page_config
+    
+    # 2. Injection méta tags avancés
+    inject_advanced_meta_tags()
     
     inject_professional_css()
     render_professional_header()
@@ -2899,27 +3191,42 @@ def main():
         st.sidebar.json(test_results)
 
     # Navigation principale par onglets
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
         " Générateur",
         "️ Trajectoire", 
         " Analyse Culture", 
         " Tableau de Bord",
+        "❓ FAQ",
+        "ℹ️ À Propos",
         "⚙️ Paramètres"
     ])
     
     with tab1:
+        create_page_specific_meta("generator")
         render_generator_tab(user_tier)
     
     with tab2:
+        create_page_specific_meta("trajectory")
         render_trajectory_tab_fixed(user_tier)
     
     with tab3:
+        create_page_specific_meta("mirror")
         render_mirror_tab_fixed(user_tier)
     
     with tab4:
+        create_page_specific_meta("dashboard")
         render_dashboard_tab(user_tier)
-    
+
     with tab5:
+        create_page_specific_meta("faq")
+        render_faq_page()
+
+    with tab6:
+        create_page_specific_meta("about")
+        render_about_page()
+    
+    with tab7:
+        create_page_specific_meta("settings")
         render_settings_tab(user_tier)
 
 if __name__ == "__main__":
