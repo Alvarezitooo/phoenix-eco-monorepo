@@ -1197,40 +1197,39 @@ def render_trajectory_tab(user_tier):
                                 render_metric_card(f"{reconversion_plan.success_probability:.0%}", "Probabilité de succès", "")
 
                         st.markdown("###  Étapes du Plan de Reconversion")
-                      try: 
                             for i, step in enumerate(reconversion_plan.steps):
-                                with st.expander(f"**Étape {i+1}: {step.title}**", expanded=i==0):
-                                    st.write(step.description)
+                            with st.expander(f"**Étape {i+1}: {step.title}**", expanded=i==0):
+                                st.write(step.description)
+                                
+                                if step.duration_weeks:
+                                    st.info(f"⏱️ **Durée estimée** : {step.duration_weeks} semaines")
+                                
+                                if step.resources:
+                                    st.markdown("#### 📚 Ressources Recommandées")
                                     
-                                    if step.duration_weeks:
-                                        st.info(f"⏱️ **Durée estimée** : {step.duration_weeks} semaines")
-                                    
-                                    if step.resources:
-                                        st.markdown("#### 📚 Ressources Recommandées")
+                                    for resource in step.resources:
+                                        icons = {
+                                            "cours_en_ligne": "📚",
+                                            "livre": "📖", 
+                                            "certification": "🏅",
+                                            "mentorat": "🤝",
+                                            "projet_pratique": "💡",
+                                            "article": "📰",
+                                            "outil": "⚙️",
+                                            "autre": "🔗"
+                                        }
                                         
-                                        for resource in step.resources:
-                                            icons = {
-                                                "cours_en_ligne": "📚",
-                                                "livre": "📖", 
-                                                "certification": "🏅",
-                                                "mentorat": "🤝",
-                                                "projet_pratique": "💡",
-                                                "article": "📰",
-                                                "outil": "⚙️",
-                                                "autre": "🔗"
-                                            }
-                                            
-                                            icon = icons.get(resource.type, "🔗")
-                                            
-                                            st.markdown(f"**{icon} {resource.name}**")
-                                            
-                                            if resource.description:
-                                                st.write(f"📝 {resource.description}")
-                                            
-                                            if resource.link:
-                                                st.write(f"🔗 [Accéder à la ressource]({resource.link})")
-                                            
-                                            st.write("---")
+                                        icon = icons.get(resource.type, "🔗")
+                                        
+                                        st.markdown(f"**{icon} {resource.name}**")
+                                        
+                                        if resource.description:
+                                            st.write(f"📝 {resource.description}")
+                                        
+                                        if resource.link:
+                                            st.write(f"🔗 [Accéder à la ressource]({resource.link})")
+                                        
+                                        st.write("---")
 
                         except APIError as e:  # ← MAINTENANT ALIGNÉ AVEC LE TRY
                             st.error(f"Impossible de générer le plan de reconversion : {e}")
