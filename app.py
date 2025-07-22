@@ -2376,12 +2376,12 @@ def render_generator_tab(user_tier):
                                         
 
                                         cv_content = extract_cv_content(uploaded_cv)
-                                    finally:
-                                        if temp_cv_path and os.path.exists(temp_cv_path):
-                                            os.remove(temp_cv_path)
                                     except FileProcessingError as e:
                                         st.error(f" Erreur lors du traitement du CV : {e}")
                                         st.stop()
+                                    finally:
+                                        if temp_cv_path and os.path.exists(temp_cv_path):
+                                            os.remove(temp_cv_path)
                                     # except SecurityScanError as e:
                                     #     st.error(f" Erreur de sécurité lors du scan du CV : {e}")
                                     #     st.stop()
