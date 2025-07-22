@@ -2290,8 +2290,7 @@ def render_generator_tab(user_tier):
                     if 'suggested_competences' not in st.session_state:
                         st.session_state.suggested_competences = ""
 
-        if est_reconversion:
-            ancien_domaine = st.text_input(
+        ancien_domaine = st.text_input(
                 " Ancien domaine d'activité (ex: Marketing, Comptabilité, Bâtiment)",
                 help="Soyez précis pour aider l'IA à faire les liens."
             )
@@ -2315,7 +2314,7 @@ def render_generator_tab(user_tier):
                 else:
                     st.warning("Veuillez renseigner l'ancien et le nouveau domaine pour obtenir des suggestions.")
 
-                    competences_transferables = st.text_area(
+            competences_transferables = st.text_area(
                 " Compétences clés transférables (vous pouvez éditer ou utiliser la suggestion) :",
                 value=st.session_state.suggested_competences,
                 help="Listez les compétences de votre ancienne carrière qui sont pertinentes pour votre nouveau projet."
