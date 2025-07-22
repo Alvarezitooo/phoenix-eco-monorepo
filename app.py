@@ -2286,39 +2286,39 @@ def render_generator_tab(user_tier):
                     )
                 
                 if est_reconversion:
-                    # Initialisation de suggested_competences ici pour garantir qu'elle existe toujours
+                    # Initialisation de suggested_competences
                     if 'suggested_competences' not in st.session_state:
                         st.session_state.suggested_competences = ""
-
-        ancien_domaine = st.text_input(
-                " Ancien domaine d'activité (ex: Marketing, Comptabilité, Bâtiment)",
-                help="Soyez précis pour aider l'IA à faire les liens."
-            )
-            
-            nouveau_domaine = st.text_input(
-                " Nouveau domaine d'activité souhaité (ex: Cybersécurité, Développement Web, Data Science)", 
-                help="C'est ici que vous projetez votre avenir !"
-            )
-
+                    
+                    ancien_domaine = st.text_input(
+                        " Ancien domaine d'activité (ex: Marketing, Comptabilité, Bâtiment)",
+                        help="Soyez précis pour aider l'IA à faire les liens."
+                    )
+                    
+                    nouveau_domaine = st.text_input(
+                        " Nouveau domaine d'activité souhaité (ex: Cybersécurité, Développement Web, Data Science)", 
+                        help="C'est ici que vous projetez votre avenir !"
+                    )
+                    
                     if st.button("✨ Suggérer les compétences transférables"):
-                if ancien_domaine and nouveau_domaine:
-                    with st.spinner("L'IA analyse les domaines pour suggérer les compétences..."):
-                        try:
-                            suggested_text = suggerer_competences_transferables(ancien_domaine, nouveau_domaine)
-                            st.session_state.suggested_competences = suggested_text
-                            st.success("Compétences suggérées ! Vous pouvez les modifier si besoin.")
-                        except APIError as e:
-                            st.error(f"❌ Erreur lors de la suggestion des compétences. Problème avec l'API Gemini : {e}. Veuillez réessayer plus tard.")
-                        except Exception as e:
-                            st.error(f" Une erreur inattendue est survenue lors de la suggestion : {e}")
-                else:
-                    st.warning("Veuillez renseigner l'ancien et le nouveau domaine pour obtenir des suggestions.")
+                        if ancien_domaine and nouveau_domaine:
+                            with st.spinner("L'IA analyse les domaines pour suggérer les compétences..."):
+                                try:
+                                    suggested_text = suggerer_competences_transferables(ancien_domaine, nouveau_domaine)
+                                    st.session_state.suggested_competences = suggested_text
+                                    st.success("Compétences suggérées ! Vous pouvez les modifier si besoin.")
+                                except APIError as e:
+                                    st.error(f"❌ Erreur lors de la suggestion des compétences. Problème avec l'API Gemini : {e}. Veuillez réessayer plus tard.")
+                                except Exception as e:
+                                    st.error(f" Une erreur inattendue est survenue lors de la suggestion : {e}")
+                        else:
+                            st.warning("Veuillez renseigner l'ancien et le nouveau domaine pour obtenir des suggestions.")
 
-            competences_transferables = st.text_area(
-                " Compétences clés transférables (vous pouvez éditer ou utiliser la suggestion) :",
-                value=st.session_state.suggested_competences,
-                help="Listez les compétences de votre ancienne carrière qui sont pertinentes pour votre nouveau projet."
-            )
+                    competences_transferables = st.text_area(
+                        " Compétences clés transférables (vous pouvez éditer ou utiliser la suggestion) :",
+                        value=st.session_state.suggested_competences,
+                        help="Listez les compétences de votre ancienne carrière qui sont pertinentes pour votre nouveau projet."
+                    )
                 
                 # Section Analyse de la Culture d'Entreprise (Mirror Match)
                 st.markdown("---")
