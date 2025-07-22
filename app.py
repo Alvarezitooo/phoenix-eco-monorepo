@@ -395,11 +395,16 @@ def inject_futuristic_css():
         to { transform: translateX(0); opacity: 1; }
     }
     
-    /* Mode Sombre Avancé */
+    /* Mode Sombre Avancé - Inversé sur demande */
     .stMarkdown, .stText, p, span, div, label {
-        color: var(--phoenix-cyan) !important;
+        color: #1a1a2e !important; /* Texte général en bleu nuit (très sombre) */
     }
     
+    /* Règle spécifique pour le texte dans st.info en blanc */
+    div[data-testid="stAlert"] {
+        color: white !important;
+    }
+
     h1, h2, h3, h4, h5, h6 {
         color: var(--phoenix-cyan) !important;
         font-family: 'Orbitron', monospace !important;
