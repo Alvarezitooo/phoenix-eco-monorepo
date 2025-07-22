@@ -2307,13 +2307,13 @@ def render_generator_tab(user_tier):
                         try:
                             suggested_text = suggerer_competences_transferables(ancien_domaine, nouveau_domaine)
                             st.session_state.suggested_competences = suggested_text
-                                    st.success("Compétences suggérées ! Vous pouvez les modifier si besoin.")
-                                except APIError as e:
-                                    st.error(f"❌ Erreur lors de la suggestion des compétences. Problème avec l'API Gemini : {e}. Veuillez réessayer plus tard.")
-                                except Exception as e:
-                                    st.error(f" Une erreur inattendue est survenue lors de la suggestion : {e}")
-                        else:
-                            st.warning("Veuillez renseigner l'ancien et le nouveau domaine pour obtenir des suggestions.")
+                            st.success("Compétences suggérées ! Vous pouvez les modifier si besoin.")
+                        except APIError as e:
+                            st.error(f"❌ Erreur lors de la suggestion des compétences. Problème avec l'API Gemini : {e}. Veuillez réessayer plus tard.")
+                        except Exception as e:
+                            st.error(f" Une erreur inattendue est survenue lors de la suggestion : {e}")
+                else:
+                    st.warning("Veuillez renseigner l'ancien et le nouveau domaine pour obtenir des suggestions.")
 
                     competences_transferables = st.text_area(
                         " Compétences clés transférables (vous pouvez éditer ou utiliser la suggestion) :",
