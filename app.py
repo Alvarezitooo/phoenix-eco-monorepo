@@ -1183,20 +1183,7 @@ def render_trajectory_tab(user_tier):
                         reconversion_plan = generate_reconversion_plan(user_profile, target_role)
                         st.success("Votre plan de reconversion a été généré !")
                         
-                        st.markdown("""
-                        <div style="
-                            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(0, 245, 255, 0.1));
-                            border-radius: 20px;
-                            padding: 2rem;
-                            margin: 2rem 0;
-                            border: 1px solid rgba(255, 215, 0, 0.3);
-                            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
-                        ">
-                            <h3 style="color: var(--phoenix-gold); text-align: center;">
-                                ️ TRAJECTOIRE GÉNÉRÉE
-                            </h3>
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.success("TRAJECTOIRE GÉNÉRÉE")
                         
                         st.subheader(f" Objectif : {reconversion_plan.goal}")
                         st.write(reconversion_plan.summary)
