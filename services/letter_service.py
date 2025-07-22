@@ -220,7 +220,7 @@ from typing import Optional
 
 from .api_client import APIError
 from .data_anonymizer import DataAnonymizer
-from .file_service import FileProcessingError, extract_cv_content, extract_annonce_content, nettoyer_contenunnonce_content, nettoyer_contenu
+from .file_service import FileProcessingError, extract_cv_content, extract_annonce_content, nettoyer_contenu
 from ..models.letter_request import LetterRequest
 from ..models.letter_response import LetterResponse
 from ..utils.cache import generate_cache_key, _letter_cache
