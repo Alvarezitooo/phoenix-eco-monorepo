@@ -1318,23 +1318,7 @@ def render_mirror_tab(user_tier):
                             render_metric_card("87%", "MATCH", "")
                         
                         # Recommandations
-                        st.markdown("""
-                        <div style="
-                            background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(255, 107, 53, 0.1));
-                            border-radius: 20px;
-                            padding: 2rem;
-                            margin: 2rem 0;
-                            border: 1px solid rgba(0, 245, 255, 0.3);
-                        ">
-                            <h4 style="color: var(--phoenix-cyan);"> RECOMMANDATIONS</h4>
-                            <ul style="color: rgba(255, 255, 255, 0.8);">
-                                <li>Adoptez un ton <strong>dynamique et innovant</strong></li>
-                                <li>Mettez l'accent sur votre <strong>capacité d'adaptation</strong></li>
-                                <li>Valorisez votre <strong>approche créative</strong> des problèmes</li>
-                                <li>Intégrez les mots-clés: <em>innovation, transformation, agilité</em></li>
-                            </ul>
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.markdown("<!-- RECOMMANDATIONS BLOCK -->", unsafe_allow_html=True)
                     except APIError as e:
                         st.error(f"Impossible d'analyser la culture d'entreprise : {e}")
                     except Exception as e:
