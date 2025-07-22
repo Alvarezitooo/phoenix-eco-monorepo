@@ -7,11 +7,32 @@ import google.generativeai as genai
 import re
 import json
 from tenacity import retry, stop_after_attempt, wait_fixed, stop_after_delay, retry_if_exception_type
+from collections import defaultdict
+from datetime import datetime, timedelta
 
 # --- Exceptions Personnalisées ---
 class APIError(Exception):
     """Exception personnalisée pour les erreurs API."""
     pass
+
+class RateLimiter:
+    def __init__(self, max_requests=10, window=timedelta(hours=1)):
+        self.requests = defaultdict(list)
+        self.max_requests = max_requests
+        self.window = window
+
+    def is_allowed(self, user_id: str) -> bool:
+        now = datetime.now()
+        # Nettoyer anciennes requêtes
+        self.requests[user_id] = [
+            req_time for req_time in self.requests[user_id]
+            if now - req_time < self.window
+        ]
+
+        if len(self.requests[user_id]) < self.max_requests:
+            self.requests[user_id].append(now)
+            return True
+        return False
 
 # --- Configuration des APIs ---
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
@@ -23,6 +44,9 @@ FRANCETRAVAIL_AUTH_URL = "https://francetravail.io/connexion/oauth2/access_token
 # Initialisation des clients/configurations
 if GOOGLE_API_KEY:
     genai.configure(api_key=GOOGLE_API_KEY)
+
+# Initialisation du Rate Limiter
+api_rate_limiter = RateLimiter(max_requests=5, window=timedelta(minutes=1)) # Exemple: 5 requêtes par minute
 
 # Variable globale pour le token France Travail
 FRANCETRAVAIL_ACCESS_TOKEN: Dict[str, Optional[Union[str, float]]] = {'value': None, 'expires_at': 0.0}
@@ -62,6 +86,8 @@ def get_france_travail_access_token() -> str:
 @retry(stop=(stop_after_attempt(3) | stop_after_delay(60)), wait=wait_fixed(2), retry=retry_if_exception_type(requests.RequestException))
 def get_france_travail_offer_details(offer_id: str) -> Optional[dict]:
     """Récupère les détails d'une offre d'emploi depuis l'API France Travail."""
+    if not api_rate_limiter.is_allowed("default_user"): # Utilisation d'un user_id générique
+        raise APIError("Limite de requêtes atteinte pour la récupération des détails d'offre France Travail. Veuillez réessayer plus tard.")
     access_token = get_france_travail_access_token()
     url = f"{FRANCETRAVAIL_API_BASE_URL}/{offer_id}"
     headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json"}
@@ -74,6 +100,8 @@ def get_france_travail_offer_details(offer_id: str) -> Optional[dict]:
 @retry(stop=(stop_after_attempt(3) | stop_after_delay(60)), wait=wait_fixed(2), retry=retry_if_exception_type(APIError))
 def suggerer_competences_transferables(ancien_domaine: str, nouveau_domaine: str) -> str:
     """Suggère des compétences transférables entre deux domaines d'activité en utilisant Google Gemini."""
+    if not api_rate_limiter.is_allowed("default_user"): # Utilisation d'un user_id générique
+        raise APIError("Limite de requêtes atteinte pour les compétences transférables. Veuillez réessayer plus tard.")
     model = genai.GenerativeModel('models/gemini-1.5-flash')
     prompt = f"""
     Tu es un expert en ressources humaines spécialisé dans la reconversion professionnelle.
@@ -94,6 +122,8 @@ def suggerer_competences_transferables(ancien_domaine: str, nouveau_domaine: str
 @retry(stop=(stop_after_attempt(3) | stop_after_delay(60)), wait=wait_fixed(2), retry=retry_if_exception_type((APIError, json.JSONDecodeError)))
 def analyser_culture_entreprise(about_page: str, linkedin_posts: str) -> dict:
     """Analyse la culture d'entreprise via Google Gemini et retourne des insights structurés."""
+    if not api_rate_limiter.is_allowed("default_user"): # Utilisation d'un user_id générique
+        raise APIError("Limite de requêtes atteinte pour l'analyse de culture d'entreprise. Veuillez réessayer plus tard.")
     model = genai.GenerativeModel('models/gemini-1.5-flash')
     prompt = f"""
     Tu es un expert en analyse de culture d'entreprise.

@@ -23,6 +23,9 @@ test appli/
 # Project documentation
 PROJET_COMPLET.md
 
+# Streamlit secrets
+.streamlit/secrets.toml
+
 # Ignored files
 amélioration_code.txt
 fix_bug.md
