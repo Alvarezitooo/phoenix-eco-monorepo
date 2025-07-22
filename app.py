@@ -2302,11 +2302,11 @@ def render_generator_tab(user_tier):
             )
 
                     if st.button("✨ Suggérer les compétences transférables"):
-                        if ancien_domaine and nouveau_domaine:
-                            with st.spinner("L'IA analyse les domaines pour suggérer les compétences..."):
-                                try:
-                                    suggested_text = suggerer_competences_transferables(ancien_domaine, nouveau_domaine)
-                                    st.session_state.suggested_competences = suggested_text
+                if ancien_domaine and nouveau_domaine:
+                    with st.spinner("L'IA analyse les domaines pour suggérer les compétences..."):
+                        try:
+                            suggested_text = suggerer_competences_transferables(ancien_domaine, nouveau_domaine)
+                            st.session_state.suggested_competences = suggested_text
                                     st.success("Compétences suggérées ! Vous pouvez les modifier si besoin.")
                                 except APIError as e:
                                     st.error(f"❌ Erreur lors de la suggestion des compétences. Problème avec l'API Gemini : {e}. Veuillez réessayer plus tard.")
