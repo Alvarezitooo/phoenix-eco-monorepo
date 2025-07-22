@@ -36,6 +36,622 @@ import numpy as np
 
 load_dotenv()
 
+# CSS pour la nouvelle interface
+def inject_professional_css():
+    """CSS Professionnel & Élégant pour Phoenix Letters"""
+    st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    /* Variables de couleurs sobres */
+    :root {
+        --phoenix-primary: #2c5aa0;
+        --phoenix-secondary: #f8fafc;
+        --phoenix-accent: #059669;
+        --phoenix-warning: #d97706;
+        --phoenix-neutral: #64748b;
+        
+        --phoenix-primary-light: #3b82f6;
+        --phoenix-primary-dark: #1e40af;
+        --phoenix-bg-light: #ffffff;
+        --phoenix-bg-card: #f8fafc;
+        --phoenix-border: #e2e8f0;
+        --phoenix-text-primary: #1e293b;
+        --phoenix-text-secondary: #64748b;
+        
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 10, 0, 0.04);
+        
+        --transition-fast: 0.15s ease-in-out;
+        --transition-normal: 0.3s ease-in-out;
+        --transition-slow: 0.5s ease-in-out;
+    }
+    
+    /* Background élégant */
+    .main > div {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: 100vh;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    /* Header professionnel */
+    .phoenix-header {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 1px solid var(--phoenix-border);
+        border-radius: 16px;
+        padding: 3rem 2rem;
+        margin: 2rem 0;
+        text-align: center;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .phoenix-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--phoenix-primary), var(--phoenix-accent), var(--phoenix-primary));
+        background-size: 200% 100%;
+        animation: gradientSlide 3s ease-in-out infinite;
+    }
+    
+    @keyframes gradientSlide {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    .phoenix-title {
+        font-family: 'Inter', sans-serif;
+        font-size: 2.75rem;
+        font-weight: 700;
+        color: var(--phoenix-text-primary);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.025em;
+    }
+    
+    .phoenix-title .highlight {
+        color: var(--phoenix-primary);
+        position: relative;
+    }
+    
+    .phoenix-title .highlight::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--phoenix-accent);
+        border-radius: 2px;
+    }
+    
+    .phoenix-subtitle {
+        font-size: 1.125rem;
+        color: var(--phoenix-text-secondary);
+        font-weight: 400;
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    /* Onglets élégants */
+    .stTabs [data-baseweb="tab-list"] {
+        background: white;
+        border: 1px solid var(--phoenix-border);
+        border-radius: 12px;
+        padding: 0.5rem;
+        box-shadow: var(--shadow-sm);
+        gap: 0.25rem;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: transparent;
+        border-radius: 8px;
+        color: var(--phoenix-text-secondary);
+        border: none;
+        transition: all var(--transition-normal);
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        font-size: 0.875rem;
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        background: var(--phoenix-bg-card);
+        color: var(--phoenix-text-primary);
+        transform: translateY(-1px);
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: var(--phoenix-primary) !important;
+        color: white !important;
+        box-shadow: var(--shadow-md) !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Cards élégantes */
+    .elegant-card {
+        background: white;
+        border: 1px solid var(--phoenix-border);
+        border-radius: 16px;
+        padding: 2rem;
+        margin: 1.5rem 0;
+        box-shadow: var(--shadow-md);
+        transition: all var(--transition-normal);
+    }
+    
+    .elegant-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--phoenix-primary);
+    }
+    
+    /* Boutons professionnels */
+    .stButton > button {
+        background: var(--phoenix-primary) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 0.75rem 2rem !important;
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 500 !important;
+        font-size: 0.875rem !important;
+        box-shadow: var(--shadow-md) !important;
+        transition: all var(--transition-normal) !important;
+        letter-spacing: 0.025em !important;
+    }
+    
+    .stButton > button:hover {
+        background: var(--phoenix-primary-dark) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: var(--shadow-lg) !important;
+    }
+    
+    /* Upload zones raffinées */
+    .stFileUploader > div {
+        background: white !important;
+        border: 2px dashed var(--phoenix-border) !important;
+        border-radius: 16px !important;
+        padding: 3rem 2rem !important;
+        text-align: center !important;
+        transition: all var(--transition-normal) !important;
+    }
+    
+    .stFileUploader > div:hover {
+        border-color: var(--phoenix-primary) !important;
+        background: var(--phoenix-bg-card) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: var(--shadow-lg) !important;
+    }
+    
+    /* Métriques élégantes */
+    .metric-card {
+        background: white;
+        border: 1px solid var(--phoenix-border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-normal);
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .metric-value {
+        font-family: 'Inter', sans-serif;
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--phoenix-primary);
+        margin-bottom: 0.25rem;
+    }
+    
+    .metric-label {
+        color: var(--phoenix-text-secondary);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    /* Sidebar professionnelle */
+    .st-emotion-cache-1d391kg { /* Cible la sidebar de Streamlit */
+        background: var(--phoenix-bg-light) !important;
+        border-right: 1px solid var(--phoenix-border) !important;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    /* Progress Bar élégante */
+    .progress-container {
+        margin: 1.5rem 0;
+    }
+    
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        color: var(--phoenix-text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background-color: var(--phoenix-border);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--phoenix-primary-light), var(--phoenix-primary));
+        border-radius: 4px;
+        transition: width var(--transition-normal);
+    }
+    
+    /* Badges de statut */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.3em 0.7em;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 0.5rem;
+    }
+    
+    .status-success {
+        background-color: rgba(5, 150, 105, 0.1);
+        color: var(--phoenix-accent);
+    }
+    
+    .status-warning {
+        background-color: rgba(217, 119, 6, 0.1);
+        color: var(--phoenix-warning);
+    }
+    
+    .status-info {
+        background-color: rgba(44, 90, 160, 0.1);
+        color: var(--phoenix-primary);
+    }
+    
+    /* Stepper élégant */
+    .stepper {
+        display: flex;
+        justify-content: space-around;
+        margin: 2rem 0;
+        padding: 1rem;
+        background: var(--phoenix-bg-card);
+        border-radius: 16px;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .step {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+        position: relative;
+        flex: 1;
+    }
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        transition: all var(--transition-normal);
+    }
+    
+    .step-number.completed {
+        background-color: var(--phoenix-accent);
+        color: white;
+    }
+    
+    .step-number.active {
+        background-color: var(--phoenix-primary);
+        color: white;
+        box-shadow: var(--shadow-md);
+    }
+    
+    .step-number.pending {
+        background-color: var(--phoenix-border);
+        color: var(--phoenix-text-secondary);
+    }
+    
+    .step-title {
+        font-weight: 600;
+        color: var(--phoenix-text-primary);
+        font-size: 0.9rem;
+    }
+    
+    .step-description {
+        font-size: 0.8rem;
+        color: var(--phoenix-text-secondary);
+    }
+    
+    /* Généralisation des couleurs de texte */
+    .stMarkdown, .stText, p, span, div, label, .st-emotion-cache-nahz7x p {
+        color: var(--phoenix-text-primary) !important;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--phoenix-text-primary) !important;
+        font-family: 'Inter', sans-serif !important;
+    }
+    
+    /* Ajustements spécifiques pour les alertes Streamlit */
+    div[data-testid="stAlert"] {
+        color: var(--phoenix-text-primary) !important; /* Texte des alertes */
+    }
+    
+    div[data-testid="stAlert"] div[data-testid="stMarkdownContainer"] p {
+        color: var(--phoenix-text-primary) !important; /* Texte dans les markdown des alertes */
+    }
+    
+    /* Scrollbar professionnelle */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: var(--phoenix-bg-card);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: var(--phoenix-primary-light);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--phoenix-primary-dark);
+    }
+    
+    /* Animation fadeIn pour les éléments */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .st-emotion-cache-nahz7x { /* Cible le conteneur principal de l'application */
+        animation: fadeInUp 0.5s ease-out;
+    }
+    
+    </style>
+    """, unsafe_allow_html=True)
+
+def render_professional_header():
+    """Header élégant et professionnel"""
+    st.markdown("""
+    <div class="phoenix-header">
+        <h1 class="phoenix-title">
+            Phoenix <span class="highlight">Letters</span>
+        </h1>
+        <p class="phoenix-subtitle">
+            Transformez votre parcours professionnel en atout grâce à l'intelligence artificielle. 
+            Spécialement conçu pour les reconversions.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+def create_elegant_progress_bar(progress: float, label: str):
+    """Barre de progression élégante"""
+    st.markdown(f"""
+    <div class="progress-container">
+        <div class="progress-label">
+            <span>{label}</span>
+            <span>{progress}%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {progress}%;"></div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def render_elegant_metric_card(value: str, label: str, icon: str = ""):
+    """Carte métrique élégante"""
+    st.markdown(f"""
+    <div class="metric-card">
+        {f'<div style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--phoenix-primary);">{icon}</div>' if icon else ''}
+        <div class="metric-value">{value}</div>
+        <div class="metric-label">{label}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def create_elegant_container(content_func, title: str = None):
+    """Container élégant pour contenu"""
+    with st.container():
+        st.markdown('<div class="elegant-card">', unsafe_allow_html=True)
+        if title:
+            st.markdown(f"""
+            <div class="elegant-card-header">
+                <h3 class="elegant-card-title">{title}</h3>
+            </div>
+            """, unsafe_allow_html=True)
+        content_func()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+def render_status_badge(status: str, text: str):
+    """Badge de statut élégant"""
+    status_classes = {
+        "success": "status-success",
+        "warning": "status-warning", 
+        "info": "status-info"
+    }
+    
+    icons = {
+        "success": "✓",
+        "warning": "⚠",
+        "info": "ℹ"
+    }
+    
+    css_class = status_classes.get(status, "status-info")
+    icon = icons.get(status, "")
+    
+    st.markdown(f"""
+    <span class="status-badge {css_class}">
+        {icon} {text}
+    </span>
+    """, unsafe_allow_html=True)
+
+def create_elegant_stepper(steps: list, current_step: int):
+    """Stepper élégant pour progression"""
+    st.markdown('<div class="stepper">', unsafe_allow_html=True)
+    
+    for i, step in enumerate(steps):
+        status = "completed" if i < current_step else "active" if i == current_step else "pending"
+        
+        st.markdown(f"""
+        <div class="step">
+            <div class="step-number {status}">
+                {i + 1 if status != "completed" else "✓"}
+            </div>
+            <div>
+                <div class="step-title">{step['title']}</div>
+                <div class="step-description">{step['description']}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+def get_professional_user_tier_ui():
+    """Interface de sélection du tier professionnelle"""
+    
+    st.sidebar.markdown("###  Votre Abonnement")
+    
+    tier_options = {
+        "Gratuit": {
+            "icon": "",
+            "features": ["3 lettres par mois", "Génération standard", "Support communauté"],
+            "color": "var(--phoenix-neutral)"
+        },
+        "Premium": {
+            "icon": "⭐",
+            "features": ["Lettres illimitées", "Analyse entreprise", "Feedback IA", "Support prioritaire"],
+            "color": "var(--phoenix-primary)"
+        },
+        "Premium Plus": {
+            "icon": "",
+            "features": ["Tout Premium", "Plans de carrière", "Coaching personnalisé", "Accès anticipé"],
+            "color": "var(--phoenix-accent)"
+        }
+    }
+    
+    tier = st.sidebar.selectbox(
+        "Plan actuel",
+        list(tier_options.keys()),
+        help="Votre niveau d'abonnement détermine les fonctionnalités disponibles"
+    )
+    
+    # Affichage élégant des fonctionnalités
+    tier_info = tier_options[tier]
+    
+    st.sidebar.markdown(f"""
+    <div style="
+        background: white;
+        border: 1px solid var(--phoenix-border);
+        border-radius: 12px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid {tier_info['color']};
+    ">
+        <h4 style="color: {tier_info['color']}; margin: 0 0 0.5rem 0;">
+            {tier_info['icon']} Plan {tier}
+        </h4>
+        <ul style="margin: 0; padding-left: 1rem; color: var(--phoenix-text-secondary);">
+    """, unsafe_allow_html=True)
+    
+    for feature in tier_info["features"]:
+        st.sidebar.markdown(f"<li style='margin: 0.25rem 0;'>{feature}</li>", unsafe_allow_html=True)
+    
+    st.sidebar.markdown("</ul></div>", unsafe_allow_html=True)
+    
+    # Bouton upgrade si nécessaire
+    if tier == "Gratuit":
+        if st.sidebar.button("⭐ Passer Premium", help="Débloquez toutes les fonctionnalités"):
+            st.sidebar.info(" Redirection vers la page de paiement...")
+    
+    # Conversion du tier pour l'API
+    tier_mapping = {
+        "Gratuit": "free",
+        "Premium": "premium", 
+        "Premium Plus": "premium_plus"
+    }
+    
+    return tier_mapping[tier]
+
+def render_professional_feature_status():
+    """Affichage du statut des fonctionnalités de manière élégante"""
+    st.sidebar.markdown("###  État du Système")
+    
+    features_status = [
+        {"name": "Génération IA", "status": "success", "available": True},
+        {"name": "Analyse Entreprise", "status": "success", "available": True},
+        {"name": "Stockage Sécurisé", "status": "warning", "available": False},
+        {"name": "API France Travail", "status": "info", "available": True}
+    ]
+    
+    for feature in features_status:
+        icon = "✅" if feature["available"] else "⚠️"
+        st.sidebar.markdown(f"{icon} {feature['name']}")
+
+def show_elegant_success_message(message: str):
+    """Message de succès élégant"""
+    st.markdown(f"""
+    <div style="
+        background: rgba(5, 150, 105, 0.1);
+        border: 1px solid rgba(5, 150, 105, 0.2);
+        border-left: 4px solid var(--phoenix-accent);
+        border-radius: 12px;
+        padding: 1rem;
+        margin: 1rem 0;
+        color: var(--phoenix-accent);
+        animation: fadeInUp 0.6s ease-out;
+    ">
+        <strong>✓ Succès :</strong> {message}
+    </div>
+    """, unsafe_allow_html=True)
+
+def create_elegant_file_uploader(label: str, file_types: list, help_text: str = "", key: str = None):
+    """Zone d'upload de fichier élégante"""
+    
+    st.markdown(f"""
+    <div style="margin-bottom: 1rem;">
+        <h4 style="color: var(--phoenix-text-primary); margin-bottom: 0.5rem;">{label}</h4>
+        {f'<p style="color: var(--phoenix-text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">{help_text}</p>' if help_text else ''}
+    </div>
+    """, unsafe_allow_html=True)
+    
+    uploaded_file = st.file_uploader(
+        f"Sélectionnez votre fichier {label.lower()}",
+        type=file_types,
+        key=key,
+        label_visibility="collapsed"
+    )
+    
+    return uploaded_file
+
+# --- Conseils utiles (pour l'attente) ---
+
 # --- Conseils utiles (pour l'attente) ---
 TIPS = [
     " Conseil utile : Saviez-vous que 80% des recruteurs parcourent d'abord votre CV en diagonale ? Assurez-vous que les informations clés sont visibles en un coup d'œil !",
@@ -553,71 +1169,22 @@ def render_generator_tab(user_tier):
     def generator_content():
         st.markdown("""
         <div style="text-align: center; margin: 2rem 0;">
-            <h2 style="color: var(--phoenix-gold); font-family: 'Orbitron', monospace;">
+            <h2 style="color: var(--phoenix-text-primary); font-family: 'Inter', sans-serif;">
                  GÉNÉRATION DE LETTRES
             </h2>
-            <p style="color: rgba(255, 255, 255, 0.8); font-size: 1.1rem;">
+            <p style="color: var(--phoenix-text-secondary); font-size: 1.1rem;">
                 Transformez votre parcours en atout grâce à l'IA Phoenix
             </p>
         </div>
         """, unsafe_allow_html=True)
         
         # Stepper visuel
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.markdown("""
-            <div style="text-align: center; padding: 1rem;">
-                <div style="
-                    background: linear-gradient(135deg, var(--phoenix-orange), var(--phoenix-cyan));
-                    width: 60px; height: 60px; border-radius: 50%;
-                    margin: 0 auto 1rem auto;
-                    display: flex; align-items: center; justify-content: center;
-                    font-size: 1.5rem; font-weight: bold;
-                    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6);
-                ">1</div>
-                <h4 style="color: var(--phoenix-cyan);">Documents</h4>
-                <p style="color: white; font-size: 0.9rem;">
-                    Chargez vos documents
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col2:
-            st.markdown("""
-            <div style="text-align: center; padding: 1rem;">
-                <div style="
-                    background: rgba(255, 255, 255, 0.2);
-                    width: 60px; height: 60px; border-radius: 50%;
-                    margin: 0 auto 1rem auto;
-                    display: flex; align-items: center; justify-content: center;
-                    font-size: 1.5rem; font-weight: bold;
-                    border: 2px solid var(--phoenix-cyan);
-                ">2</div>
-                <h4 style="color: rgba(255, 255, 255, 0.5);">Configuration</h4>
-                <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.9rem;">
-                    Paramétrez l'intelligence artificielle
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col3:
-            st.markdown("""
-            <div style="text-align: center; padding: 1rem;">
-                <div style="
-                    background: rgba(255, 255, 255, 0.1);
-                    width: 60px; height: 60px; border-radius: 50%;
-                    margin: 0 auto 1rem auto;
-                    display: flex; align-items: center; justify-content: center;
-                    font-size: 1.5rem; font-weight: bold;
-                    border: 2px solid rgba(255, 255, 255, 0.3);
-                ">3</div>
-                <h4 style="color: rgba(255, 255, 255, 0.3);">Génération</h4>
-                <p style="color: white; font-size: 0.9rem;">
-                    Synthèse en cours...
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
+        steps = [
+            {"title": "Documents", "description": "Chargez vos documents"},
+            {"title": "Configuration", "description": "Paramétrez l'intelligence artificielle"},
+            {"title": "Génération", "description": "Synthèse en cours..."}
+        ]
+        create_elegant_stepper(steps, 0)
         
         st.markdown("<br>", unsafe_allow_html=True)
         
@@ -625,29 +1192,27 @@ def render_generator_tab(user_tier):
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("###  CV Upload")
-            uploaded_cv = st.file_uploader(
-                "Glissez votre CV ici...", 
-                type=['pdf', 'txt'], 
-                key="cv_quantum",
-                help="Formats supportés: PDF, TXT"
+            uploaded_cv = create_elegant_file_uploader(
+                label="CV Upload",
+                file_types=['pdf', 'txt'],
+                help_text="Formats supportés: PDF, TXT",
+                key="cv_quantum"
             )
             
             if uploaded_cv:
-                show_success_toast("CV chargé !")
+                show_elegant_success_message("CV chargé !")
                 st.session_state.user_progress = 33
         
         with col2:
-            st.markdown("###  Offre d'emploi")
-            uploaded_annonce = st.file_uploader(
-                "Chargez l'offre d'emploi...", 
-                type=['txt', 'pdf'], 
-                key="annonce_quantum",
-                help="Format TXT ou PDF"
+            uploaded_annonce = create_elegant_file_uploader(
+                label="Offre d'emploi",
+                file_types=['txt', 'pdf'],
+                help_text="Format TXT ou PDF",
+                key="annonce_quantum"
             )
             
             if uploaded_annonce:
-                show_success_toast("Offre chargée !")
+                show_elegant_success_message("Offre chargée !")
                 st.session_state.user_progress = 66
         
         st.markdown("---")
@@ -893,14 +1458,14 @@ def render_generator_tab(user_tier):
                                     # --- Nouvelle section d'affichage de la lettre générée ---
                                     st.markdown("""
                                     <div style="
-                                        background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(0, 245, 255, 0.1));
-                                        border-radius: 20px;
+                                        background: var(--phoenix-bg-card);
+                                        border-radius: 16px;
                                         padding: 2rem;
                                         margin: 2rem 0;
-                                        border: 1px solid rgba(255, 107, 53, 0.3);
-                                        box-shadow: 0 0 30px rgba(255, 107, 53, 0.2);
+                                        border: 1px solid var(--phoenix-border);
+                                        box-shadow: var(--shadow-md);
                                     ">
-                                        <h3 style="color: var(--phoenix-gold); text-align: center; margin-bottom: 1.5rem;">
+                                        <h3 style="color: var(--phoenix-text-primary); text-align: center; margin-bottom: 1.5rem;">
                                              VOTRE LETTRE PHOENIX GÉNÉRÉE
                                         </h3>
                                     """, unsafe_allow_html=True)
@@ -1088,11 +1653,11 @@ def render_generator_tab(user_tier):
                         st.session_state.clear()
                         st.rerun()
             
-            create_glass_container(config_content_inner, "Configuration de l'IA")
+            create_elegant_container(config_content_inner, "Configuration de l'IA")
         else:
             st.info("Veuillez charger votre CV et l'annonce (ou un ID France Travail) pour commencer la configuration.")
 
-    create_glass_container(generator_content)
+    create_elegant_container(generator_content)
 
 def render_trajectory_tab(user_tier):
     """Onglet Trajectory Builder stylisé"""
@@ -1100,10 +1665,10 @@ def render_trajectory_tab(user_tier):
     def trajectory_content():
         st.markdown("""
         <div style="text-align: center; margin: 2rem 0;">
-            <h2 style="color: var(--phoenix-gold); font-family: 'Orbitron', monospace;">
+            <h2 style="color: var(--phoenix-text-primary); font-family: 'Inter', sans-serif;">
                 ️ MATRICE DE RECONVERSION
             </h2>
-            <p style="color: rgba(255, 255, 255, 0.8); font-size: 1.1rem;">
+            <p style="color: var(--phoenix-text-secondary); font-size: 1.1rem;">
                 Cartographiez votre trajectoire professionnelle
             </p>
         </div>
@@ -1218,10 +1783,10 @@ def render_trajectory_tab(user_tier):
                         col1, col2 = st.columns(2)
                         with col1:
                             if reconversion_plan.estimated_total_duration_weeks:
-                                render_metric_card(f"{reconversion_plan.estimated_total_duration_weeks} semaines", "Durée totale", "⏱️")
+                                render_elegant_metric_card(f"{reconversion_plan.estimated_total_duration_weeks} semaines", "Durée totale", "⏱️")
                         with col2:
                             if reconversion_plan.success_probability is not None:
-                                render_metric_card(f"{reconversion_plan.success_probability:.0%}", "Probabilité de succès", "📊")
+                                render_elegant_metric_card(f"{reconversion_plan.success_probability:.0%}", "Probabilité de succès", "📊")
 
                         st.markdown("###  Étapes du Plan de Reconversion")
                         for i, step in enumerate(reconversion_plan.steps):
@@ -1270,7 +1835,7 @@ def render_trajectory_tab(user_tier):
         st.button(" Passer Premium Plus", type="primary")
         return
     
-    create_glass_container(trajectory_content)
+    create_elegant_container(trajectory_content)
 
 def render_mirror_tab(user_tier):
     """Onglet Mirror Match stylisé"""
@@ -1278,10 +1843,10 @@ def render_mirror_tab(user_tier):
     def mirror_content():
         st.markdown("""
         <div style="text-align: center; margin: 2rem 0;">
-            <h2 style="color: var(--phoenix-gold); font-family: 'Orbitron', monospace;">
+            <h2 style="color: var(--phoenix-text-primary); font-family: 'Inter', sans-serif;">
                  ANALYSE DE LA CULTURE D'ENTREPRISE
             </h2>
-            <p style="color: rgba(255, 255, 255, 0.8); font-size: 1.1rem;">
+            <p style="color: var(--phoenix-text-secondary); font-size: 1.1rem;">
                 Analysez la culture d'entreprise pour adapter votre message
             </p>
         </div>
@@ -1322,13 +1887,13 @@ def render_mirror_tab(user_tier):
                         col1, col2, col3 = st.columns(3)
                         
                         with col1:
-                            render_metric_card("Innovation", "VALEUR CLÉ", "")
+                            render_elegant_metric_card("Innovation", "VALEUR CLÉ", "")
                         
                         with col2:
-                            render_metric_card("Dynamique", "TON", "️")
+                            render_elegant_metric_card("Dynamique", "TON", "️")
                         
                         with col3:
-                            render_metric_card("87%", "MATCH", "")
+                            render_elegant_metric_card("87%", "MATCH", "")
                         
                         # Recommandations
                         st.markdown("<!-- RECOMMANDATIONS BLOCK -->", unsafe_allow_html=True)
@@ -1344,7 +1909,7 @@ def render_mirror_tab(user_tier):
         st.button("⭐ Passer Premium", type="primary", key="premium_mirror")
         return
     
-    create_glass_container(mirror_content)
+    create_elegant_container(mirror_content)
 
 def render_dashboard_tab(user_tier):
     """Dashboard stylisé avec métriques"""
@@ -1352,10 +1917,10 @@ def render_dashboard_tab(user_tier):
     def dashboard_content():
         st.markdown("""
         <div style="text-align: center; margin: 2rem 0;">
-            <h2 style="color: var(--phoenix-gold); font-family: 'Orbitron', monospace;">
+            <h2 style="color: var(--phoenix-text-primary); font-family: 'Inter', sans-serif;">
                  TABLEAU DE BORD
             </h2>
-            <p style="color: rgba(255, 255, 255, 0.8); font-size: 1.1rem;">
+            <p style="color: var(--phoenix-text-secondary); font-size: 1.1rem;">
                 Suivez vos progrès et vos statistiques
             </p>
         </div>
@@ -1365,16 +1930,16 @@ def render_dashboard_tab(user_tier):
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            render_metric_card("12", "LETTRES", "")
+            render_elegant_metric_card("12", "LETTRES", "")
         
         with col2:
-            render_metric_card("3", "DOMAINES", "️")
+            render_elegant_metric_card("3", "DOMAINES", "️")
         
         with col3:
-            render_metric_card("8.4/10", "SCORE IA", "⭐")
+            render_elegant_metric_card("8.4/10", "SCORE IA", "⭐")
         
         with col4:
-            render_metric_card("76%", "TAUX MATCH", "")
+            render_elegant_metric_card("76%", "TAUX MATCH", "")
         
         # Graphique temporel des générations
         dates = pd.date_range('2025-07-01', periods=20, freq='D')
@@ -1389,8 +1954,8 @@ def render_dashboard_tab(user_tier):
         fig.update_layout(
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
-            font_color='white',
-            title_font_color='#00f5ff'
+            font_color='var(--phoenix-text-primary)',
+            title_font_color='var(--phoenix-text-primary)'
         )
         
         st.plotly_chart(fig, use_container_width=True)
@@ -1407,20 +1972,20 @@ def render_dashboard_tab(user_tier):
         for lettre in lettres_data:
             st.markdown(f"""
             <div style="
-                background: rgba(255, 255, 255, 0.05);
+                background: var(--phoenix-bg-card);
                 border-radius: 15px;
                 padding: 1rem;
                 margin: 0.5rem 0;
-                border-left: 4px solid var(--phoenix-cyan);
-                transition: all 0.3s ease;
-            " onmouseover="this.style.background='rgba(255, 107, 53, 0.1)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'">
+                border-left: 4px solid var(--phoenix-primary);
+                transition: all var(--transition-normal);
+            " onmouseover="this.style.background='var(--phoenix-bg-card)'" onmouseout="this.style.background='var(--phoenix-bg-card)'">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <strong style="color: var(--phoenix-cyan);">{lettre['Poste']}</strong>
+                        <strong style="color: var(--phoenix-text-primary);">{lettre['Poste']}</strong>
                         <br>
-                        <small style="color: rgba(255, 255, 255, 0.7);">{lettre['Entreprise']} • {lettre['Date']}</small>
+                        <small style="color: var(--phoenix-text-secondary);">{lettre['Entreprise']} • {lettre['Date']}</small>
                     </div>
-                    <div style="color: var(--phoenix-gold); font-weight: bold;">
+                    <div style="color: var(--phoenix-primary); font-weight: bold;">
                         {lettre['Score']}
                     </div>
                 </div>
@@ -1432,7 +1997,7 @@ def render_dashboard_tab(user_tier):
         st.button("⭐ Passer Premium", type="primary")
         return
     
-    create_glass_container(dashboard_content)
+    create_elegant_container(dashboard_content)
 
 def render_settings_tab(user_tier):
     """Onglet paramètres stylisé"""
@@ -1440,10 +2005,10 @@ def render_settings_tab(user_tier):
     def settings_content():
         st.markdown("""
         <div style="text-align: center; margin: 2rem 0;">
-            <h2 style="color: var(--phoenix-gold); font-family: 'Orbitron', monospace;">
+            <h2 style="color: var(--phoenix-text-primary); font-family: 'Inter', sans-serif;">
                 ⚙️ PARAMÈTRES
             </h2>
-            <p style="color: rgba(255, 255, 255, 0.8); font-size: 1.1rem;">
+            <p style="color: var(--phoenix-text-secondary); font-size: 1.1rem;">
                 Gérez les réglages de l'IA Phoenix
             </p>
         </div>
@@ -1488,14 +2053,14 @@ def render_settings_tab(user_tier):
         
         st.markdown(f"""
         <div style="
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(0, 245, 255, 0.1));
-            border-radius: 20px;
+            background: var(--phoenix-bg-card);
+            border-radius: 16px;
             padding: 2rem;
             margin: 1rem 0;
             border: 1px solid {color};
         ">
             <h4 style="color: {color};">✨ Fonctionnalités Activées</h4>
-            <ul style="color: rgba(255, 255, 255, 0.8);">
+            <ul style="color: var(--phoenix-text-primary);">
         """, unsafe_allow_html=True)
         
         for feature in features:
@@ -1552,22 +2117,21 @@ def render_settings_tab(user_tier):
         
         # Bouton de sauvegarde
         if st.button(" SAUVEGARDER CONFIGURATION", type="primary", key="save_config_button"):
-            show_success_toast("Configuration sauvegardée !")
+            show_elegant_success_message("Configuration sauvegardée !")
             
         # Easter egg
         if st.button(" Mode Phoenix Ultime", help="Activation du mode expérimental", key="phoenix_mode_button"):
             st.balloons()
             st.markdown("""
             <div style="
-                background: linear-gradient(45deg, #ff6b35, #00f5ff, #ffd700);
-                background-size: 400% 400%;
-                animation: gradientShift 2s ease infinite;
-                border-radius: 20px;
+                background: var(--phoenix-primary);
+                border-radius: 16px;
                 padding: 2rem;
                 text-align: center;
                 color: white;
                 font-weight: bold;
                 margin: 2rem 0;
+                box-shadow: var(--shadow-lg);
             ">
                  MODE PHOENIX ULTIME ACTIVÉ ! <br>
                 Toutes les fonctionnalités débloquées !
@@ -1612,7 +2176,7 @@ def render_settings_tab(user_tier):
         else:
             st.info("L'historique des lettres et la gestion des données sont des fonctionnalités Premium. Abonnez-vous pour en bénéficier !")
     
-    create_glass_container(settings_content)
+    create_elegant_container(settings_content)
 
 # --- Fonction principale ---
 def main():
@@ -1623,15 +2187,14 @@ def main():
         initial_sidebar_state="collapsed"
     )
     
-    inject_futuristic_css()
-    create_particle_background()
-    render_futuristic_header()
+    inject_professional_css()
+    render_professional_header()
     
     # Barre de progression globale d'onboarding
     if 'user_progress' not in st.session_state:
         st.session_state.user_progress = 0
     
-    create_cyber_progress_bar(st.session_state.user_progress, "Progression de l'utilisateur")
+    create_elegant_progress_bar(st.session_state.user_progress, "Progression de l'utilisateur")
     
     # Initialiser les variables de session si elles n'existent pas
     if 'annonce_content' not in st.session_state:
@@ -1648,7 +2211,7 @@ def main():
     ** Protection des données** : Vos données (CV, lettre générée) sont traitées **uniquement en mémoire** et **supprimées immédiatement** après génération. Aucune sauvegarde n'est effectuée sur nos serveurs. Le traitement IA est réalisé via Gemini (Google). Pour plus de détails, consultez notre politique de confidentialité (à venir).
     """)
 
-    user_tier = get_user_tier_ui()
+    user_tier = get_professional_user_tier_ui()
 
     # Navigation principale par onglets
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
