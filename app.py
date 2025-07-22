@@ -397,7 +397,7 @@ def inject_futuristic_css():
     
     /* Mode Sombre Avancé */
     .stMarkdown, .stText, p, span, div, label {
-        color: rgba(255, 255, 255, 0.9) !important;
+        color: var(--phoenix-cyan) !important;
     }
     
     h1, h2, h3, h4, h5, h6 {
@@ -523,7 +523,7 @@ def get_user_tier_ui():
     # Preview des fonctionnalités selon le tier
     if tier == " Gratuit":
         st.sidebar.info("✅ 3 lettres/mois\n✅ Génération basique")
-        if st.sidebar.button(" Passer Premium"):
+        if st.sidebar.button(" Passer Premium", key="premium_sidebar"):
             st.info("Redirection vers paiement...")
     
     elif tier == "⭐ Premium":
@@ -654,7 +654,6 @@ def render_generator_tab(user_tier):
         )
         st.markdown("---")
 
-        # Configuration IA si fichiers uploadés
         est_reconversion = False
         ancien_domaine = ""
         nouveau_domaine = ""
@@ -663,6 +662,7 @@ def render_generator_tab(user_tier):
         company_about_page = ""
         linkedin_posts = ""
 
+        # Configuration IA si fichiers uploadés
         if uploaded_cv and (uploaded_annonce or offer_id):
             st.markdown("<br><br>", unsafe_allow_html=True)
             
@@ -1314,7 +1314,7 @@ def render_mirror_tab(user_tier):
     
     if user_tier == "free":
         st.info(" L'analyse de la culture d'entreprise est une fonctionnalité Premium.")
-        st.button("⭐ Passer Premium", type="primary")
+        st.button("⭐ Passer Premium", type="primary", key="premium_mirror")
         return
     
     create_glass_container(mirror_content)
