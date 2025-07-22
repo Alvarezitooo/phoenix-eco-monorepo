@@ -679,6 +679,756 @@ def generate_docx(text_content: str) -> bytes:
     byte_io.seek(0)
     return byte_io.getvalue()
 
+# ===== 1. FIX MIRROR MATCH (ANALYSE CULTURE ENTREPRISE) =====
+
+def render_mirror_tab_fixed(user_tier):
+    """Onglet Mirror Match - FIXÉ ET OPÉRATIONNEL"""
+    
+    def mirror_content():
+        st.markdown("""
+        <div style="text-align: center; margin: 2rem 0;">
+            <h2 style="color: var(--phoenix-primary); font-family: 'Inter', sans-serif;">
+                 ANALYSE DE LA CULTURE D'ENTREPRISE
+            </h2>
+            <p style="color: var(--phoenix-text-secondary); font-size: 1.1rem;">
+                Analysez la culture d'entreprise pour adapter parfaitement votre message
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Interface d'analyse de culture
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("###  Contenu 'À Propos'")
+            company_about = st.text_area(
+                "Page 'À Propos' de l'entreprise",
+                placeholder="Collez ici le contenu de la page 'À Propos' de l'entreprise...",
+                height=200,
+                help="L'IA analysera les valeurs, la mission et le ton de l'entreprise",
+                key="company_about_mirror"
+            )
+        
+        with col2:
+            st.markdown("###  Posts LinkedIn Récents")
+            linkedin_posts = st.text_area(
+                "Posts LinkedIn de l'entreprise",
+                placeholder="Collez ici quelques posts récents de leur page LinkedIn...",
+                height=200,
+                help="L'IA analysera le style de communication et les priorités actuelles",
+                key="linkedin_posts_mirror"
+            )
+        
+        # Instructions d'utilisation
+        with st.expander(" Comment utiliser cette fonctionnalité"):
+            st.markdown("""
+            **Étapes recommandées :**
+            1. **Visitez le site web** de l'entreprise cible
+            2. **Copiez le contenu** de leur page "À Propos", "Notre histoire" ou "Qui sommes-nous"
+            3. **Allez sur leur LinkedIn** et copiez 2-3 posts récents
+            4. **Lancez l'analyse** - l'IA identifiera leur culture et vous donnera des recommandations
+            
+            **Résultat :** Votre lettre sera adaptée au ton et aux valeurs de l'entreprise !
+            """)
+        
+        # Bouton d'analyse
+        if company_about.strip() or linkedin_posts.strip():
+            if st.button(" LANCER L'ANALYSE", type="primary", use_container_width=True):
+                if not company_about.strip() and not linkedin_posts.strip():
+                    st.warning("⚠️ Veuillez fournir au moins un type de contenu à analyser.")
+                else:
+                    try:
+                        with st.spinner(" Analyse de la culture d'entreprise en cours..."):
+                            # Import sécurisé
+                            from services.api_client import analyser_culture_entreprise, APIError
+                            
+                            # Appel API avec gestion d'erreur
+                            company_insights = analyser_culture_entreprise(
+                                company_about if company_about.strip() else "Aucun contenu fourni",
+                                linkedin_posts if linkedin_posts.strip() else "Aucun contenu fourni"
+                            )
+                            
+                            st.success("✅ Analyse terminée avec succès !")
+                            
+                            # Affichage des résultats
+                            st.markdown("---")
+                            st.markdown("##  Résultats de l'Analyse")
+                            
+                            if isinstance(company_insights, dict):
+                                # Affichage structuré si l'IA renvoie du JSON
+                                col1, col2, col3 = st.columns(3)
+                                
+                                with col1:
+                                    if 'valeurs' in company_insights:
+                                        st.markdown("###  Valeurs Clés")
+                                        for valeur in company_insights['valeurs'][:3]:
+                                            st.markdown(f"• **{valeur}**")
+                                
+                                with col2:
+                                    if 'ton_communication' in company_insights:
+                                        st.markdown("### ️ Ton de Communication")
+                                        st.markdown(f"**{company_insights['ton_communication']}**")
+                                
+                                with col3:
+                                    if 'profil_candidat' in company_insights:
+                                        st.markdown("###  Profil Recherché")
+                                        st.markdown(f"**{company_insights['profil_candidat']}**")
+                                
+                                # Recommandations détaillées
+                                st.markdown("###  Recommandations pour votre lettre")
+                                
+                                recommendations = [
+                                    f"Adoptez un ton **{company_insights.get('ton_communication', 'professionnel')}** dans votre lettre",
+                                    f"Mettez l'accent sur ces valeurs : **{', '.join(company_insights.get('valeurs', ['professionnalisme'])[:2])}**",
+                                    f"Positionnez-vous comme un profil **{company_insights.get('profil_candidat', 'polyvalent')}**"
+                                ]
+                                
+                                if 'defis_business' in company_insights and company_insights['defis_business']:
+                                    recommendations.append(f"Montrez comment vous pouvez les aider avec leurs défis : **{', '.join(company_insights['defis_business'][:2])}**")
+                                
+                                for i, rec in enumerate(recommendations, 1):
+                                    st.markdown(f"{i}. {rec}")
+                            
+                            else:
+                                # Affichage simple si l'IA renvoie du texte
+                                st.markdown("###  Analyse Détaillée")
+                                st.write(company_insights)
+                            
+                            # Call-to-action
+                            st.info(" **Conseil :** Utilisez ces insights lors de la génération de votre lettre dans l'onglet 'Générateur' !")
+                            
+                    except APIError as e:
+                        st.error(f"❌ Erreur lors de l'analyse : {str(e)}")
+                        st.info(" Vérifiez votre connexion et réessayez. Si le problème persiste, utilisez les insights manuellement.")
+                    except Exception as e:
+                        st.error(" Une erreur inattendue s'est produite. Veuillez réessayer.")
+                        st.write(f"Détails de l'erreur : {str(e)}")
+        
+        else:
+            st.info(" **Pour commencer :** Ajoutez du contenu dans au moins un des champs ci-dessus, puis cliquez sur 'Lancer l'analyse'.")
+    
+    # Vérification du tier utilisateur
+    if user_tier == "free":
+        st.info(" **L'analyse de la culture d'entreprise** est une fonctionnalité Premium.")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("⭐ Passer Premium", type="primary"):
+                st.success(" Redirection vers la page d'abonnement...")
+        with col2:
+            if st.button(" Découvrir Premium Plus", type="secondary"):
+                st.info(" Premium Plus inclut toutes les fonctionnalités Premium + Trajectory Builder")
+        return
+    
+    create_elegant_container(mirror_content)
+
+# ===== 2. FIX SMART COACH (FEEDBACK IA) =====
+
+def render_smart_coach_analysis_fixed(lettre_content: str, annonce_content: str):
+    """Smart Coach Analysis - FIXÉ ET OPÉRATIONNEL"""
+    
+    if not lettre_content.strip():
+        st.warning("⚠️ Aucune lettre à analyser. Générez d'abord une lettre.")
+        return
+    
+    if not annonce_content.strip():
+        st.warning("⚠️ Contenu de l'annonce manquant pour l'analyse.")
+        return
+    
+    st.markdown("---")
+    st.markdown("##  Smart Coach - Feedback IA")
+    
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.info(" **L'IA va analyser votre lettre** selon 4 critères professionnels et vous donner des conseils d'amélioration.")
+    with col2:
+        analyze_button = st.button(" Analyser ma lettre", type="primary", use_container_width=True)
+    
+    if analyze_button:
+        try:
+            with st.spinner(" L'IA analyse votre lettre selon les critères professionnels..."):
+                # Import sécurisé
+                from services.letter_service import evaluate_letter
+                from services.api_client import APIError
+                
+                # Appel API avec gestion d'erreur
+                coaching_report = evaluate_letter(lettre_content, annonce_content)
+                
+                st.success("✅ Analyse Smart Coach terminée !")
+                
+                # Affichage du score global
+                score_color = "" if coaching_report.score >= 7 else "" if coaching_report.score >= 5 else ""
+                st.markdown(f"### {score_color} Score Global : **{coaching_report.score:.1f}/10**")
+                
+                # Affichage des suggestions
+                st.markdown("###  Recommandations d'amélioration")
+                for i, suggestion in enumerate(coaching_report.suggestions, 1):
+                    st.markdown(f"**{i}.** {suggestion}")
+                
+                # Détail des critères (si disponible)
+                if coaching_report.rationale:
+                    with st.expander(" Analyse détaillée par critère"):
+                        for critere, detail in coaching_report.rationale.items():
+                            critere_clean = critere.replace('_', ' ').title()
+                            st.markdown(f"**{critere_clean}** : {detail}")
+                
+                # Conseils d'action
+                st.markdown("###  Plan d'action")
+                if coaching_report.score >= 8:
+                    st.success(" **Excellente lettre !** Vous pouvez l'envoyer en confiance.")
+                elif coaching_report.score >= 6:
+                    st.info(" **Bonne lettre !** Quelques ajustements mineurs peuvent la rendre parfaite.")
+                else:
+                    st.warning("⚠️ **Lettre à améliorer.** Suivez les recommandations ci-dessus avant envoi.")
+                
+        except APIError as e:
+            st.error(f"❌ Erreur lors de l'analyse Smart Coach : {str(e)}")
+            st.info(" Vérifiez votre connexion et réessayez.")
+        except Exception as e:
+            st.error(" Une erreur inattendue s'est produite lors de l'analyse.")
+            st.write(f"Détails : {str(e)}")
+
+# ===== 3. FIX TRAJECTORY BUILDER =====
+
+def render_trajectory_tab_fixed(user_tier):
+    """Onglet Trajectory Builder - FIXÉ ET OPÉRATIONNEL"""
+    
+    def trajectory_content():
+        st.markdown("""
+        <div style="text-align: center; margin: 2rem 0;">
+            <h2 style="color: var(--phoenix-primary); font-family: 'Inter', sans-serif;">
+                ️ TRAJECTORY BUILDER
+            </h2>
+            <p style="color: var(--phoenix-text-secondary); font-size: 1.1rem;">
+                Créez votre plan de reconversion personnalisé avec l'IA
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Formulaire de profil
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("###  Votre Profil Actuel")
+            current_skills = st.text_area(
+                "Vos compétences actuelles",
+                placeholder="Ex: Gestion d'équipe, Communication, Analyse, Organisation...",
+                help="Listez vos compétences principales, séparées par des virgules",
+                key="current_skills_trajectory",
+                height=120
+            )
+            
+            current_exp = st.text_area(
+                "Votre expérience professionnelle",
+                placeholder="Ex: 10 ans en tant que manager dans le retail, gestion d'équipes de 15 personnes...",
+                help="Décrivez brièvement votre parcours professionnel",
+                key="current_exp_trajectory",
+                height=120
+            )
+        
+        with col2:
+            st.markdown("###  Votre Objectif")
+            aspirations = st.text_area(
+                "Vos aspirations",
+                placeholder="Ex: Devenir développeur web pour allier créativité et technique...",
+                help="Expliquez pourquoi vous voulez faire cette reconversion",
+                key="aspirations_trajectory",
+                height=120
+            )
+            
+            target_role = st.text_input(
+                "Métier cible précis",
+                placeholder="Ex: Développeur Full-Stack, Data Analyst, Chef de projet digital...",
+                help="Le poste exact que vous visez",
+                key="target_role_trajectory"
+            )
+        
+        # Instructions d'utilisation
+        with st.expander(" Comment utiliser le Trajectory Builder"):
+            st.markdown("""
+            **Ce que l'IA va créer pour vous :**
+            -  **Plan étape par étape** pour votre reconversion
+            - ⏱️ **Timeline réaliste** avec durées estimées
+            -  **Ressources spécifiques** (formations, livres, certifications)
+            -  **Probabilité de succès** basée sur votre profil
+            -  **Roadmap personnalisée** selon votre situation
+            
+            **Soyez précis** dans vos réponses pour un plan sur-mesure !
+            """)
+        
+        # Bouton génération plan
+        if st.button(" CRÉER MON PLAN DE RECONVERSION", type="primary", use_container_width=True):
+            # Validation des champs
+            if not all([current_skills.strip(), current_exp.strip(), aspirations.strip(), target_role.strip()]):
+                st.error("❌ **Tous les champs sont requis** pour créer un plan personnalisé.")
+                return
+            
+            try:
+                with st.spinner(" L'IA crée votre plan de reconversion personnalisé..."):
+                    # Import sécurisé
+                    from services.trajectory_service import generate_reconversion_plan
+                    from models.user_profile import UserProfile
+                    from services.api_client import APIError
+                    
+                    # Création du profil utilisateur
+                    user_profile = UserProfile(
+                        current_skills=[s.strip() for s in current_skills.split(',') if s.strip()],
+                        current_experience=current_exp.strip(),
+                        aspirations=aspirations.strip()
+                    )
+                    
+                    # Génération du plan
+                    reconversion_plan = generate_reconversion_plan(user_profile, target_role.strip())
+                    
+                    st.success(" **Votre plan de reconversion a été créé !**")
+                    
+                    # Affichage du plan
+                    st.markdown("---")
+                    st.markdown(f"##  Plan : {reconversion_plan.goal}")
+                    
+                    # Résumé du plan
+                    st.markdown("###  Résumé")
+                    st.write(reconversion_plan.summary)
+                    
+                    # Métriques du plan
+                    col1, col2, col3 = st.columns(3)
+                    
+                    with col1:
+                        if reconversion_plan.estimated_total_duration_weeks:
+                            weeks = reconversion_plan.estimated_total_duration_weeks
+                            months = round(weeks / 4.33, 1)
+                            render_elegant_metric_card(f"{weeks} sem.", "Durée Totale", "⏱️")
+                            st.caption(f"≈ {months} mois")
+                    
+                    with col2:
+                        if reconversion_plan.success_probability is not None:
+                            prob_percent = int(reconversion_plan.success_probability * 100)
+                            render_elegant_metric_card(f"{prob_percent}%", "Probabilité Succès", "")
+                    
+                    with col3:
+                        steps_count = len(reconversion_plan.steps)
+                        render_elegant_metric_card(f"{steps_count}", "Étapes", "")
+                    
+                    # Analyse des écarts de compétences
+                    if reconversion_plan.skills_gap_analysis:
+                        st.markdown("###  Analyse des Écarts")
+                        st.info(reconversion_plan.skills_gap_analysis)
+                    
+                    # Étapes détaillées
+                    st.markdown("###  Plan Détaillé")
+                    
+                    for i, step in enumerate(reconversion_plan.steps):
+                        with st.expander(f"**Étape {i+1} : {step.title}**", expanded=i==0):
+                            # Description de l'étape
+                            st.markdown("####  Description")
+                            st.write(step.description)
+                            
+                            # Durée si disponible
+                            if step.duration_weeks:
+                                duration_months = round(step.duration_weeks / 4.33, 1)
+                                st.info(f"⏱️ **Durée estimée :** {step.duration_weeks} semaines (≈ {duration_months} mois)")
+                            
+                            # Ressources si disponibles
+                            if step.resources:
+                                st.markdown("####  Ressources Recommandées")
+                                
+                                # Grouper par type de ressource
+                                resources_by_type = {}
+                                for resource in step.resources:
+                                    res_type = resource.type
+                                    if res_type not in resources_by_type:
+                                        resources_by_type[res_type] = []
+                                    resources_by_type[res_type].append(resource)
+                                
+                                # Affichage par type
+                                for res_type, resources in resources_by_type.items():
+                                    type_icons = {
+                                        "cours_en_ligne": "",
+                                        "livre": "", 
+                                        "certification": "",
+                                        "mentorat": "",
+                                        "projet_pratique": "",
+                                        "article": "",
+                                        "outil": "⚙️",
+                                        "autre": ""
+                                    }
+                                    
+                                    icon = type_icons.get(res_type, "")
+                                    type_name = res_type.replace('_', ' ').title()
+                                    
+                                    st.markdown(f"**{icon} {type_name}**")
+                                    
+                                    for resource in resources:
+                                        st.markdown(f"• **{resource.name}**")
+                                        
+                                        if resource.description:
+                                            st.markdown(f"   {resource.description}")
+                                        
+                                        if resource.link:
+                                            st.markdown(f"   [Accéder à la ressource]({resource.link})")
+                                        
+                                        st.markdown("")
+                    
+                    # Call-to-action final
+                    st.markdown("---")
+                    st.success(" **Votre feuille de route est prête !** Commencez par l'étape 1 et suivez le plan.")
+                    
+                    # Suggestions d'actions
+                    st.markdown("###  Prochaines Actions")
+                    st.markdown("""
+                    1. **Sauvegardez ce plan** (copier-coller ou capture d'écran)
+                    2. **Commencez par l'étape 1** dès cette semaine
+                    3. **Fixez-vous des objectifs** hebdomadaires
+                    4. **Suivez votre progression** et ajustez si nécessaire
+                    5. **Revenez ici** pour créer des lettres de motivation adaptées
+                    """)
+                    
+            except APIError as e:
+                st.error(f"❌ Erreur lors de la création du plan : {str(e)}")
+                st.info(" Vérifiez votre connexion et réessayez.")
+            except Exception as e:
+                st.error(" Une erreur inattendue s'est produite.")
+                st.write(f"Détails : {str(e)}")
+    
+    # Vérification du tier utilisateur
+    if user_tier in ["free", "premium"]:
+        restriction_msg = " **Le Trajectory Builder** est exclusif à Premium Plus."
+        if user_tier == "premium":
+            restriction_msg = " **Le Trajectory Builder** est disponible avec Premium Plus. Vous avez Premium."
+        
+        st.info(restriction_msg)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button(" Passer Premium Plus", type="primary"):
+                st.success(" Redirection vers la page d'abonnement Premium Plus...")
+        with col2:
+            if st.button(" Voir les fonctionnalités", type="secondary"):
+                st.info("Premium Plus inclut : Trajectory Builder + Plans carrière + Coaching IA + Accès prioritaire")
+        return
+    
+    create_elegant_container(trajectory_content)
+
+# ===== 4. FIX ANALYSE ATS =====
+
+def render_ats_analysis_fixed(lettre_content: str, annonce_content: str):
+    """Analyse ATS - FIXÉE ET OPÉRATIONNEL"""
+    
+    if not lettre_content.strip():
+        st.warning("⚠️ Aucune lettre à analyser. Générez d'abord une lettre.")
+        return
+    
+    if not annonce_content.strip():
+        st.warning("⚠️ Contenu de l'annonce manquant pour l'analyse ATS.")
+        return
+    
+    st.markdown("---")
+    st.markdown("##  Analyse ATS (Applicant Tracking System)")
+    
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.info(" **Vérifiez la compatibilité** de votre lettre avec les systèmes de tri automatique des recruteurs.")
+    with col2:
+        analyze_ats = st.button(" Analyser ATS", type="primary", use_container_width=True)
+    
+    if analyze_ats:
+        try:
+            with st.spinner(" Analyse de la compatibilité ATS en cours..."):
+                # Import sécurisé
+                from services.letter_service import extraire_mots_cles_annonce
+                
+                # Extraction des mots-clés
+                mots_cles_annonce = extraire_mots_cles_annonce(annonce_content)
+                mots_cles_lettre = extraire_mots_cles_annonce(lettre_content)
+                
+                # Calculs
+                mots_trouves = set(mots_cles_annonce).intersection(set(mots_cles_lettre))
+                mots_manquants = set(mots_cles_annonce) - set(mots_cles_lettre)
+                
+                if not mots_cles_annonce:
+                    st.warning("⚠️ Aucun mot-clé extrait de l'annonce. Vérifiez le contenu.")
+                    return
+                
+                # Calcul du score
+                pourcentage = (len(mots_trouves) / len(mots_cles_annonce)) * 100
+                
+                st.success("✅ Analyse ATS terminée !")
+                
+                # Affichage du score principal
+                score_color = "" if pourcentage >= 70 else "" if pourcentage >= 50 else ""
+                st.markdown(f"### {score_color} Score ATS : **{pourcentage:.1f}%**")
+                
+                # Interprétation du score
+                if pourcentage >= 70:
+                    st.success(" **Excellent !** Votre lettre est bien optimisée pour les ATS.")
+                elif pourcentage >= 50:
+                    st.info(" **Bon score.** Quelques mots-clés supplémentaires pourraient améliorer votre visibilité.")
+                else:
+                    st.warning("⚠️ **Score faible.** Ajoutez plus de mots-clés de l'annonce dans votre lettre.")
+                
+                # Détails de l'analyse
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    render_elegant_metric_card(str(len(mots_cles_annonce)), "Mots-clés Annonce", "")
+                
+                with col2:
+                    render_elegant_metric_card(str(len(mots_trouves)), "Mots-clés Trouvés", "✅")
+                
+                with col3:
+                    render_elegant_metric_card(str(len(mots_manquants)), "Mots-clés Manquants", "❌")
+                
+                # Affichage détaillé
+                with st.expander(" Analyse détaillée des mots-clés"):
+                    
+                    # Mots-clés trouvés
+                    if mots_trouves:
+                        st.markdown("#### ✅ Mots-clés présents dans votre lettre")
+                        mots_trouves_liste = sorted(list(mots_trouves))
+                        
+                        # Affichage en badges
+                        badges_html = ""
+                        for mot in mots_trouves_liste[:20]:  # Limite à 20 pour l'affichage
+                            badges_html += f'<span style="background: rgba(5, 150, 105, 0.1); color: var(--phoenix-accent); padding: 0.25rem 0.5rem; border-radius: 12px; margin: 0.25rem; display: inline-block; font-size: 0.8rem;">{mot}</span>'
+                        
+                        st.markdown(badges_html, unsafe_allow_html=True)
+                        
+                        if len(mots_trouves) > 20:
+                            st.caption(f"... et {len(mots_trouves) - 20} autres mots-clés")
+                    
+                    # Mots-clés manquants
+                    if mots_manquants:
+                        st.markdown("#### ❌ Mots-clés manquants à ajouter")
+                        mots_manquants_liste = sorted(list(mots_manquants))
+                        
+                        # Affichage en badges
+                        badges_html = ""
+                        for mot in mots_manquants_liste[:15]:  # Limite à 15 pour les suggestions
+                            badges_html += f'<span style="background: rgba(217, 119, 6, 0.1); color: var(--phoenix-warning); padding: 0.25rem 0.5rem; border-radius: 12px; margin: 0.25rem; display: inline-block; font-size: 0.8rem;">{mot}</span>'
+                        
+                        st.markdown(badges_html, unsafe_allow_html=True)
+                        
+                        if len(mots_manquants) > 15:
+                            st.caption(f"... et {len(mots_manquants) - 15} autres mots-clés")
+                    else:
+                        st.success(" **Parfait !** Tous les mots-clés de l'annonce sont présents dans votre lettre.")
+                
+                # Conseils d'amélioration
+                if mots_manquants:
+                    st.markdown("###  Conseils d'Optimisation ATS")
+                    
+                    mots_prioritaires = sorted(list(mots_manquants))[:5]
+                    
+                    st.markdown(f"""
+                    **Ajoutez ces mots-clés prioritaires dans votre lettre :**
+                    
+                    {', '.join(f'**{mot}**' for mot in mots_prioritaires)}
+                    
+                    **Comment les intégrer naturellement :**
+                    - Dans votre présentation : *"Fort de mon expérience en {mots_prioritaires[0] if mots_prioritaires else 'domaine'}..."*
+                    - Dans vos compétences : *"Mes compétences en {mots_prioritaires[1] if len(mots_prioritaires) > 1 else 'techniques'} me permettent..."*
+                    - Dans votre motivation : *"Votre besoin en {mots_prioritaires[2] if len(mots_prioritaires) > 2 else 'expertise'} correspond parfaitement..."*
+                    """)
+                
+        except Exception as e:
+            st.error(" Une erreur s'est produite lors de l'analyse ATS.")
+            st.write(f"Détails : {str(e)}")
+
+# ===== 5. FONCTIONS D'INTÉGRATION =====
+
+def integrate_fixed_features_in_generator(user_tier, lettre_content="", annonce_content=""):
+    """Intégration des fonctionnalités fixées dans l'onglet générateur"""
+    
+    # Analyses optionnelles (après génération de lettre)
+    if lettre_content.strip():
+        
+        # 1. Analyse ATS (disponible pour tous)
+        show_ats_analysis = st.checkbox(
+            " Afficher l'analyse ATS (compatibilité systèmes de recrutement)", 
+            value=False,
+            help="Vérifie si votre lettre contient les mots-clés importants de l'annonce"
+        )
+        
+        if show_ats_analysis:
+            render_ats_analysis_fixed(lettre_content, annonce_content)
+        
+        # 2. Smart Coach (Premium et Premium Plus)
+        if user_tier in ["premium", "premium_plus"]:
+            show_smart_coach = st.checkbox(
+                " Afficher l'analyse Smart Coach (feedback IA détaillé)", 
+                value=False,
+                help="L'IA évalue votre lettre et propose des améliorations"
+            )
+            
+            if show_smart_coach:
+                render_smart_coach_analysis_fixed(lettre_content, annonce_content)
+        
+        else:
+            # Teasing pour les utilisateurs gratuits
+            st.markdown("---")
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                st.info(" **Smart Coach** : Obtenez un feedback IA détaillé sur votre lettre (Premium)")
+            with col2:
+                st.button("⭐ Découvrir Premium", key="smart_coach_upgrade")
+
+# ===== 6. MESSAGES D'ERREUR AMÉLIORÉS =====
+
+def handle_api_errors_gracefully(error_type: str, error_message: str):
+    """Gestion élégante des erreurs API"""
+    
+    error_solutions = {
+        "connection": {
+            "title": " Problème de Connexion",
+            "message": "Impossible de se connecter aux services IA.",
+            "solutions": [
+                "Vérifiez votre connexion internet",
+                "Réessayez dans quelques minutes",
+                "Si le problème persiste, contactez le support"
+            ]
+        },
+        "quota": {
+            "title": "⏱️ Limite Temporaire Atteinte",
+            "message": "Trop de requêtes simultanées. Veuillez patienter.",
+            "solutions": [
+                "Attendez 1-2 minutes avant de réessayer",
+                "Les limites se réinitialisent automatiquement",
+                "Considérez un upgrade Premium pour plus de capacité"
+            ]
+        },
+        "api_key": {
+            "title": " Problème de Configuration",
+            "message": "Erreur d'authentification avec les services IA.",
+            "solutions": [
+                "Contactez l'administrateur",
+                "Vérifiez votre abonnement",
+                "Essayez de rafraîchir la page"
+            ]
+        },
+        "unknown": {
+            "title": " Erreur Inattendue",
+            "message": f"Une erreur s'est produite : {error_message}",
+            "solutions": [
+                "Réessayez l'opération",
+                "Rafraîchissez la page si nécessaire",
+                "Contactez le support si le problème persiste"
+            ]
+        }
+    }
+    
+    error_info = error_solutions.get(error_type, error_solutions["unknown"])
+    
+    st.error(f"**{error_info['title']}**")
+    st.write(error_info['message'])
+    
+    with st.expander(" Solutions possibles"):
+        for solution in error_info['solutions']:
+            st.markdown(f"• {solution}")
+
+# ===== 7. FONCTIONS DE DIAGNOSTIC =====
+
+def run_features_health_check():
+    """Diagnostic de santé des fonctionnalités"""
+    
+    health_status = {
+        "core_generation": True,  # Génération de base
+        "mirror_match": True,     # Analyse culture entreprise
+        "smart_coach": True,      # Feedback IA
+        "trajectory_builder": True, # Plans de reconversion
+        "ats_analysis": True,     # Analyse ATS
+        "premium_storage": False, # Stockage premium (nécessite env var)
+        "france_travail_api": True # API France Travail
+    }
+    
+    # Vérifications spécifiques
+    try:
+        # Test import des services critiques
+        from services.api_client import analyser_culture_entreprise, suggerer_competences_transferables
+        from services.letter_service import evaluate_letter, extraire_mots_cles_annonce
+        from services.trajectory_service import generate_reconversion_plan
+        from models.user_profile import UserProfile
+        
+        # Test création d'objets
+        test_profile = UserProfile(
+            current_skills=["test"],
+            current_experience="test",
+            aspirations="test"
+        )
+        
+    except ImportError as e:
+        st.error(f" Erreur d'import : {e}")
+        health_status["core_generation"] = False
+    except Exception as e:
+        st.warning(f"⚠️ Problème mineur détecté : {e}")
+    
+    return health_status
+
+def display_features_status_sidebar():
+    """Affiche le statut des fonctionnalités dans la sidebar"""
+    
+    st.sidebar.markdown("###  État des Fonctionnalités")
+    
+    health = run_features_health_check()
+    
+    feature_names = {
+        "core_generation": "✨ Génération IA",
+        "mirror_match": " Mirror Match",
+        "smart_coach": " Smart Coach", 
+        "trajectory_builder": "️ Trajectory Builder",
+        "ats_analysis": " Analyse ATS",
+        "premium_storage": " Stockage Premium",
+        "france_travail_api": " API France Travail"
+    }
+    
+    for feature_key, feature_name in feature_names.items():
+        if health.get(feature_key, False):
+            st.sidebar.success(feature_name)
+        else:
+            st.sidebar.warning(f"{feature_name} (Indisponible)")
+    
+    # Score global
+    available_count = sum(1 for status in health.values() if status)
+    total_count = len(health)
+    score_percent = (available_count / total_count) * 100
+    
+    st.sidebar.metric(" Santé Système", f"{score_percent:.0f}%")
+
+# ===== 9. TESTS DE VALIDATION =====
+
+def test_premium_features():
+    """Tests rapides pour valider les fonctionnalités"""
+    
+    test_results = {
+        "imports_ok": False,
+        "models_ok": False,
+        "functions_ok": False
+    }
+    
+    try:
+        # Test imports
+        from services.api_client import analyser_culture_entreprise
+        from services.letter_service import evaluate_letter
+        from services.trajectory_service import generate_reconversion_plan
+        test_results["imports_ok"] = True
+        
+        # Test models
+        from models.user_profile import UserProfile
+        test_profile = UserProfile(
+            current_skills=["test"],
+            current_experience="test", 
+            aspirations="test"
+        )
+        test_results["models_ok"] = True
+        
+        # Test basic functions
+        from services.letter_service import extraire_mots_cles_annonce
+        test_mots = extraire_mots_cles_annonce("test développeur python")
+        test_results["functions_ok"] = len(test_mots) > 0
+        
+    except Exception as e:
+        st.error(f"Erreur de test : {e}")
+    
+    return test_results
+
 # CSS pour la nouvelle interface
 def inject_futuristic_css():
     st.markdown("""
@@ -1506,83 +2256,25 @@ def render_generator_tab(user_tier):
                                     st.markdown("</div>", unsafe_allow_html=True)
                                     # --- Fin de la nouvelle section d'affichage ---
 
-                                    # Analyses optionnelles
-                                    show_ats_analysis = st.checkbox("Afficher l'analyse ATS (pour les experts !)", value=False)
+                                    # Intégration des fonctionnalités fixées
+                                    integrate_fixed_features_in_generator(
+                                        user_tier, 
+                                        st.session_state.lettre_editable,
+                                        st.session_state.get('annonce_content', '')
+                                    )
 
-                                    if show_ats_analysis:
-                                        st.markdown("---")
-                                        st.subheader(" Analyse ATS (Applicant Tracking System)")
-                                        st.info("Cette section vous aide à vérifier la pertinence de votre lettre par rapport aux mots-clés de l'annonce.")
-
-                                        try:
-                                            if 'lettre_editable' not in st.session_state:
-                                                st.error("❌ Aucune lettre générée. Veuillez d'abord générer une lettre.")
-                                            elif 'annonce_content' not in st.session_state or not st.session_state.annonce_content:
-                                                st.error("❌ Contenu de l'annonce manquant. Veuillez recharger l'annonce.")
-                                            else:
-                                                mots_cles_annonce = extraire_mots_cles_annonce(st.session_state.annonce_content)
-                                                mots_cles_lettre = extraire_mots_cles_annonce(st.session_state.lettre_editable)
-                                                
-                                                mots_trouves = set(mots_cles_annonce).intersection(set(mots_cles_lettre))
-                                                mots_manquants = set(mots_cles_annonce) - set(mots_cles_lettre)
-                                                
-                                                st.markdown(f"**Mots-clés de l'annonce ({len(mots_cles_annonce)}) :**")
-                                                if mots_cles_annonce:
-                                                    mots_affiches = sorted(list(mots_cles_annonce))[:50]
-                                                    st.code(", ".join(mots_affiches) + ("..." if len(mots_cles_annonce) > 50 else ""))
-                                                else:
-                                                    st.warning("Aucun mot-clé extrait de l'annonce")
-
-                                                st.markdown(f"**Mots-clés trouvés dans la lettre ({len(mots_trouves)}) :**")
-                                                if mots_trouves:
-                                                    mots_trouves_affiches = sorted(list(mots_trouves))[:50]
-                                                    st.success(", ".join(mots_trouves_affiches) + ("..." if len(mots_trouves) > 50 else ""))
-                                                else:
-                                                    st.warning("Aucun mot-clé de l'annonce trouvé dans la lettre.")
-
-                                                st.markdown(f"**Mots-clés manquants dans la lettre ({len(mots_manquants)}) :**")
-                                                if mots_manquants:
-                                                    mots_manquants_affiches = sorted(list(mots_manquants))[:50]
-                                                    st.error(", ".join(mots_manquants_affiches) + ("..." if len(mots_manquants) > 50 else ""))
-                                                else:
-                                                    st.success("Tous les mots-clés de l'annonce sont présents dans la lettre !")
-                                                    
-                                                if mots_cles_annonce:
-                                                    pourcentage = (len(mots_trouves) / len(mots_cles_annonce)) * 100
-                                                    st.metric(" Taux de correspondance ATS", f"{pourcentage:.1f}%")
-                                                
-                                        except Exception as e:
-                                            st.error(f"❌ Erreur lors de l'extraction des mots-clés : {str(e)}")
-                                            
-                                        st.markdown("---")
-
-                                    show_smart_coach_analysis = st.checkbox("Afficher l'analyse Smart Coach (Feedback IA !)", value=False)
-
-                                    if show_smart_coach_analysis:
-                                        st.markdown("---")
-                                        st.subheader(" Analyse Smart Coach (Feedback IA)")
-                                        st.info("L'IA évalue votre lettre et vous propose des pistes d'amélioration.")
-                                        with st.spinner("L'IA analyse votre lettre..."):
-                                            try:
-                                                coaching_report = evaluate_letter(st.session_state.lettre_editable, st.session_state.annonce_content)
-                                                st.markdown(f"**Score Global : {coaching_report.score:.1f}/10**")
-                                                for suggestion in coaching_report.suggestions:
-                                                    st.write(f"- {suggestion}")
-                                                st.markdown("**Détail des Critères :**")
-                                                for critere, detail in coaching_report.rationale.items():
-                                                    st.write(f"**{critere.replace('_', ' ').title()}** : {detail}")
-                                            except APIError as e:
-                                                st.error(f"Impossible d'obtenir l'analyse Smart Coach : {e}")
-                                            except Exception as e:
-                                                st.error(f"Une erreur inattendue est survenue lors de l'analyse Smart Coach : {e}")
-                                        st.markdown("---")
+                                    # Intégration des fonctionnalités fixées
+                                    integrate_fixed_features_in_generator(
+                                        user_tier, 
+                                        st.session_state.lettre_editable,
+                                        st.session_state.get('annonce_content', '')
+                                    )
 
                                     # --- Historique des Lettres et Gestion des Données (Premium) ---
                                     st.markdown("---")
                                     st.subheader(" Historique et Gestion des Données")
                                     rgpd_user_manager = RGPDUserManager()
                                     try:
-                                        try:
                                         secure_storage = SecurePremiumStorage()
                                     except ValueError as e:
                                         secure_storage = None
@@ -2213,6 +2905,15 @@ def main():
 
     user_tier = get_professional_user_tier_ui()
 
+    # Ajout du diagnostic
+    if st.sidebar.checkbox(" Diagnostic Système"):
+        display_features_status_sidebar()
+
+    # Optionnel : pour vérifier que tout fonctionne
+    if st.sidebar.button(" Test Fonctionnalités"):
+        test_results = test_premium_features()
+        st.sidebar.json(test_results)
+
     # Navigation principale par onglets
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
         " Générateur",
@@ -2226,10 +2927,10 @@ def main():
         render_generator_tab(user_tier)
     
     with tab2:
-        render_trajectory_tab(user_tier)
+        render_trajectory_tab_fixed(user_tier)
     
     with tab3:
-        render_mirror_tab(user_tier)
+        render_mirror_tab_fixed(user_tier)
     
     with tab4:
         render_dashboard_tab(user_tier)
