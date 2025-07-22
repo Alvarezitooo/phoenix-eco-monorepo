@@ -1197,7 +1197,7 @@ def render_trajectory_tab(user_tier):
                                 render_metric_card(f"{reconversion_plan.success_probability:.0%}", "Probabilité de succès", "")
 
                         st.markdown("###  Étapes du Plan de Reconversion")
-                      try:  # ← AJOUTER CE TRY ICI (même niveau que le for)
+                      try: 
                             for i, step in enumerate(reconversion_plan.steps):
                                 with st.expander(f"**Étape {i+1}: {step.title}**", expanded=i==0):
                                     st.write(step.description)
