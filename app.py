@@ -1194,7 +1194,7 @@ def render_trajectory_tab(user_tier):
                                 render_metric_card(f"{reconversion_plan.estimated_total_duration_weeks} semaines", "Durée totale", "⏱️")
                         with col2:
                             if reconversion_plan.success_probability is not None:
-                                render_metric_card(f"{reconversion_plan.success_probability:.0%}", "Probabilité de succès", "")
+                                render_metric_card(f"{reconversion_plan.success_probability:.0%}", "Probabilité de succès", "📊")
 
                         st.markdown("###  Étapes du Plan de Reconversion")
                         for i, step in enumerate(reconversion_plan.steps):
@@ -1231,10 +1231,10 @@ def render_trajectory_tab(user_tier):
                                         
                                         st.write("---")
 
-                        except APIError as e:
-                    st.error(f"Impossible de générer le plan de reconversion : {e}")
-                except Exception as e:
-                    st.error(f"Une erreur inattendue est survenue lors de la génération du plan : {e}")
+                    except APIError as e:
+                        st.error(f"Impossible de générer le plan de reconversion : {e}")
+                    except Exception as e:
+                        st.error(f"Une erreur inattendue est survenue lors de la génération du plan : {e}")
             else:
                 st.warning("Veuillez remplir tous les champs du profil et du rôle cible pour générer le plan.")
     
