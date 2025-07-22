@@ -51,6 +51,7 @@ pdfminer.six==20250506
 pdfplumber==0.11.7
 phonenumbers==8.13.55
 pillow==11.3.0
+plotly
 preshed==3.0.10
 proto-plus==1.26.1
 protobuf==5.29.5
