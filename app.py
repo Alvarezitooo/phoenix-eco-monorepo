@@ -2316,10 +2316,10 @@ def render_generator_tab(user_tier):
                     st.warning("Veuillez renseigner l'ancien et le nouveau domaine pour obtenir des suggestions.")
 
                     competences_transferables = st.text_area(
-                        " Compétences clés transférables (vous pouvez éditer ou utiliser la suggestion) :",
-                        value=st.session_state.suggested_competences,
-                        help="Listez les compétences de votre ancienne carrière qui sont pertinentes pour votre nouveau projet."
-                    )
+                " Compétences clés transférables (vous pouvez éditer ou utiliser la suggestion) :",
+                value=st.session_state.suggested_competences,
+                help="Listez les compétences de votre ancienne carrière qui sont pertinentes pour votre nouveau projet."
+            )
                 
                 # Section Analyse de la Culture d'Entreprise (Mirror Match)
                 st.markdown("---")
