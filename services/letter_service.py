@@ -3,13 +3,18 @@ import time
 import google.generativeai as genai
 import re
 import json
+from typing import Optional
 
+from tenacity import retry, stop_after_attempt, wait_fixed, stop_after_delay, retry_if_exception_type
+
+# Imports locaux
 from services.api_client import APIError
+from services.content_extractor import FileProcessingError, extract_cv_content, extract_annonce_content
+from services.data_anonymizer import DataAnonymizer
 from models.letter_request import LetterRequest
 from models.letter_response import LetterResponse
 from models.coaching_report import CoachingReport
 from utils.cache import generate_cache_key
-from services.data_anonymizer import DataAnonymizer
 
 # Cache en mémoire pour les lettres générées
 _letter_cache: dict[str, LetterResponse] = {}
@@ -220,10 +225,10 @@ from typing import Optional
 
 from .api_client import APIError
 from .data_anonymizer import DataAnonymizer
-from .file_service import FileProcessingError, extract_cv_content, extract_annonce_content, nettoyer_contenu
-from ..models.letter_request import LetterRequest
-from ..models.letter_response import LetterResponse
-from ..utils.cache import generate_cache_key, _letter_cache
+
+from models.letter_request import LetterRequest
+from models.letter_response import LetterResponse
+from utils.cache import generate_cache_key
 
 # ... (autres fonctions et code)
 
