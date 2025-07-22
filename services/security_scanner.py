@@ -25,7 +25,7 @@ class SecurityScanner:
         
         # Vérifier la disponibilité de clamscan avant de tenter de l'exécuter
         try:
-            subprocess.run(["clamscan", "--version"], check=True, capture_output=True)
+            subprocess.run(["/usr/bin/clamscan", "--version"], check=True, capture_output=True)
             clamscan_available = True
         except (FileNotFoundError, subprocess.CalledProcessError):
             clamscan_available = False
@@ -38,7 +38,7 @@ class SecurityScanner:
                 # --stdout pour capturer la sortie.
                 # Le code de retour 0 signifie propre, 1 signifie virus trouvé, 2 signifie erreur.
                 result = subprocess.run(
-                    ["clamscan", "--no-summary", "--stdout", file_path],
+                    ["/usr/bin/clamscan", "--no-summary", "--stdout", file_path],
                     capture_output=True,
                     text=True,
                     check=False # Ne lève pas d'exception pour le code de retour 1 (virus trouvé)

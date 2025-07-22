@@ -210,7 +210,25 @@ def build_standard_prompt(request: LetterRequest, cv_clean: str, annonce_clean: 
     
     return "\n".join(prompt_lines)
 
-def generer_lettre(request: LetterRequest, max_retries: int = 3) -> LetterResponse:
+from tenacity import retry, stop_after_attempt, wait_fixed, stop_after_delay, retry_if_exception_type
+import google.generativeai as genai
+import logging
+import time
+import re
+import json
+from typing import Optional
+
+from .api_client import APIError
+from .data_anonymizer import DataAnonymizer
+from .file_service import FileProcessingError, extract_cv_content, extract_annonce_content, nettoyer_contenu
+from ..models.letter_request import LetterRequest
+from ..models.letter_response import LetterResponse
+from ..utils.cache import generate_cache_key, _letter_cache
+
+# ... (autres fonctions et code)
+
+@retry(stop=(stop_after_attempt(3) | stop_after_delay(60)), wait=wait_fixed(2), retry=retry_if_exception_type(APIError))
+def generer_lettre(request: LetterRequest) -> LetterResponse:
     """
     Génère la lettre de motivation en utilisant le modèle Google Gemini.
     Utilise automatiquement le prompt spécialisé reconversion si nécessaire.
@@ -220,7 +238,7 @@ def generer_lettre(request: LetterRequest, max_retries: int = 3) -> LetterRespon
 
     # Anonymiser le contenu du CV et de l'annonce avant de les nettoyer et de les envoyer à l'IA
     cv_anonymized = anonymizer.anonymize_text(request.cv_contenu)
-    annonce_anonymized = anonymizer.anonymize_text(request.annonce_contenu)
+    annonce_anonymized = anonymizer.anonymize_text(request.annonce_contenue)
 
     # Générer une clé de cache à partir de la requête anonymisée
     anonymized_request_for_cache = request.model_dump()
@@ -233,40 +251,30 @@ def generer_lettre(request: LetterRequest, max_retries: int = 3) -> LetterRespon
         logging.info("Lettre récupérée du cache.")
         return _letter_cache[cache_key]
 
-    for tentative in range(max_retries):
-        try:
-            model = genai.GenerativeModel('models/gemini-1.5-flash')
-            
-            # Nettoyer le contenu anonymisé
-            cv_clean = nettoyer_contenu(cv_anonymized)
-            annonce_clean = nettoyer_contenu(annonce_anonymized)
-
-            # Choisir le prompt approprié selon le type de candidature
-            if request.est_reconversion:
-                logging.info("Utilisation du prompt spécialisé reconversion")
-                prompt = build_reconversion_prompt(request, cv_clean, annonce_clean)
-            else:
-                logging.info("Utilisation du prompt standard")
-                prompt = build_standard_prompt(request, cv_clean, annonce_clean)
-
-            response = model.generate_content(prompt)
-
-            if not response.text or len(response.text) < 100:
-                raise APIError("Réponse API invalide ou trop courte")
-
-            logging.info("Lettre générée avec succès")
-            lettre_response = LetterResponse(lettre_generee=response.text)
-            _letter_cache[cache_key] = lettre_response # Mettre en cache la réponse
-            logging.info("Lettre mise en cache.")
-            return lettre_response
-
-        except Exception as e:
-            logging.error(f"Erreur inattendue tentative {tentative + 1}: {e}")
-            if tentative == max_retries - 1:
-                raise APIError(f"Échec après {max_retries} tentatives: {e}")
-            time.sleep(2 ** tentative)
+    model = genai.GenerativeModel('models/gemini-1.5-flash')
     
-    raise APIError("Toutes les tentatives ont échoué")
+    # Nettoyer le contenu anonymisé
+    cv_clean = nettoyer_contenu(cv_anonymized)
+    annonce_clean = nettoyer_contenu(annonce_anonymized)
+
+    # Choisir le prompt approprié selon le type de candidature
+    if request.est_reconversion:
+        logging.info("Utilisation du prompt spécialisé reconversion")
+        prompt = build_reconversion_prompt(request, cv_clean, annonce_clean)
+    else:
+        logging.info("Utilisation du prompt standard")
+        prompt = build_standard_prompt(request, cv_clean, annonce_clean)
+
+    response = model.generate_content(prompt, request_options={"timeout": 60}) # Ajout du timeout ici
+    if not response.text:
+        raise APIError("Réponse API vide pour la génération de lettre.")
+
+    lettre_generee = response.text.strip()
+    
+    # Sauvegarder la réponse en cache
+    _letter_cache[cache_key] = LetterResponse(lettre_generee=lettre_generee)
+    logging.info("Lettre générée et mise en cache.")
+    return _letter_cache[cache_key]
 
 def evaluate_letter(letter_content: str, annonce_content: str, max_retries: int = 3) -> CoachingReport:
     """Évalue la lettre de motivation générée par rapport à l'annonce et retourne un rapport de coaching."""

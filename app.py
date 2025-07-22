@@ -24,8 +24,7 @@ from services.trajectory_service import generate_reconversion_plan
 from services.rgpd_manager import RGPDUserManager, SecurePremiumStorage, RGPDViolationError
 from services.data_anonymizer import DataAnonymizer
 from services.cv_optimization_service import CvOptimizationService
-# Note: SecurityScanner désactivé pour Streamlit Cloud
-# from services.security_scanner import SecurityScanner, SecurityScanError
+
 import logging
 import random
 from docx import Document
@@ -684,25 +683,43 @@ def render_generator_tab(user_tier):
                     )
                 
                 with col2:
-                    est_reconversion = st.checkbox(
-                        " C'est une reconversion", 
-                        value=True,
-                        help="Cochez cette case si vous changez de carrière. L'IA adaptera son discours pour valoriser votre parcours."
-                    )
+                    # Initialisation des variables pour éviter UnboundLocalError
+        est_reconversion = False
+        ancien_domaine = ""
+        nouveau_domaine = ""
+        competences_transferables = ""
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            ton_choisi = st.selectbox(
+                " Ton souhaité",
+                ["formel", "dynamique", "sobre", "créatif", "startup", "associatif"],
+                help="Le ton influence le style d'écriture de l'IA."
+            )
+
+        with col2:
+            est_reconversion = st.checkbox(
+                " C'est une reconversion",
+                value=True,
+                help="Cochez cette case si vous changez de carrière. L'IA adaptera son discours pour valoriser votre parcours."
+            )
                 
                 if est_reconversion:
-                    ancien_domaine = st.text_input(
-                        " Ancien domaine d'activité (ex: Marketing, Comptabilité, Bâtiment)",
-                        help="Soyez précis pour aider l'IA à faire les liens."
-                    )
-                    
-                    nouveau_domaine = st.text_input(
-                        " Nouveau domaine d'activité souhaité (ex: Cybersécurité, Développement Web, Data Science)", 
-                        help="C'est ici que vous projetez votre avenir !"
-                    )
-                    
-                    if 'suggested_competences' not in st.session_state:
-                        st.session_state.suggested_competences = ""
+                    # Initialisation de suggested_competences ici pour garantir qu'elle existe toujours
+        if 'suggested_competences' not in st.session_state:
+            st.session_state.suggested_competences = ""
+
+        if est_reconversion:
+            ancien_domaine = st.text_input(
+                " Ancien domaine d'activité (ex: Marketing, Comptabilité, Bâtiment)",
+                help="Soyez précis pour aider l'IA à faire les liens."
+            )
+            
+            nouveau_domaine = st.text_input(
+                " Nouveau domaine d'activité souhaité (ex: Cybersécurité, Développement Web, Data Science)", 
+                help="C'est ici que vous projetez votre avenir !"
+            )
 
                     if st.button("✨ Suggérer les compétences transférables"):
                         if ancien_domaine and nouveau_domaine:
@@ -771,17 +788,18 @@ def render_generator_tab(user_tier):
                                     annonce_content = ""
 
                                     # Traitement du CV
+                                    temp_cv_path = None # Initialiser à None
                                     try:
                                         with tempfile.NamedTemporaryFile(delete=False) as temp_cv_file:
                                             temp_cv_file.write(uploaded_cv.getvalue())
                                             temp_cv_path = temp_cv_file.name
                                         
-                                        # SecurityScanner désactivé pour Streamlit Cloud
-                                        # if not SecurityScanner().scan_file(temp_cv_path):
-                                        #     st.error(" Fichier CV détecté comme potentiellement malveillant.")
-                                        #     st.stop()
+                                        
 
                                         cv_content = extract_cv_content(uploaded_cv)
+                                    finally:
+                                        if temp_cv_path and os.path.exists(temp_cv_path):
+                                            os.remove(temp_cv_path)
                                     except FileProcessingError as e:
                                         st.error(f" Erreur lors du traitement du CV : {e}")
                                         st.stop()
@@ -809,15 +827,13 @@ def render_generator_tab(user_tier):
                                             st.error(f"Erreur lors de la récupération de l'offre France Travail : {e}. Veuillez vérifier l'ID ou réessayer plus tard.")
                                             return
                                     elif uploaded_annonce is not None:
+                                        temp_annonce_path = None # Initialiser à None
                                         try:
                                             with tempfile.NamedTemporaryFile(delete=False) as temp_annonce_file:
                                                 temp_annonce_file.write(uploaded_annonce.getvalue())
                                                 temp_annonce_path = temp_annonce_file.name
 
-                                            # SecurityScanner désactivé pour Streamlit Cloud
-                                            # if not SecurityScanner().scan_file(temp_annonce_path):
-                                            #     st.error(" Fichier annonce détecté comme potentiellement malveillant.")
-                                            #     st.stop()
+                                            
 
                                             annonce_content = extract_annonce_content(uploaded_annonce)
                                             st.session_state.annonce_content = annonce_content
@@ -828,7 +844,7 @@ def render_generator_tab(user_tier):
                                         #     st.error(f" Erreur de sécurité lors du scan de l'annonce : {e}")
                                         #     st.stop()
                                         finally:
-                                            if 'temp_annonce_path' in locals() and os.path.exists(temp_annonce_path):
+                                            if temp_annonce_path and os.path.exists(temp_annonce_path):
                                                 os.remove(temp_annonce_path)
                                     else:
                                         st.warning("Veuillez charger une annonce ou fournir un ID d'offre France Travail.")
@@ -1001,7 +1017,11 @@ def render_generator_tab(user_tier):
                                     st.subheader(" Historique et Gestion des Données")
                                     rgpd_user_manager = RGPDUserManager()
                                     try:
+                                        try:
                                         secure_storage = SecurePremiumStorage()
+                                    except ValueError as e:
+                                        secure_storage = None
+                                        st.warning(f"⚠️ Le stockage sécurisé des données Premium n'est pas configuré (manque de variables d'environnement). Les fonctionnalités d'historique et de gestion RGPD seront désactivées. Erreur: {e}")
                                     except ValueError as e:
                                         st.error(f"Erreur de configuration RGPD : {e}. Veuillez définir la variable d'environnement 'USER_DATA_ENCRYPTION_KEY'.")
                                         st.stop()
@@ -1037,7 +1057,7 @@ def render_generator_tab(user_tier):
                                     else:
                                         st.info("Vos données ne sont pas conservées (utilisateur gratuit ou consentement non donné).")
 
-                                    if user_tier != 'free' and explicit_consent:
+                                    if user_tier != 'free' and explicit_consent and secure_storage is not None:
                                         st.info("En tant qu'utilisateur Premium, vous pouvez consulter l'historique de vos lettres et gérer vos données.")
                                         user_history = secure_storage.get_user_history(st.session_state.user_id)
                                         if user_history:
@@ -1053,12 +1073,14 @@ def render_generator_tab(user_tier):
                                             st.info("Aucun historique de lettres trouvé pour le moment.")
                                     else:
                                         st.info("L'historique des lettres est une fonctionnalité Premium. Abonnez-vous pour en bénéficier !")
+                                        if user_tier != 'free' and explicit_consent and secure_storage is None:
+                                            st.warning("Le stockage sécurisé n'est pas disponible. Veuillez vérifier la configuration.")
 
                             except (APIError, FileProcessingError, ValueError) as e:
                                 st.error("❌ Une erreur est survenue lors de la génération. Veuillez réessayer.")
                                 logging.exception("Erreur lors de la génération via l'interface web.")
                             except Exception as e:
-                                st.error(" Une erreur inattendue est survenue. L'ingénieur est sur le coup !")
+                                st.error(f" Une erreur inattendue est survenue : {e}. Veuillez réessayer. Si le problème persiste, contactez le support ou vérifiez votre connexion internet.")
                                 logging.exception("Erreur critique inattendue dans l'app Streamlit.")
 
                 with col_buttons_2:
@@ -1561,8 +1583,8 @@ def render_settings_tab(user_tier):
         try:
             secure_storage = SecurePremiumStorage()
         except ValueError as e:
-            st.error(f"Erreur de configuration RGPD : {e}. Veuillez définir la variable d'environnement 'USER_DATA_ENCRYPTION_KEY'.")
-            st.stop()
+            secure_storage = None
+            st.warning(f"⚠️ Le stockage sécurisé des données Premium n'est pas configuré (manque de variables d'environnement). Les fonctionnalités d'historique et de gestion RGPD seront désactivées. Erreur: {e}")
 
         explicit_consent_settings = st.checkbox(
             "Je consens à la conservation de mes données (CV anonymisé, lettres) pour la durée de mon abonnement.",
@@ -1614,6 +1636,8 @@ def main():
     # Initialiser les variables de session si elles n'existent pas
     if 'annonce_content' not in st.session_state:
         st.session_state.annonce_content = ""
+    if 'lettre_editable' not in st.session_state:
+        st.session_state.lettre_editable = ""
     if 'user_id' not in st.session_state:
         st.session_state.user_id = "simulated_user_" + str(uuid.uuid4())
     if 'last_generation_time' not in st.session_state:

@@ -58,99 +58,80 @@ def get_france_travail_access_token() -> str:
         logging.error(f"Erreur lors de la récupération du jeton d'accès France Travail: {e}")
         raise APIError(f"Erreur API France Travail (authentification): {e}")
 
+@retry(stop=(stop_after_attempt(3) | stop_after_delay(60)), wait=wait_fixed(2), retry=retry_if_exception_type(requests.RequestException))
 def get_france_travail_offer_details(offer_id: str) -> Optional[dict]:
     """Récupère les détails d'une offre d'emploi depuis l'API France Travail."""
     access_token = get_france_travail_access_token()
     url = f"{FRANCETRAVAIL_API_BASE_URL}/{offer_id}"
     headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json"}
     logging.info(f"Tentative de récupération des détails de l'offre {offer_id}...")
-    try:
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
-        logging.info(f"Détails de l'offre {offer_id} récupérés avec succès.")
-        return response.json()
-    except requests.RequestException as e:
-        logging.error(f"Erreur lors de la récupération de l'offre {offer_id}: {e}")
-        raise APIError(f"Erreur API France Travail (détails offre): {e}")
+    response = requests.get(url, headers=headers, timeout=10)
+    response.raise_for_status()
+    logging.info(f"Détails de l'offre {offer_id} récupérés avec succès.")
+    return response.json()
 
-def suggerer_competences_transferables(ancien_domaine: str, nouveau_domaine: str, max_retries: int = 3) -> str:
+from tenacity import retry, stop_after_attempt, wait_fixed, stop_after_delay, retry_if_exception_type
+
+# ... (autres imports et code)
+
+@retry(stop=(stop_after_attempt(3) | stop_after_delay(60)), wait=wait_fixed(2), retry=retry_if_exception_type(APIError))
+def suggerer_competences_transferables(ancien_domaine: str, nouveau_domaine: str) -> str:
     """Suggère des compétences transférables entre deux domaines d'activité en utilisant Google Gemini."""
-    for tentative in range(max_retries):
-        try:
-            model = genai.GenerativeModel('models/gemini-1.5-flash')
-            prompt = f"""
-            Tu es un expert en ressources humaines spécialisé dans la reconversion professionnelle.
-            Ta mission est de suggérer une liste de compétences clés transférables entre deux domaines d'activité.
+    model = genai.GenerativeModel('models/gemini-1.5-flash')
+    prompt = f"""
+    Tu es un expert en ressources humaines spécialisé dans la reconversion professionnelle.
+    Ta mission est de suggérer une liste de compétences clés transférables entre deux domaines d'activité.
 
-            Ancien domaine d'activité : {ancien_domaine}
-            Nouveau domaine d'activité souhaité : {nouveau_domaine}
+    Ancien domaine d'activité : {ancien_domaine}
+    Nouveau domaine d'activité souhaité : {nouveau_domaine}
 
-            Liste les compétences transférables pertinentes, séparées par des virgules.
-            Exemple : "Gestion de projet, Communication, Analyse de données, Résolution de problèmes, Adaptabilité"
-            """
-            response = model.generate_content(prompt)
-            if not response.text or len(response.text) < 10:
-                raise APIError("Réponse API invalide ou trop courte pour les compétences transférables.")
-            logging.info("Compétences transférables suggérées avec succès.")
-            return response.text.strip()
-        except Exception as e:
-            logging.warning(f"Erreur lors de la suggestion de compétences (tentative {tentative + 1}/{max_retries}): {e}")
-            if tentative < max_retries - 1:
-                time.sleep(2 ** tentative)
-            else:
-                raise APIError(f"Échec de la suggestion de compétences après {max_retries} tentatives.")
-    raise APIError("Toutes les tentatives de suggestion de compétences ont échoué.")
+    Liste les compétences transférables pertinentes, séparées par des virgules.
+    Exemple : "Gestion de projet, Communication, Analyse de données, Résolution de problèmes, Adaptabilité"
+    """
+    response = model.generate_content(prompt, request_options={"timeout": 30}) # Ajout du timeout ici
+    if not response.text or len(response.text) < 10:
+        raise APIError("Réponse API invalide ou trop courte pour les compétences transférables.")
+    logging.info("Compétences transférables suggérées avec succès.")
+    return response.text.strip()
 
-def analyser_culture_entreprise(about_page: str, linkedin_posts: str, max_retries: int = 3) -> dict:
+@retry(stop=(stop_after_attempt(3) | stop_after_delay(60)), wait=wait_fixed(2), retry=retry_if_exception_type((APIError, json.JSONDecodeError)))
+def analyser_culture_entreprise(about_page: str, linkedin_posts: str) -> dict:
     """Analyse la culture d'entreprise via Google Gemini et retourne des insights structurés."""
-    for tentative in range(max_retries):
-        try:
-            model = genai.GenerativeModel('models/gemini-1.5-flash')
-            prompt = f"""
-            Tu es un expert en analyse de culture d'entreprise.
-            Analyse le texte suivant et les posts LinkedIn pour déterminer :
-            1.  Les 3 valeurs principales de l'entreprise.
-            2.  Son ton de communication (ex: formel, décontracté, innovant, traditionnel).
-            3.  Ses défis business actuels ou ses axes de développement majeurs.
-            4.  Le profil de candidat qu'elle recherche probablement (ex: autonome, collaboratif, créatif, rigoureux).
+    model = genai.GenerativeModel('models/gemini-1.5-flash')
+    prompt = f"""
+    Tu es un expert en analyse de culture d'entreprise.
+    Analyse le texte suivant et les posts LinkedIn pour déterminer :
+    1.  Les 3 valeurs principales de l'entreprise.
+    2.  Son ton de communication (ex: formel, décontracté, innovant, traditionnel).
+    3.  Ses défis business actuels ou ses axes de développement majeurs.
+    4.  Le profil de candidat qu'elle recherche probablement (ex: autonome, collaboratif, créatif, rigoureux).
 
-            Retourne ces informations au format JSON, avec les clés 'valeurs', 'ton_communication', 'defis_business', 'profil_candidat'.
-            Les valeurs et défis doivent être des listes de chaînes de caractères.
+    Retourne ces informations au format JSON, avec les clés 'valeurs', 'ton_communication', 'defis_business', 'profil_candidat'.
+    Les valeurs et défis doivent être des listes de chaînes de caractères.
 
-            Contenu de la page 'À propos' de l'entreprise :
-            ---
-            {about_page}
-            ---
+    Contenu de la page 'À propos' de l'entreprise :
+    ---
+    {about_page}
+    ---
 
-            Posts LinkedIn récents (séparés par des tirets) :
-            ---
-            {linkedin_posts}
-            ---
-            """
-            response = model.generate_content(prompt)
-            if not response.text:
-                raise APIError("Réponse API vide pour l'analyse de culture d'entreprise.")
-            
-            # Tenter d'extraire le JSON de la réponse (parfois l'IA ajoute du texte autour)
-            json_match = re.search(r'```json\n(.*)\n```', response.text, re.DOTALL)
-            if json_match:
-                json_string = json_match.group(1)
-            else:
-                json_string = response.text # Tenter de parser directement si pas de bloc code
+    Posts LinkedIn récents (séparés par des tirets) :
+    ---
+    {linkedin_posts}
+    ---
+    """
+    response = model.generate_content(prompt, request_options={"timeout": 30})
+    if not response.text:
+        raise APIError("Réponse API vide pour l'analyse de culture d'entreprise.")
+    
+    # Tenter d'extraire le JSON de la réponse (parfois l'IA ajoute du texte autour)
+    json_match = re.search(r'```json\n(.*)\n```', response.text, re.DOTALL)
+    if json_match:
+        json_string = json_match.group(1)
+    else:
+        json_string = response.text # Tenter de parser directement si pas de bloc code
 
-            insights = json.loads(json_string)
-            logging.info("Analyse de culture d'entreprise réussie.")
-            return insights
-        except json.JSONDecodeError as e:
-            logging.error(f"Erreur de décodage JSON de la réponse de l'IA (tentative {tentative + 1}/{max_retries}): {e}. Réponse brute: {response.text}")
-            if tentative < max_retries - 1:
-                time.sleep(2 ** tentative)
-            else:
-                raise APIError(f"Échec du décodage JSON après {max_retries} tentatives.")
-        except Exception as e:
-            logging.warning(f"Erreur lors de l'analyse de culture d'entreprise (tentative {tentative + 1}/{max_retries}): {e}")
-            if tentative < max_retries - 1:
-                time.sleep(2 ** tentative)
-            else:
-                raise APIError(f"Échec de l'analyse de culture d'entreprise après {max_retries} tentatives.")
+    insights = json.loads(json_string)
+    logging.info("Analyse de culture d'entreprise réussie.")
+    return insights
+
     raise APIError("Toutes les tentatives d'analyse de culture d'entreprise ont échoué.")
