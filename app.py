@@ -1197,7 +1197,7 @@ def render_trajectory_tab(user_tier):
                                 render_metric_card(f"{reconversion_plan.success_probability:.0%}", "Probabilité de succès", "")
 
                         st.markdown("###  Étapes du Plan de Reconversion")
-                            for i, step in enumerate(reconversion_plan.steps):
+                        for i, step in enumerate(reconversion_plan.steps):
                             with st.expander(f"**Étape {i+1}: {step.title}**", expanded=i==0):
                                 st.write(step.description)
                                 
@@ -1231,12 +1231,12 @@ def render_trajectory_tab(user_tier):
                                         
                                         st.write("---")
 
-                        except APIError as e:  # ← MAINTENANT ALIGNÉ AVEC LE TRY
-                            st.error(f"Impossible de générer le plan de reconversion : {e}")
-                        except Exception as e:
-                            st.error(f"Une erreur inattendue est survenue lors de la génération du plan : {e}")
-                    else:
-                        st.warning("Veuillez remplir tous les champs du profil et du rôle cible pour générer le plan.")
+                        except APIError as e:
+                    st.error(f"Impossible de générer le plan de reconversion : {e}")
+                except Exception as e:
+                    st.error(f"Une erreur inattendue est survenue lors de la génération du plan : {e}")
+            else:
+                st.warning("Veuillez remplir tous les champs du profil et du rôle cible pour générer le plan.")
     
     if user_tier == "free":
         st.info(" Le Trajectory Builder est une fonctionnalité Premium Plus.")
