@@ -578,7 +578,7 @@ def render_generator_tab(user_tier):
                     box-shadow: 0 0 30px rgba(255, 107, 53, 0.6);
                 ">1</div>
                 <h4 style="color: var(--phoenix-cyan);">Documents</h4>
-                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">
+                <p style="color: white; font-size: 0.9rem;">
                     Chargez vos documents
                 </p>
             </div>
@@ -614,7 +614,7 @@ def render_generator_tab(user_tier):
                     border: 2px solid rgba(255, 255, 255, 0.3);
                 ">3</div>
                 <h4 style="color: rgba(255, 255, 255, 0.3);">Génération</h4>
-                <p style="color: rgba(255, 255, 255, 0.3); font-size: 0.9rem;">
+                <p style="color: white; font-size: 0.9rem;">
                     Synthèse en cours...
                 </p>
             </div>
