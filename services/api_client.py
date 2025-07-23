@@ -84,6 +84,7 @@ def get_france_travail_access_token() -> str:
         raise APIError(f"Erreur API France Travail (authentification): {e}")
 
 @retry(stop=(stop_after_attempt(3) | stop_after_delay(60)), wait=wait_fixed(2), retry=retry_if_exception_type(requests.RequestException))
+@monitor.track_performance('france_travail_api')
 def get_france_travail_offer_details(offer_id: str) -> Optional[dict]:
     """Récupère les détails d'une offre d'emploi depuis l'API France Travail."""
     if not api_rate_limiter.is_allowed("default_user"): # Utilisation d'un user_id générique
@@ -98,6 +99,7 @@ def get_france_travail_offer_details(offer_id: str) -> Optional[dict]:
     return response.json()
 
 @retry(stop=(stop_after_attempt(3) | stop_after_delay(60)), wait=wait_fixed(2), retry=retry_if_exception_type(APIError))
+@monitor.track_performance('gemini_api_call')
 def suggerer_competences_transferables(ancien_domaine: str, nouveau_domaine: str) -> str:
     """Suggère des compétences transférables entre deux domaines d'activité en utilisant Google Gemini."""
     if not api_rate_limiter.is_allowed("default_user"): # Utilisation d'un user_id générique
@@ -120,7 +122,9 @@ def suggerer_competences_transferables(ancien_domaine: str, nouveau_domaine: str
     return response.text.strip()
 
 @retry(stop=(stop_after_attempt(3) | stop_after_delay(60)), wait=wait_fixed(2), retry=retry_if_exception_type((APIError, json.JSONDecodeError)))
-def analyser_culture_entreprise(about_page: str, linkedin_posts: str) -> dict:
+@monitor.track_performance('gemini_api_call')
+def analyser_culture_entreprise(
+        company_about: str, linkedin_posts: str) -> str:
     """Analyse la culture d'entreprise via Google Gemini et retourne des insights structurés."""
     if not api_rate_limiter.is_allowed("default_user"): # Utilisation d'un user_id générique
         raise APIError("Limite de requêtes atteinte pour l'analyse de culture d'entreprise. Veuillez réessayer plus tard.")

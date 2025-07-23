@@ -233,6 +233,7 @@ from utils.cache import generate_cache_key
 # ... (autres fonctions et code)
 
 @retry(stop=(stop_after_attempt(3) | stop_after_delay(60)), wait=wait_fixed(2), retry=retry_if_exception_type(APIError))
+@monitor.track_performance('letter_generation')
 def generer_lettre(request: LetterRequest) -> LetterResponse:
     """
     Génère la lettre de motivation en utilisant le modèle Google Gemini.
@@ -243,7 +244,11 @@ def generer_lettre(request: LetterRequest) -> LetterResponse:
 
     # Anonymiser le contenu du CV et de l'annonce avant de les nettoyer et de les envoyer à l'IA
     cv_anonymized = anonymizer.anonymize_text(request.cv_contenu)
-    annonce_anonymized = anonymizer.anonymize_text(request.annonce_contenue)
+    annonce_anonymized = anonymizer.anonymize_text(request.annonce_contenu)
+
+    # Audit sécurité des inputs
+    security_auditor.audit_input('cv', request.cv_contenu, user_id="anonymous")
+    security_auditor.audit_input('annonce', request.annonce_contenu, user_id="anonymous")
 
     # Générer une clé de cache à partir de la requête anonymisée
     anonymized_request_for_cache = request.model_dump()

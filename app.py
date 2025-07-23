@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import os
 from dotenv import load_dotenv
+from services.monitoring import monitor, security_auditor, user_tracker
 from services.api_client import (
     suggerer_competences_transferables,
     get_france_travail_offer_details,
@@ -36,6 +37,14 @@ import numpy as np
 
 load_dotenv()
 
+def inject_professional_css():
+    """CSS Professionnel & Élégant pour Phoenix Letters"""
+    st.markdown("""
+    <style>
+    /* TODO: Insérer le CSS complet ici */
+    </style>
+    """, unsafe_allow_html=True)
+
 # CSS pour la nouvelle interface
 
 
@@ -45,6 +54,21 @@ load_dotenv()
 # 5. REMPLACE TES FONCTIONS MANQUANTES PAR DES VERSIONS SIMPLIFIÉES
 
 
+
+
+def render_professional_header():
+    """Header élégant et professionnel"""
+    st.markdown("""
+    <div class="phoenix-header">
+        <h1 class="phoenix-title">
+            Phoenix <span class="highlight">Letters</span>
+        </h1>
+        <p class="phoenix-subtitle">
+            Transformez votre parcours professionnel en atout grâce à l'intelligence artificielle.
+            Spécialement conçu pour les reconversions.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 def render_professional_header():
@@ -1222,6 +1246,10 @@ def render_generator_tab(user_tier):
             if uploaded_cv:
                 show_elegant_success_message("CV chargé !")
                 st.session_state.user_progress = 33
+                user_tracker.track_action(st.session_state.session_id, 'upload_cv', {
+                    'file_size': uploaded_cv.size,
+                    'file_type': uploaded_cv.type
+                })
 
         with col2:
             uploaded_annonce = create_elegant_file_uploader(
@@ -1353,6 +1381,7 @@ def render_generator_tab(user_tier):
                                         cooldown_time -
                                         time_since_last_generation)} secondes avant de générer une nouvelle lettre.")
                         else:
+                            user_tracker.track_action(st.session_state.session_id, 'generate_letter_start')
                             # Début du processus de génération
                             try:
                                 with st.spinner("Préparation des documents... Votre CV et l'annonce sont en cours d'analyse."):
@@ -1480,6 +1509,7 @@ def render_generator_tab(user_tier):
                                     progress_bar.empty()
                                     st.success(
                                         " Votre lettre de motivation a été générée !")
+                                    user_tracker.track_action(st.session_state.session_id, 'generate_letter_success')
 
                                     st.session_state.lettre_editable = lettre_generee
 
@@ -1626,6 +1656,9 @@ def render_generator_tab(user_tier):
                                     "❌ Une erreur est survenue lors de la génération. Veuillez réessayer.")
                                 logging.exception(
                                     "Erreur lors de la génération via l'interface web.")
+                                user_tracker.track_action(st.session_state.session_id, 'generate_letter_error', {
+                                    'error': str(e)
+                                })
                             except Exception as e:
                                 st.error(
                                     f" Une erreur inattendue est survenue : {e}. Veuillez réessayer. Si le problème persiste, contactez le support ou vérifiez votre connexion internet.")
@@ -2364,28 +2397,10 @@ def render_about_page():
 # 5. REMPLACE TES FONCTIONS MANQUANTES PAR DES VERSIONS SIMPLIFIÉES
 
 
-def inject_professional_css():
-    """Version simplifiée du CSS"""
-    st.markdown("""
-    <style>
-    .main { background: linear-gradient(135deg, #1a1a2e, #16213e); }
-    .stTabs [data-baseweb="tab"] {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        border-radius: 10px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
 
-def render_professional_header():
-    """Version simplifiée du header"""
-    st.markdown("""
-    <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(0, 245, 255, 0.1)); border-radius: 20px; margin: 1rem 0;">
-        <h1 style="color: #ff6b35; font-size: 2.5rem;"> PHOENIX LETTERS</h1>
-        <p style="color: #00f5ff;">Intelligence Artificielle • Reconversion Professionnelle</p>
-    </div>
-    """, unsafe_allow_html=True)
+
+
 
 
 def create_elegant_progress_bar(progress, label):
@@ -2469,32 +2484,17 @@ def integrate_fixed_features_in_generator(
                         f"Impossible d'obtenir l'analyse Smart Coach : {e}")
 
 
-def render_trajectory_tab_fixed(user_tier):
-    """Version corrigée de l'onglet trajectory"""
-    if user_tier == "free":
-        st.info(" Le Trajectory Builder est une fonctionnalité Premium Plus.")
-        return
-
-    # Version simplifiée pour éviter les erreurs
-    st.markdown("## ️ Trajectory Builder")
-    st.info("Fonctionnalité en développement - Version complète bientôt disponible !")
 
 
-def render_mirror_tab_fixed(user_tier):
-    """Version corrigée de l'onglet mirror match"""
-    if user_tier == "free":
-        st.info(" L'analyse de la culture d'entreprise est une fonctionnalité Premium.")
-        return
 
-    # Version simplifiée pour éviter les erreurs
-    st.markdown("##  Mirror Match")
-    st.info("Fonctionnalité en développement - Version complète bientôt disponible !")
+
 
 # ===== FIN DES CORRECTIONS =====
 
 # TON MAIN() CORRIGÉ :
 
 
+@integrate_monitoring
 def main():
     st.set_page_config(
         page_title="Phoenix Letters - Générateur de Lettres IA",
@@ -2528,12 +2528,26 @@ def main():
     if 'last_generation_time' not in st.session_state:
         st.session_state.last_generation_time = 0
 
+    # Tracking session
+    if 'session_id' not in st.session_state:
+        st.session_state.session_id = str(uuid.uuid4())
+        user_tracker.track_action(st.session_state.session_id, 'new_session')
+
     create_elegant_progress_bar(st.session_state.user_progress, "Progression")
 
     # Bandeau RGPD
     st.info("️ **Protection des données** : Vos données sont traitées uniquement en mémoire et supprimées immédiatement après génération.")
 
     user_tier = get_professional_user_tier_ui()
+
+    # Ajout du monitoring dans la sidebar
+    display_monitoring_dashboard()
+
+    # Vérification des alertes
+    AlertSystem.check_performance_alerts()
+
+    # Export des données
+    export_monitoring_data()
 
     # Navigation
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
@@ -2551,10 +2565,10 @@ def main():
         render_generator_tab(user_tier)
 
     with tab2:
-        render_trajectory_tab_fixed(user_tier)
+        render_trajectory_tab(user_tier)
 
     with tab3:
-        render_mirror_tab_fixed(user_tier)
+        render_mirror_tab(user_tier)
 
     with tab4:
         render_dashboard_tab(user_tier)
