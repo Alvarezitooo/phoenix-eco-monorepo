@@ -1,0 +1,23 @@
+# Phoenix CV - Dependencies principales
+streamlit>=1.28.0
+pandas>=1.5.0
+google-generativeai>=0.3.0
+pydantic>=2.0.0
+
+# Securite et validation
+bleach>=6.0.0
+cryptography>=41.0.0
+
+# Traitement texte et IA
+tenacity>=8.2.0
+instructor>=0.4.0
+yake>=0.4.8
+spacy>=3.6.0
+
+# Utilitaires
+PyPDF2>=3.0.0
+python-docx>=0.8.11
+python-multipart>=0.0.6
+
+# Monitoring et logs
+structlog>=23.1.0
