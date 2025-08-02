@@ -1,6 +1,0 @@
-google-generativeai
-pydantic
-tenacity
-instructor
-yake
-spacy

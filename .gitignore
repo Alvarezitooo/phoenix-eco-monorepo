@@ -1,31 +1,175 @@
-# Python
-__pycache__/
-*.pyc
+# 🔥 Phoenix Ecosystem - Global Gitignore
 
-# Environment variables
+# ===============================================================================
+# SECRETS & ENVIRONMENT FILES
+# ===============================================================================
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+**/.env*
+!**/.env.example
 
-# Virtual environment
+# Streamlit Secrets
+secrets.toml
+**/secrets.toml
+**/.streamlit/secrets.toml
+
+# ===============================================================================
+# PYTHON 
+# ===============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
 venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+phoenix_env/
+**/phoenix_env/
+**/.venv/
 
-# Logs
+# ===============================================================================
+# NODE.JS & NEXT.JS (Phoenix Website)
+# ===============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.next/
+out/
+.vercel/
+
+# ===============================================================================
+# IDE & EDITORS
+# ===============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.vs/
+
+# ===============================================================================
+# OPERATING SYSTEM
+# ===============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===============================================================================
+# TESTING & COVERAGE
+# ===============================================================================
+.coverage
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+coverage.xml
+*.cover
+*.py,cover
+.cache
+nosetests.xml
+.nyc_output/
+
+# ===============================================================================
+# JUPYTER NOTEBOOKS
+# ===============================================================================
+.ipynb_checkpoints
+
+# ===============================================================================
+# LOGS & TEMPORARY FILES
+# ===============================================================================
 *.log
+logs/
+*.tmp
+*.temp
+temp/
+tmp/
 
+# ===============================================================================
+# DATABASE FILES
+# ===============================================================================
+*.db
+*.sqlite3
 
+# ===============================================================================
+# BACKUP & ARCHIVE FILES
+# ===============================================================================
+*.bak
+*.backup
+*.tar.gz
+*.zip
 
-# Caches
-.mypy_cache/
-.ruff_cache/
+# ===============================================================================
+# PHOENIX SPECIFIC
+# ===============================================================================
+# Journal de bord (contient infos sensibles)
+**/journal_de_bord*.md
 
-# Local test files
-test appli/
+# Fichiers de contexte développement
+**/phoenix_*_context_rules.md
+**/claude_*.md
 
-# Project documentation
-PROJET_COMPLET.md
+# Données temporaires IA
+**/temp_cv_data/
+**/temp_letters/
 
-# Streamlit secrets
-.streamlit/secrets.toml
+# Rapports de tests locaux
+**/test_results_local/
+**/security_scan_results/
 
-# Ignored files
-amélioration_code.txt
-fix_bug.md
+# ===============================================================================
+# STRIPE & PAIEMENTS
+# ===============================================================================
+stripe_events.log
+webhook_logs/
+
+# ===============================================================================
+# SUPABASE & DATABASE
+# ===============================================================================
+supabase/.branches
+supabase/.temp
+
+# ===============================================================================
+# DOCKER
+# ===============================================================================
+docker-compose.override.yml
+.dockerignore
+
+# ===============================================================================
+# CERTIFICATES & KEYS
+# ===============================================================================
+*.pem
+*.key
+*.crt
+*.cert

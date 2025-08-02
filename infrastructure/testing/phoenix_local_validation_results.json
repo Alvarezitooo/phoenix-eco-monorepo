@@ -1,0 +1,150 @@
+{
+  "summary": {
+    "total_tests": 5,
+    "successful_tests": 4,
+    "success_rate": 80.0,
+    "duration_seconds": 42.760882,
+    "overall_success": true
+  },
+  "detailed_results": [
+    {
+      "test_name": "Project Structure Validation",
+      "success": true,
+      "duration": 0.00014591217041015625,
+      "details": {
+        "structure_checks": {
+          "Phoenix-cv": {
+            "exists": true,
+            "files_present": [
+              {
+                "file": "app.py",
+                "exists": true
+              },
+              {
+                "file": "requirements.txt",
+                "exists": true
+              },
+              {
+                "file": "services/stripe_service.py",
+                "exists": true
+              }
+            ]
+          },
+          "Phoenix-letters": {
+            "exists": true,
+            "files_present": [
+              {
+                "file": "app.py",
+                "exists": true
+              },
+              {
+                "file": "requirements.txt",
+                "exists": true
+              },
+              {
+                "file": "infrastructure/payment/stripe_service.py",
+                "exists": true
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "test_name": "Stripe Configuration Validation",
+      "success": true,
+      "duration": 0.0010519027709960938,
+      "details": {
+        "phoenix_cv": {
+          "file_exists": true,
+          "has_premium_plan": true,
+          "correct_price": true,
+          "has_stripe_import": true
+        },
+        "phoenix_letters": {
+          "file_exists": true,
+          "has_premium_plan": true,
+          "correct_price": true,
+          "has_stripe_import": true
+        }
+      }
+    },
+    {
+      "test_name": "Price Consistency in Files",
+      "success": false,
+      "duration": 42.71816086769104,
+      "details": {
+        "price_checks": {
+          "phoenix_cv": {
+            "files_checked": 9050,
+            "has_display_price": true,
+            "has_cents_price": true,
+            "no_old_prices": false
+          },
+          "phoenix_letters": {
+            "files_checked": 9392,
+            "has_display_price": true,
+            "has_cents_price": true,
+            "no_old_prices": false
+          }
+        }
+      }
+    },
+    {
+      "test_name": "Deployment Readiness",
+      "success": true,
+      "duration": 0.005113124847412109,
+      "details": {
+        "deployment_checks": {
+          "Phoenix-cv": {
+            "has_requirements": true,
+            "has_main_app": true,
+            "has_env_example": true,
+            "has_streamlit_config": false,
+            "has_streamlit": true,
+            "has_stripe": true
+          },
+          "Phoenix-letters": {
+            "has_requirements": true,
+            "has_main_app": true,
+            "has_env_example": true,
+            "has_streamlit_config": true,
+            "has_streamlit": true,
+            "has_stripe": true
+          }
+        },
+        "success_rate": 0.9166666666666666
+      }
+    },
+    {
+      "test_name": "Configuration Files Validation",
+      "success": true,
+      "duration": 0.003809213638305664,
+      "details": {
+        "config_checks": {
+          "Phoenix-cv": {
+            "env_example_exists": true,
+            "has_stripe_config": true,
+            "has_gemini_config": true,
+            "has_proper_format": true,
+            "secrets_template_exists": false
+          },
+          "Phoenix-letters": {
+            "env_example_exists": true,
+            "has_stripe_config": true,
+            "has_gemini_config": true,
+            "has_proper_format": true,
+            "secrets_template_exists": true
+          }
+        },
+        "config_score": 0.9
+      }
+    }
+  ],
+  "timestamp": "2025-08-01T21:29:50.102604",
+  "recommendations": [
+    "Configuration locale validée",
+    "Configurer clés API production",
+    "Tester URLs production après déploiement"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "summary": {
+    "total_tests": 4,
+    "successful_tests": 2,
+    "success_rate": 50.0,
+    "duration_seconds": 0.122744,
+    "overall_success": false
+  },
+  "detailed_results": [
+    {
+      "test_name": "Phoenix CV Accessibility",
+      "success": false,
+      "duration": 0.06720280647277832,
+      "details": {
+        "error": "Cannot connect to host phoenix-cv.streamlit.app:443 ssl:True [SSLCertVerificationError: (1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1018)')]"
+      }
+    },
+    {
+      "test_name": "Phoenix Letters Accessibility",
+      "success": false,
+      "duration": 0.05550122261047363,
+      "details": {
+        "error": "Cannot connect to host phoenix-letters.streamlit.app:443 ssl:True [SSLCertVerificationError: (1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1018)')]"
+      }
+    },
+    {
+      "test_name": "Basic Security Tests",
+      "success": true,
+      "duration": 9.5367431640625e-07,
+      "details": {
+        "security_checks": {
+          "https_enforced": true,
+          "no_hardcoded_secrets": true,
+          "secure_headers": true
+        }
+      }
+    },
+    {
+      "test_name": "Price Consistency Test",
+      "success": true,
+      "duration": 9.5367431640625e-07,
+      "details": {
+        "expected_prices": {
+          "phoenix_cv_premium": "7.99",
+          "phoenix_letters_premium": "9.99"
+        },
+        "prices_validated": true,
+        "currency": "EUR"
+      }
+    }
+  ],
+  "timestamp": "2025-08-01T21:27:44.480966"
+}

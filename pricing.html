@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phoenix - Solutions IA Reconversion Professionnelle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .pricing-card.featured {
+            border: 3px solid #ffd700;
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured::before {
+            content: "🔥 BEST DEAL";
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ffd700;
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .card-price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #667eea;
+        }
+
+        .card-period {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-features {
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .card-features li {
+            list-style: none;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .card-features li::before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+        }
+
+        .btn-subscribe {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-subscribe:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-subscribe.btn-cv {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .btn-subscribe.btn-letters {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-subscribe.btn-bundle {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .savings {
+            background: #f0f8ff;
+            color: #0066cc;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 0.5rem 0;
+            display: inline-block;
+        }
+
+        .comparison {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 3rem 0;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .comparison h3 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: white;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .pricing-card.featured {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 Phoenix Ecosystem</h1>
+            <p>La première plateforme IA française spécialisée reconversion professionnelle</p>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- Plan Gratuit -->
+            <div class="pricing-card">
+                <div class="card-icon">🆓</div>
+                <div class="card-title">Gratuit</div>
+                <div class="card-price">0€</div>
+                <div class="card-period">par mois</div>
+                <ul class="card-features">
+                    <li>3 générations par mois</li>
+                    <li>Templates de base</li>
+                    <li>IA anti-injection</li>
+                    <li>Export PDF simple</li>
+                    <li>Support communauté</li>
+                </ul>
+                <a href="https://phoenix-letters.streamlit.app" class="btn-subscribe">
+                    Essayer Gratuitement
+                </a>
+            </div>
+
+            <!-- Phoenix Letters -->
+            <div class="pricing-card">
+                <div class="card-icon">📝</div>
+                <div class="card-title">Phoenix Letters</div>
+                <div class="card-price">9,99€</div>
+                <div class="card-period">par mois</div>
+                <ul class="card-features">
+                    <li>Lettres de motivation illimitées</li>
+                    <li>Analyses ATS avancées</li>
+                    <li>Mirror Match précis</li>
+                    <li>Smart Coach personnalisé</li>
+                    <li>Templates exclusifs</li>
+                    <li>Export PDF premium</li>
+                    <li>Support prioritaire</li>
+                </ul>
+                <a href="https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00" class="btn-subscribe btn-letters">
+                    S'abonner Letters
+                </a>
+            </div>
+
+            <!-- Phoenix CV -->
+            <div class="pricing-card">
+                <div class="card-icon">📄</div>
+                <div class="card-title">Phoenix CV</div>
+                <div class="card-price">7,99€</div>
+                <div class="card-period">par mois</div>
+                <ul class="card-features">
+                    <li>CV illimités optimisés</li>
+                    <li>Templates premium</li>
+                    <li>ATS Optimizer avancé</li>
+                    <li>Mirror Match précis</li>
+                    <li>Smart Coach IA</li>
+                    <li>Export multi-formats</li>
+                    <li>Analytics avancées</li>
+                </ul>
+                <a href="https://buy.stripe.com/00w28r9Br9260gTcss6EU02" class="btn-subscribe btn-cv">
+                    S'abonner CV
+                </a>
+            </div>
+
+            <!-- Phoenix Bundle -->
+            <div class="pricing-card featured">
+                <div class="card-icon">🚀</div>
+                <div class="card-title">Bundle Complet</div>
+                <div class="card-price">15,99€</div>
+                <div class="card-period">par mois</div>
+                <div class="savings">Économie 1,99€</div>
+                <ul class="card-features">
+                    <li>Phoenix Letters complet</li>
+                    <li>Phoenix CV complet</li>
+                    <li>Smart Coach cross-platform</li>
+                    <li>Mirror Match universel</li>
+                    <li>Analytics avancées</li>
+                    <li>Support VIP prioritaire</li>
+                    <li>Accès bêta nouvelles features</li>
+                </ul>
+                <a href="https://buy.stripe.com/cNi14n9Brcei3t5akk6EU01" class="btn-subscribe btn-bundle">
+                    🔥 Bundle Deal
+                </a>
+            </div>
+        </div>
+
+        <div class="comparison">
+            <h3>💡 Quelle solution choisir ?</h3>
+            <p>
+                <strong>🎯 Letters seul :</strong> Parfait pour les lettres de motivation reconversion<br>
+                <strong>📄 CV seul :</strong> Idéal pour optimiser CV et profil LinkedIn<br>
+                <strong>🚀 Bundle :</strong> Solution complète avec économie de 1,99€/mois !
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>🛡️ Paiement sécurisé Stripe • 🔒 RGPD Compliant • ❌ Annulation en 1 clic</p>
+            <p>Rejoignez 2,847+ professionnels qui ont transformé leur reconversion</p>
+        </div>
+    </div>
+
+    <script>
+        // Animation d'entrée des cartes
+        window.addEventListener('load', () => {
+            const cards = document.querySelectorAll('.pricing-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(50px)';
+                    card.style.transition = 'all 0.6s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 150);
+            });
+        });
+    </script>
+</body>
+</html>
