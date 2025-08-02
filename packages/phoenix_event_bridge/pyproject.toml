@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phoenix_event_bridge"
+version = "1.0.0"
+authors = [
+  { name="Matthieu Rubia", email="contact.phoenixletters@gmail.com" },
+]
+description = "Le bus d'événements partagé de l'écosystème Phoenix - Event-Sourcing avec Supabase"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+# Dependencies spécifiques au package phoenix_event_bridge
+dependencies = [
+    "supabase",
+    "python-dotenv"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]

@@ -17,7 +17,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-# Dependencies from requirements_clean.txt
+# Dependencies externes ET internes (approche Gemini Pro Oracle)
 dependencies = [
     "streamlit",
     "google-generativeai",
@@ -30,7 +30,10 @@ dependencies = [
     "supabase",
     "plotly>=5.0.0",
     "pandas>=1.5.0",
-    "cryptography>=3.4.8"
+    "cryptography>=3.4.8",
+    # Dépendance locale vers le paquet phoenix_event_bridge
+    # Le chemin est relatif à CE fichier pyproject.toml
+    "phoenix_event_bridge @ file:../../packages/phoenix_event_bridge"
 ]
 
 [tool.setuptools.packages.find]
