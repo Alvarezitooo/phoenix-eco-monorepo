@@ -1,16 +1,21 @@
 """
-🔥 Phoenix Letters - Version 2.0 avec Authentification Unifiée
-Architecture migratée vers Phoenix Shared Auth pour écosystème cohérent
+🚀 Phoenix Letters - Point d'entrée principal
+Redirection intelligente vers version fonctionnelle selon disponibilité
 
 Author: Claude Phoenix DevSecOps Guardian
-Version: 2.0.0 - Unified Authentication Ready
+Version: Smart-Deploy - Adaptive Entry Point
 """
 
-# Point d'entrée principal - Redirection vers app avec auth unifiée
+# Point d'entrée principal avec fallback intelligent
 if __name__ == "__main__":
-    from phoenix_letters_auth_integration import main
-
-    main()
+    try:
+        # Essayer la nouvelle version avec auth unifiée
+        from phoenix_letters_auth_integration import main
+        main()
+    except ImportError:
+        # Fallback vers version legacy fonctionnelle
+        from app_legacy import main
+        main()
 
 import asyncio
 import logging
