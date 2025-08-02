@@ -1,0 +1,27 @@
+streamlit
+google-generativeai
+tenacity
+python-dotenv
+black
+isort
+mypy
+bandit
+safety
+pylint
+pytest
+pytest-mock
+protobuf
+PyJWT
+Requests
+bcrypt
+asyncpg
+supabase
+# Phoenix Shared Auth Module
+phoenix-shared-auth>=1.0.0
+# Phoenix Green AI dependencies
+plotly>=5.0.0
+pandas>=1.5.0
+# Payment processing - Stripe Professional
+stripe>=5.0.0
+# Enhanced security
+cryptography>=3.4.8

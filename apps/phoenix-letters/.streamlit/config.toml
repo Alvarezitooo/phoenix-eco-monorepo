@@ -1,0 +1,38 @@
+# 🔥 Phoenix Letters - Configuration Streamlit
+# Author: Claude Phoenix DevSecOps Guardian
+
+[global]
+developmentMode = false
+showWarningOnDirectExecution = false
+
+[server]
+headless = true
+port = 8501
+enableCORS = false
+enableXsrfProtection = true
+maxUploadSize = 10
+maxMessageSize = 200
+
+[browser]
+gatherUsageStats = false
+serverAddress = "0.0.0.0"
+
+[theme]
+primaryColor = "#667eea"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f0f2f6"
+textColor = "#262730"
+font = "sans serif"
+
+[client]
+caching = true
+displayEnabled = true
+
+[runner]
+magicEnabled = true
+installTracer = false
+fixMatplotlib = true
+
+[logger]
+level = "info"
+messageFormat = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

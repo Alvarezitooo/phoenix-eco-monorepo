@@ -1,0 +1,1 @@
+"""Infrastructure de paiement Phoenix Letters."""

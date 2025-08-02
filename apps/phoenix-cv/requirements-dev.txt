@@ -1,0 +1,7 @@
+# Development requirements for Phoenix-cv
+
+-r requirements.txt
+
+# Testing
+pytest
+pytest-mock

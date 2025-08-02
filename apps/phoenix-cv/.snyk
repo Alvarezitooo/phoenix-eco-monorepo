@@ -1,0 +1,21 @@
+# 🛡️ Snyk Configuration - Phoenix CV Security
+# https://docs.snyk.io/snyk-cli/test-for-vulnerabilities/the-.snyk-file
+
+# Configuration générale
+version: v1.0.0
+
+# Ignorer les vulnérabilités de développement uniquement
+ignore:
+  # Exemple d'ignore si nécessaire (à adapter selon les résultats)
+  # 'npm:lodash:20180130':
+  #   - '*':
+  #       reason: Used only in development
+  #       expires: '2025-12-31T23:59:59.999Z'
+
+# Patches automatiques si disponibles
+patch: {}
+
+# Paramètres spécifiques Python
+python:
+  # Scan seulement les dépendances de production
+  dev: false
