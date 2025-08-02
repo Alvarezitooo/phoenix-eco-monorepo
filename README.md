@@ -3,8 +3,10 @@
 > **La première plateforme IA française spécialisée reconversion professionnelle**
 
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
-[![Security](https://img.shields.io/badge/Security-A%2B-green.svg)](docs/SECURITY_AUDIT_ECOSYSTEM_PHOENIX.md)
-[![RGPD](https://img.shields.io/badge/RGPD-Compliant-green.svg)](#)
+[![Security Audit](https://img.shields.io/badge/Security%20Audit-PASSED-brightgreen.svg)](PHOENIX_SECURITY_AUDIT_2025.md)
+[![OWASP](https://img.shields.io/badge/OWASP%20Top%2010-Compliant-blue.svg)](SECURITY.md)
+[![Zero Vulns](https://img.shields.io/badge/Critical%20Vulns-0-brightgreen.svg)](PHOENIX_SECURITY_AUDIT_2025.md)
+[![RGPD](https://img.shields.io/badge/RGPD-Compliant-green.svg)](SECURITY.md)
 
 ## 🎯 **Vue d'ensemble**
 
