@@ -2,7 +2,7 @@
 
 > **La première plateforme IA française spécialisée reconversion professionnelle**
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 [![Security](https://img.shields.io/badge/Security-A%2B-green.svg)](docs/SECURITY_AUDIT_ECOSYSTEM_PHOENIX.md)
 [![RGPD](https://img.shields.io/badge/RGPD-Compliant-green.svg)](#)
 
@@ -134,7 +134,11 @@ SUPABASE_KEY=...
 
 ## 📄 **License**
 
-MIT License - Voir [LICENSE](LICENSE)
+GNU General Public License v3.0 - Voir [LICENSE](LICENSE)
+
+**Protection Copyleft :** Toute modification doit rester open source sous GPL v3  
+**Dual Licensing :** Licence commerciale disponible pour usage propriétaire  
+**Contact :** contact.phoenixletters@gmail.com
 
 ## 📞 **Contact**
 

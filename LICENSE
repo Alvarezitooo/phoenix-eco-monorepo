@@ -1,59 +1,130 @@
-# Phoenix Ecosystem - Proprietary License
+GNU GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007
 
-**Copyright (c) 2025 Matthieu RUBIA. Tous droits réservés.**
+Phoenix Ecosystem - Copyright (C) 2025 Matthieu RUBIA
 
-## 📋 **Propriété Intellectuelle**
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-Ce logiciel et tous les composants de l'écosystème Phoenix (Phoenix Letters, Phoenix CV, Phoenix Website, et tous les modules associés) sont la propriété exclusive de **Matthieu RUBIA**.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-### **🔒 Droits Réservés**
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-TOUS LES DROITS SONT RÉSERVÉS. Ce code source et tous les fichiers associés sont protégés par les lois sur le droit d'auteur et la propriété intellectuelle.
+================================================================================
 
-### **🚫 Restrictions**
+🔥 PHOENIX ECOSYSTEM - GPL v3 LICENSE
 
-**IL EST STRICTEMENT INTERDIT de :**
-- Reproduire, copier, distribuer ce code ou une partie de celui-ci
-- Modifier, adapter, créer des œuvres dérivées
-- Utiliser ce code à des fins commerciales sans autorisation écrite
-- Reverse engineer, décompiler ou désassembler le logiciel
-- Retirer ou modifier les mentions de copyright
+**Copyright (C) 2025 Matthieu RUBIA**
+**Phoenix Letters • Phoenix CV • Phoenix Website**
 
-### **✅ Utilisations Autorisées**
+================================================================================
 
-Les utilisations suivantes sont autorisées UNIQUEMENT avec l'autorisation écrite préalable de Matthieu RUBIA :
-- Inspection du code à des fins d'évaluation technique
-- Contribution au projet sous accord de cession de droits
-- Intégration dans des projets commerciaux sous licence spécifique
+## 🛡️ **PROTECTION COPYLEFT - Vos Droits et Obligations**
 
-### **🤝 Contributions**
+### **✅ Ce que vous POUVEZ faire :**
+- **Utiliser** le logiciel à des fins personnelles et commerciales
+- **Étudier** le code source et comprendre son fonctionnement  
+- **Modifier** le code selon vos besoins
+- **Distribuer** des copies exactes ou modifiées
+- **Créer** des œuvres dérivées basées sur ce code
 
-Toute contribution (code, documentation, idées) au projet Phoenix devient automatiquement la propriété de Matthieu RUBIA. En contribuant, vous acceptez de céder tous vos droits sur votre contribution.
+### **⚖️ Ce que vous DEVEZ faire (Obligations GPL) :**
+- **Conserver** tous les avis de copyright et de licence
+- **Publier** le code source de toute version modifiée sous GPL v3
+- **Informer** les utilisateurs de leurs droits GPL
+- **Attribuer** clairement les modifications à leurs auteurs
+- **Rendre disponible** le code source pour toute distribution binaire
 
-### **⚖️ Violation**
+### **🚫 Ce que vous NE POUVEZ PAS faire :**
+- **Relicencier** sous une licence non-GPL (propriétaire, MIT, etc.)
+- **Créer** une version fermée/propriétaire sans code source
+- **Retirer** les mentions de copyright originales
+- **Breveter** des améliorations sans les partager sous GPL
+- **Intégrer** dans un logiciel propriétaire sans contamination GPL
 
-Toute violation de cette licence peut entraîner :
-- Poursuites judiciaires civiles et pénales
-- Dommages et intérêts
-- Injonction d'arrêter l'utilisation
+================================================================================
 
-### **🌍 Juridiction**
+## 🔒 **PROTECTION BUSINESS - Dual Licensing Disponible**
 
-Cette licence est régie par le droit français. Tout litige sera soumis aux tribunaux compétents de France.
+### **Option GPL v3 (Gratuite)**
+Utilisation selon les termes stricts de la GPL v3 ci-dessus.
+Parfait pour projets open source, éducation, recherche.
 
-### **📞 Contact**
+### **Option Licence Commerciale (Payante)**
+Pour usage commercial sans contraintes GPL :
+- **Intégration** dans logiciel propriétaire
+- **Distribution** sans obligation de publier le code source  
+- **Support commercial** et garanties étendues
+- **Personnalisations** privées sans publication
 
-Pour toute demande d'autorisation ou question concernant cette licence :
+**Contact commercial :** contact.phoenixletters@gmail.com
 
-**Matthieu RUBIA**  
-Email : contact.phoenixletters@gmail.com  
-Projet : Phoenix Ecosystem  
-Repository : https://github.com/Alvarezitooo/Phoenix-eco
+================================================================================
 
----
+## ⚔️ **PROTECTION ANTI-BREVETS (GPL v3 Section 11)**
 
-**⚠️ AVERTISSEMENT LÉGAL**
+En contribuant ou distribuant ce logiciel, vous accordez automatiquement :
+- **Licence de brevet** pour tous brevets nécessaires à l'utilisation
+- **Protection contre attaques de brevets** - si vous attaquez Phoenix Ecosystem ou un utilisateur GPL pour brevets, votre licence GPL est révoquée
+- **Immunité croisée** - protection collective de l'écosystème open source
 
-L'utilisation non autorisée de ce code constitue une violation du droit d'auteur et peut faire l'objet de poursuites judiciaires. Ce logiciel est fourni "en l'état" sans aucune garantie.
+================================================================================
 
-**© 2025 Matthieu RUBIA - Phoenix Ecosystem. Tous droits réservés.**
+## 🌍 **APPLICABILITÉ INTERNATIONALE**
+
+Cette licence GPL v3 est reconnue et applicable dans :
+- **Union Européenne** (directive droits d'auteur)
+- **France** (Code de la propriété intellectuelle)  
+- **États-Unis** (Copyright Act)
+- **Plus de 180 pays** signataires des conventions internationales
+
+**Juridiction préférentielle :** Tribunaux français pour litiges impliquant Matthieu RUBIA
+
+================================================================================
+
+## 🚀 **CONTRIBUTION AU PROJET PHOENIX**
+
+### **Copyright des Contributions**
+- Les contributions restent propriété de leurs auteurs originaux
+- Mais doivent être compatibles GPL v3 pour inclusion
+- Pas de cession de droits forcée (contrairement licence propriétaire)
+
+### **Processus de Contribution**
+1. **Fork** le repository GitHub
+2. **Développer** vos améliorations en respectant GPL v3
+3. **Tester** et documenter vos modifications
+4. **Soumettre** Pull Request avec DCO (Developer Certificate of Origin)
+5. **Review** et intégration par Matthieu RUBIA
+
+================================================================================
+
+## 📞 **CONTACT & SUPPORT**
+
+**Créateur Original :** Matthieu RUBIA  
+**Email Projet :** contact.phoenixletters@gmail.com  
+**Repository :** https://github.com/Alvarezitooo/Phoenix-eco  
+**Support Communauté :** Issues GitHub  
+**Licence Commerciale :** contact.phoenixletters@gmail.com
+
+================================================================================
+
+## ⚠️ **TEXTE INTÉGRAL GPL v3**
+
+Pour le texte complet et juridiquement contraignant de la GNU General Public License version 3, consultez :
+**https://www.gnu.org/licenses/gpl-3.0.html**
+
+Le résumé ci-dessus est fourni à titre informatif uniquement.
+En cas de conflit, le texte officiel GPL v3 fait foi.
+
+================================================================================
+
+**🔥 Phoenix Ecosystem - Révolutionnons les reconversions professionnelles !**  
+**🛡️ Protégé par GPL v3 - Copyleft pour l'écosystème open source français**
+
+**© 2025 Matthieu RUBIA - Licensed under GNU GPL v3**
