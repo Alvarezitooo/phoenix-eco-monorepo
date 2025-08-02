@@ -1,0 +1,4 @@
+# 🚀 Phoenix CV - Requirements via Launcher Script
+# Pattern Gemini Pro Oracle pour Phoenix CV
+
+-r apps/phoenix-cv/requirements.txt
