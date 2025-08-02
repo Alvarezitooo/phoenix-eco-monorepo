@@ -1,0 +1,1 @@
+{"version":"1.131.0","results":[],"errors":[],"paths":{"scanned":[]},"time":{"rules":[],"rules_parse_time":0.6957399845123291,"profiling_times":{"config_time":3.2248599529266357,"core_time":0.9566769599914551,"ignores_time":0.0005300045013427734,"total_time":4.182462930679321},"targets":[],"total_bytes":0,"max_memory_bytes":807973440},"engine_requested":"OSS","skipped_rules":[]}
