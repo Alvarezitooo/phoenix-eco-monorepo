@@ -1,7 +1,19 @@
 # 🚀 Phoenix Ecosystem - Monorepo Requirements
-# Solution Gemini Pro Oracle - Package installable approach
+# Solution Gemini Pro Oracle avec fallback robuste
 
-# Installe le paquet phoenix-letters qui se trouve dans apps/phoenix-letters
-# L'option -e (editable) garantit que les changements dans votre code
-# sont immédiatement pris en compte, sans avoir à réinstaller.
--e ./apps/phoenix-letters
+# Stratégie 1: Dependencies directes (fallback si package échoue)
+streamlit
+google-generativeai
+tenacity
+python-dotenv
+protobuf
+PyJWT
+requests
+bcrypt
+supabase
+plotly>=5.0.0
+pandas>=1.5.0
+cryptography>=3.4.8
+
+# Stratégie 2: Package installable (idéal)
+# -e ./apps/phoenix-letters
