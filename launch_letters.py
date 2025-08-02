@@ -11,6 +11,15 @@ import sys
 def main():
     """Point d'entrée principal avec stratégie de fallback robuste"""
     
+    # Configuration Streamlit globale
+    import streamlit as st
+    
+    st.set_page_config(
+        page_title="🚀 Phoenix Letters", 
+        page_icon="🔥",
+        layout="wide"
+    )
+    
     # Stratégie 1: Essayer le package installé (solution Gemini Pro)
     try:
         from phoenix_letters.app import main as phoenix_main
@@ -21,7 +30,8 @@ def main():
         print(f"⚠️ Package installé non trouvé: {package_error}")
         pass  # Continue vers fallback
     
-    # Stratégie 2: Fallback sys.path (solution de secours)
+    # Stratégie 2: Fallback sys.path avec gestion imports (solution de secours)
+    
     try:
         print("🔄 Fallback vers manipulation sys.path...")
         
@@ -34,24 +44,45 @@ def main():
             
         print(f"📁 Chemin ajouté: {phoenix_letters_path}")
         
-        # Import direct depuis le chemin
-        from app import main as fallback_main
-        print("✅ Fallback réussi - chargement de l'app originale")
-        fallback_main()
-        return
+        # Import et exécution plus robuste
+        import importlib.util
         
-    except ImportError as fallback_error:
+        app_file_path = os.path.join(phoenix_letters_path, 'app.py')
+        
+        if os.path.exists(app_file_path):
+            st.success("✅ Fallback sys.path activé - Chargement de l'app Phoenix Letters...")
+            
+            # Essayer d'importer le module app directement
+            spec = importlib.util.spec_from_file_location("phoenix_app", app_file_path)
+            phoenix_app = importlib.util.module_from_spec(spec)
+            
+            # Ajouter au sys.modules pour les imports relatifs
+            sys.modules["phoenix_app"] = phoenix_app
+            
+            # Exécuter le module
+            spec.loader.exec_module(phoenix_app)
+            
+            # Appeler la fonction main si elle existe
+            if hasattr(phoenix_app, 'main'):
+                print("✅ Fallback réussi - chargement de l'app originale")
+                phoenix_app.main()
+                return
+            else:
+                st.error("❌ Fonction main() non trouvée dans app.py")
+        else:
+            st.error(f"❌ Fichier app.py non trouvé: {app_file_path}")
+            
+    except Exception as fallback_error:
         print(f"❌ Fallback échoué: {fallback_error}")
+        st.error(f"**❌ Erreur Fallback:** {str(fallback_error)}")
+        
+        # Afficher l'erreur détaillée pour debug
+        import traceback
+        st.code(traceback.format_exc())
+        
         pass  # Continue vers diagnostic
     
     # Stratégie 3: Diagnostic et interface minimale
-    import streamlit as st
-    
-    st.set_page_config(
-        page_title="🚀 Phoenix Letters", 
-        page_icon="🔥",
-        layout="wide"
-    )
     
     st.error("❌ **Impossible de charger Phoenix Letters**")
     
