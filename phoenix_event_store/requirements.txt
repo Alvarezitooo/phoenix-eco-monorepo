@@ -1,0 +1,3 @@
+psycopg2-binary
+phoenix_shared_models
+pika
