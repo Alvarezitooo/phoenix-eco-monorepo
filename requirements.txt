@@ -1,4 +1,5 @@
 # 🚀 Phoenix Letters - Requirements via Launcher Script
 # Solution Gemini Pro Oracle pour monorepo Streamlit Cloud
+# Utilise les dépendances propres sans phoenix-shared-auth
 
 -r apps/phoenix-letters/requirements_clean.txt
