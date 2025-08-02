@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phoenix_letters"
+version = "1.0.0"
+authors = [
+  { name="Matthieu Rubia", email="contact.phoenixletters@gmail.com" },
+]
+description = "L'application Phoenix Letters de l'écosystème Phoenix - Générateur IA de lettres de motivation pour reconversions professionnelles"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+# Dependencies from requirements_clean.txt
+dependencies = [
+    "streamlit",
+    "google-generativeai",
+    "tenacity",
+    "python-dotenv",
+    "protobuf",
+    "PyJWT",
+    "requests",
+    "bcrypt",
+    "supabase",
+    "plotly>=5.0.0",
+    "pandas>=1.5.0",
+    "cryptography>=3.4.8"
+]
+
+[tool.setuptools.packages.find]
+# Indique à setuptools de trouver automatiquement tous les paquets (dossiers avec __init__.py)
+where = ["."]

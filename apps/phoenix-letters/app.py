@@ -6,16 +6,10 @@ Author: Claude Phoenix DevSecOps Guardian
 Version: Smart-Deploy - Adaptive Entry Point
 """
 
-# Point d'entrée principal avec fallback intelligent
-if __name__ == "__main__":
-    try:
-        # Essayer la nouvelle version avec auth unifiée
-        from phoenix_letters_auth_integration import main
-        main()
-    except ImportError:
-        # Fallback vers version legacy fonctionnelle
-        from app_legacy import main
-        main()
+# Point d'entrée principal - utilise la fonction main() de ce fichier
+# (Commenté le fallback pour forcer l'utilisation de l'app complète)
+# if __name__ == "__main__":
+#     main()
 
 import asyncio
 import logging

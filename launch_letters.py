@@ -1,52 +1,65 @@
 """
-🚀 Phoenix Letters - Launcher pour Application Originale
-Point d'entrée à la racine pour contourner les limitations monorepo
+🚀 Phoenix Letters - Launcher Script Architectural Clean
+Solution Gemini Pro Oracle - Package installable approach
 
-Solution Gemini Pro Oracle - Utilise l'application Phoenix Letters complète
-Redirection vers l'application originale avancée avec toutes ses fonctionnalités
+Ce launcher est maintenant beaucoup plus simple grâce à l'approche
+par paquet installable. Plus besoin de manipuler sys.path !
 """
 
-import os
-import sys
-
-# Ajouter le chemin de l'application au sys.path pour permettre les imports
-app_path = os.path.join(os.path.dirname(__file__), 'apps', 'phoenix-letters')
-sys.path.insert(0, app_path)
-
-# Point d'entrée principal avec fallback intelligent vers l'app originale
+# Point d'entrée principal avec package installé
 if __name__ == "__main__":
     try:
-        # Essayer d'importer l'application Phoenix Letters complète
-        from app import main
+        # Import direct depuis le paquet installé 'phoenix_letters'
+        from phoenix_letters.app import main
+        
+        # Exécution de l'application Phoenix Letters complète
         main()
+        
     except ImportError as e:
-        # Si problème d'import, essayer l'app legacy
-        try:
-            from app_legacy import main
-            main()
-        except ImportError:
-            # Fallback final - version ultra-simple
-            import streamlit as st
+        # Fallback avec diagnostic détaillé
+        import streamlit as st
+        
+        st.set_page_config(
+            page_title="🚀 Phoenix Letters",
+            page_icon="🔥",
+            layout="wide"
+        )
+        
+        st.error(f"""
+        **❌ Erreur d'importation du module Phoenix Letters**
+        
+        Cela signifie probablement que l'installation via `pip install -e .` 
+        a échoué dans l'environnement Streamlit Cloud.
+        
+        **🔧 Solution Gemini Pro Oracle en cours...**
+        """)
+        
+        st.code(f"Détails de l'erreur: {str(e)}")
+        
+        st.info("""
+        **🏗️ Architecture Gemini Pro Oracle**
+        
+        - ✅ Launcher pattern activé
+        - 🔄 Package installable en cours de déploiement
+        - 🎯 Solution définitive pour monorepo Python
+        """)
+        
+        # Diagnostics additionnels
+        st.subheader("🔍 Diagnostic Environnement")
+        
+        import sys
+        import os
+        
+        st.write("**Python Path:**")
+        for path in sys.path[:5]:  # Affiche les 5 premiers paths
+            st.code(path)
             
-            st.set_page_config(
-                page_title="🚀 Phoenix Letters",
-                page_icon="🔥",
-                layout="wide"
-            )
-            
-            st.error("❌ Impossible de charger l'application Phoenix Letters")
-            st.info("🔧 Problème d'import détecté - Vérifiez la configuration")
-            st.code(f"Erreur: {str(e)}")
-            
-            st.markdown("""
-            ### 🚀 Phoenix Letters - Launcher Actif
-            
-            Le launcher fonctionne mais l'application complète n'a pas pu être chargée.
-            
-            **Architecture monorepo avec pattern Gemini Pro Oracle ✅**
-            """)
+        st.write("**Working Directory:**")
+        st.code(os.getcwd())
+        
+        st.write("**Environment Type:**")
+        st.code("Streamlit Cloud" if "streamlit" in os.getcwd().lower() else "Local")
 
 def main():
-    """Point d'entrée depuis les imports directs"""
-    # Cette fonction sera surchargée par l'import de l'app originale
+    """Point d'entrée alternatif (ne sera pas utilisé avec le package)"""
     pass
