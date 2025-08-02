@@ -1,0 +1,12 @@
+streamlit
+google-generativeai
+tenacity
+python-dotenv
+protobuf
+PyJWT
+requests
+bcrypt
+supabase
+plotly>=5.0.0
+pandas>=1.5.0
+cryptography>=3.4.8
