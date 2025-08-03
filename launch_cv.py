@@ -1,14 +1,23 @@
 import sys
 from pathlib import Path
 
-# --- CONFIGURATION DU CONTEXTE ---
-APP_ROOT = Path(__file__).resolve().parent / "apps" / "phoenix-cv" / "phoenix_cv"
+# 1. On détermine la racine du monorepo.
+ROOT_DIR = Path(__file__).resolve().parent
 
-if str(APP_ROOT) not in sys.path:
-    sys.path.insert(0, str(APP_ROOT))
+# 2. On ajoute le dossier 'apps' au chemin de Python.
+#    Ceci permet à Python de trouver le paquet 'phoenix_cv'.
+APPS_DIR = ROOT_DIR / "apps"
+if str(APPS_DIR) not in sys.path:
+    sys.path.insert(0, str(APPS_DIR))
 
-# --- IMPORT ET EXÉCUTION ---
-from app import main
+# 3. On importe et on exécute l'application.
+try:
+    from phoenix_cv.app import main
+    
+    if __name__ == "__main__":
+        main()
 
-if __name__ == "__main__":
-    main()
+except Exception as e:
+    import streamlit as st
+    st.error("Une erreur est survenue lors du chargement de Phoenix CV.")
+    st.exception(e)
