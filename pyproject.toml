@@ -15,7 +15,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9"
+python = ">=3.9, <4.0"
 
 # Dépendances de développement avec chemins relatifs (Poetry style)
 phoenix_letters = { path = "apps/phoenix-letters", develop = true }
