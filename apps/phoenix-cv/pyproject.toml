@@ -22,6 +22,9 @@ plotly = ">=5.0.0"
 pandas = ">=1.5.0"
 cryptography = ">=3.4.8"
 stripe = "*"
+# Dépendances pour traitement documents CV
+python-docx = "*"
+PyPDF2 = "*"
 # Dépendance locale gérée par l'orchestrateur racine
 phoenix_event_bridge = "*"
 
