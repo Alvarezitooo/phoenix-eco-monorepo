@@ -6,17 +6,9 @@ Author: Claude Phoenix DevSecOps Guardian
 Version: 4.0.0 - Unified Authentication Ready
 """
 
-# Point d'entrée principal - Redirection vers app avec auth unifiée
+# Point d'entrée principal - Version simplifiée pour monorepo
 if __name__ == "__main__":
-    # Check if running in a test environment
-    if os.environ.get("STREAMLIT_TEST_MODE") == "true":
-        # In test mode, directly call the main function of app.py
-        main()
-    else:
-        # In normal execution, use the auth integration
-        from phoenix_cv_auth_integration import main as auth_main
-
-        auth_main()
+    main()
 
 # === LEGACY IMPORTS POUR COMPATIBILITÉ ===
 import os
