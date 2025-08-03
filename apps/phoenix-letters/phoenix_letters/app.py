@@ -15,30 +15,30 @@ import asyncio
 import logging
 from datetime import datetime
 
-# === IMPORTS RELATIFS - ARCHITECTURE POETRY CORRECTE ===
+# === IMPORTS ABSOLUS - CONTRÔLE TOTAL DU CONTEXTE ===
 import streamlit as st
-from .config.settings import Settings
-from .core.entities.user import UserTier
-from .core.services.job_offer_parser import JobOfferParser
-from .core.services.letter_service import LetterService
-from .core.services.prompt_service import PromptService
-from .infrastructure.ai.gemini_client import GeminiClient
-from .infrastructure.auth.jwt_manager import JWTManager
-from .infrastructure.auth.streamlit_auth_middleware import StreamlitAuthMiddleware
-from .infrastructure.auth.user_auth_service import UserAuthService
-from .infrastructure.database.db_connection import DatabaseConnection
-from .infrastructure.monitoring.performance_monitor import PerformanceMonitor
-from .infrastructure.security.input_validator import InputValidator
-from .infrastructure.storage.session_manager import SecureSessionManager
-from .ui.components.file_uploader import SecureFileUploader
-from .ui.components.letter_editor import LetterEditor
-from .ui.components.progress_bar import ProgressIndicator
-from .ui.pages.about_page import AboutPage
-from .ui.pages.generator_page import GeneratorPage
-from .ui.pages.premium_page import PremiumPage
-from .ui.pages.settings_page import SettingsPage
-from .utils.async_runner import AsyncServiceRunner
-from .utils.monitoring import (
+from config.settings import Settings
+from core.entities.user import UserTier
+from core.services.job_offer_parser import JobOfferParser
+from core.services.letter_service import LetterService
+from core.services.prompt_service import PromptService
+from infrastructure.ai.gemini_client import GeminiClient
+from infrastructure.auth.jwt_manager import JWTManager
+from infrastructure.auth.streamlit_auth_middleware import StreamlitAuthMiddleware
+from infrastructure.auth.user_auth_service import UserAuthService
+from infrastructure.database.db_connection import DatabaseConnection
+from infrastructure.monitoring.performance_monitor import PerformanceMonitor
+from infrastructure.security.input_validator import InputValidator
+from infrastructure.storage.session_manager import SecureSessionManager
+from ui.components.file_uploader import SecureFileUploader
+from ui.components.letter_editor import LetterEditor
+from ui.components.progress_bar import ProgressIndicator
+from ui.pages.about_page import AboutPage
+from ui.pages.generator_page import GeneratorPage
+from ui.pages.premium_page import PremiumPage
+from ui.pages.settings_page import SettingsPage
+from utils.async_runner import AsyncServiceRunner
+from utils.monitoring import (
     APIUsageTracker,
     diagnostic_urgence_50_requetes,
     render_api_monitoring_dashboard,
