@@ -1,0 +1,30 @@
+# 🚀 Phoenix CV - Configuration Poetry
+# Compatible avec l'orchestrateur Poetry du monorepo
+
+[tool.poetry]
+name = "phoenix_cv"
+version = "1.0.0"
+description = "L'application Phoenix CV de l'écosystème Phoenix - Générateur IA de CV pour reconversions professionnelles"
+authors = ["Matthieu Rubia <contact.phoenixletters@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.9, <4.0"
+streamlit = "*"
+google-generativeai = "*"
+tenacity = "*"
+python-dotenv = "*"
+protobuf = "*"
+PyJWT = "*"
+requests = "*"
+bcrypt = "*"
+supabase = "*"
+plotly = ">=5.0.0"
+pandas = ">=1.5.0"
+cryptography = ">=3.4.8"
+stripe = "*"
+# Dépendance locale gérée par l'orchestrateur racine
+phoenix_event_bridge = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
