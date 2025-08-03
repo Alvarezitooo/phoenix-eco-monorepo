@@ -1,0 +1,22 @@
+# /netlify.toml
+# Plan directeur de déploiement pour le site vitrine Phoenix sur Netlify
+
+[build]
+  # --- L'INSTRUCTION LA PLUS IMPORTANTE POUR UN MONOREPO ---
+  # Indique à Netlify de se placer dans ce dossier avant de faire quoi que ce soit.
+  # C'est ici que se trouve le `package.json` de votre site Next.js.
+  base = "apps/phoenix-website"
+
+  # Commande que Netlify doit exécuter pour construire votre site Next.js.
+  command = "next build"
+
+  # Répertoire où Netlify trouvera les fichiers du site une fois la construction terminée.
+  # Pour Next.js, c'est toujours le dossier ".next".
+  publish = ".next"
+
+# Configuration du plugin Next.js pour Netlify.
+# C'est ce qui rend le déploiement si puissant.
+# Il gère automatiquement les fonctions serverless, le rendu côté serveur,
+# la régénération statique incrémentielle (ISR) et l'optimisation d'images.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
