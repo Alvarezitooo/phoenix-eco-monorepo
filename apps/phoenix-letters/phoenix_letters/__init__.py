@@ -7,7 +7,7 @@ __version__ = "1.0.0"
 __author__ = "Matthieu Rubia"
 __email__ = "contact.phoenixletters@gmail.com"
 
-# Import principal pour l'architecture monorepo
-from .app import main
+# Import principal pour l'architecture monorepo - ABSOLU
+from phoenix_letters.phoenix_letters.app import main
 
 __all__ = ["main"]

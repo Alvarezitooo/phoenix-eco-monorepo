@@ -15,30 +15,30 @@ import asyncio
 import logging
 from datetime import datetime
 
-# === IMPORTS ARCHITECTURE PACKAGE ===
+# === IMPORTS ABSOLUS - SOLUTION FINALE GEMINI ===
 import streamlit as st
-from .config.settings import Settings
-from .core.entities.user import UserTier
-from .core.services.job_offer_parser import JobOfferParser
-from .core.services.letter_service import LetterService
-from .core.services.prompt_service import PromptService
-from .infrastructure.ai.gemini_client import GeminiClient
-from .infrastructure.auth.jwt_manager import JWTManager
-from .infrastructure.auth.streamlit_auth_middleware import StreamlitAuthMiddleware
-from .infrastructure.auth.user_auth_service import UserAuthService
-from .infrastructure.database.db_connection import DatabaseConnection
-from .infrastructure.monitoring.performance_monitor import PerformanceMonitor
-from .infrastructure.security.input_validator import InputValidator
-from .infrastructure.storage.session_manager import SecureSessionManager
-from .ui.components.file_uploader import SecureFileUploader
-from .ui.components.letter_editor import LetterEditor
-from .ui.components.progress_bar import ProgressIndicator
-from .ui.pages.about_page import AboutPage
-from .ui.pages.generator_page import GeneratorPage
-from .ui.pages.premium_page import PremiumPage
-from .ui.pages.settings_page import SettingsPage
-from .utils.async_runner import AsyncServiceRunner
-from .utils.monitoring import (
+from phoenix_letters.phoenix_letters.config.settings import Settings
+from phoenix_letters.phoenix_letters.core.entities.user import UserTier
+from phoenix_letters.phoenix_letters.core.services.job_offer_parser import JobOfferParser
+from phoenix_letters.phoenix_letters.core.services.letter_service import LetterService
+from phoenix_letters.phoenix_letters.core.services.prompt_service import PromptService
+from phoenix_letters.phoenix_letters.infrastructure.ai.gemini_client import GeminiClient
+from phoenix_letters.phoenix_letters.infrastructure.auth.jwt_manager import JWTManager
+from phoenix_letters.phoenix_letters.infrastructure.auth.streamlit_auth_middleware import StreamlitAuthMiddleware
+from phoenix_letters.phoenix_letters.infrastructure.auth.user_auth_service import UserAuthService
+from phoenix_letters.phoenix_letters.infrastructure.database.db_connection import DatabaseConnection
+from phoenix_letters.phoenix_letters.infrastructure.monitoring.performance_monitor import PerformanceMonitor
+from phoenix_letters.phoenix_letters.infrastructure.security.input_validator import InputValidator
+from phoenix_letters.phoenix_letters.infrastructure.storage.session_manager import SecureSessionManager
+from phoenix_letters.phoenix_letters.ui.components.file_uploader import SecureFileUploader
+from phoenix_letters.phoenix_letters.ui.components.letter_editor import LetterEditor
+from phoenix_letters.phoenix_letters.ui.components.progress_bar import ProgressIndicator
+from phoenix_letters.phoenix_letters.ui.pages.about_page import AboutPage
+from phoenix_letters.phoenix_letters.ui.pages.generator_page import GeneratorPage
+from phoenix_letters.phoenix_letters.ui.pages.premium_page import PremiumPage
+from phoenix_letters.phoenix_letters.ui.pages.settings_page import SettingsPage
+from phoenix_letters.phoenix_letters.utils.async_runner import AsyncServiceRunner
+from phoenix_letters.phoenix_letters.utils.monitoring import (
     APIUsageTracker,
     diagnostic_urgence_50_requetes,
     render_api_monitoring_dashboard,
