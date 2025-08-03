@@ -1,8 +1,0 @@
-# 🚀 Phoenix Ecosystem - Monorepo Multi-Packages
-# Solution Gemini Pro Oracle - Architecture professionnelle finale
-
-# Installe le paquet partagé en premier
--e ./packages/phoenix_event_bridge
-
-# Installe l'application phoenix-letters, qui dépend du paquet ci-dessus
--e ./apps/phoenix-letters

@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phoenix-ecosystem"
+version = "1.0.0"
+description = "Le monorepo complet de l'écosystème Phoenix - Générateur IA pour reconversions professionnelles"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name="Matthieu Rubia", email="contact.phoenixletters@gmail.com" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+# Pas de dépendances listées ici, elles sont dans les sous-paquets.
+
+[tool.setuptools.packages.find]
+# Indique à setuptools de trouver automatiquement tous les paquets 
+# dans les sous-dossiers spécifiés.
+where = [
+    "apps",
+    "packages",
+]
