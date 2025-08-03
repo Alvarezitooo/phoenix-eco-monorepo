@@ -20,6 +20,7 @@ from io import BytesIO
 import docx
 import PyPDF2
 import streamlit as st
+st.toast("✅ VERSION DU 03/08/2025 - 09:15 AM CEST")
 # FORCE CACHE BUST - IMPORTS RELATIFS CORRECTS
 from .services.ai_trajectory_builder import (
     CareerStage,
