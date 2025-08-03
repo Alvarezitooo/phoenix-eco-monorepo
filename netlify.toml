@@ -8,7 +8,7 @@
   base = "apps/phoenix-website"
 
   # Commande que Netlify doit exécuter pour construire votre site Next.js.
-  command = "next build"
+  command = "npm install && next build"
 
   # Répertoire où Netlify trouvera les fichiers du site une fois la construction terminée.
   # Pour Next.js, c'est toujours le dossier ".next".
