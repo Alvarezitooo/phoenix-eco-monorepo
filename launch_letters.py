@@ -1,63 +1,76 @@
 """
-🚀 Phoenix Letters - Launcher avec Patch Architectural Runtime
-Solution finale Gemini Pro Oracle - Injection explicite du workspace dans sys.path
+🚀 Phoenix Letters - Launcher Architecture Poetry Simple
+Solution finale : Poetry a installé les packages, utilisons-les directement !
 """
 
-import sys
-from pathlib import Path
-
-# --- DÉBUT DU PATCH ARCHITECTURAL DE RUNTIME ---
-# Objectif : Forcer l'interpréteur Python à reconnaître la structure du monorepo.
-
-# 1. On détermine le chemin absolu de la racine du monorepo.
-#    Path(__file__) est le chemin de ce script (launch_letters.py).
-#    .resolve() nettoie le chemin (gère les '..', etc.).
-#    .parent est le dossier qui contient ce script, donc la racine.
-ROOT_DIR = Path(__file__).resolve().parent
-
-# 2. On définit les chemins absolus vers nos dossiers sources de paquets.
-APPS_DIR = ROOT_DIR / "apps"
-PACKAGES_DIR = ROOT_DIR / "packages"
-
-# 3. On ajoute ces chemins au sys.path de Python.
-#    Ceci est la clé. L'interpréteur saura maintenant que 'apps' et 'packages'
-#    sont des endroits où il peut trouver des modules de haut niveau.
-#    Il pourra donc trouver 'phoenix_letters' dans 'apps'.
-if str(APPS_DIR) not in sys.path:
-    sys.path.insert(0, str(APPS_DIR))
-
-if str(PACKAGES_DIR) not in sys.path:
-    sys.path.insert(0, str(PACKAGES_DIR))
-# --- FIN DU PATCH ARCHITECTURAL DE RUNTIME ---
-
-# 4. Maintenant que le chemin est correctement configuré, on tente l'import.
-#    Cette fois, il ne peut pas échouer.
-try:
-    # L'import n'est plus relatif, c'est un import absolu
-    # car 'apps' est maintenant dans le path.
-    from phoenix_letters.phoenix_letters.app import main
-    
-except ModuleNotFoundError as e:
-    import streamlit as st
-    st.error(f"""
-        **ERREUR D'IMPORTATION FATALE**
-
-        Le patch du `sys.path` n'a pas suffi. Cela indique une incohérence
-        dans la structure des dossiers par rapport au script de lancement.
-
-        **État du `sys.path` au moment de l'erreur :**
-        ```
-        {sys.path}
-        ```
-
-        **Erreur originale :**
-        `{e}`
-    """)
-    sys.exit()
-
-# 5. On lance l'application.
+# Point d'entrée principal - Architecture clean Poetry
 if __name__ == "__main__":
-    print("🔥 Patch architectural runtime activé - sys.path injecté")
-    print(f"✅ APPS_DIR ajouté: {APPS_DIR}")
-    print(f"✅ PACKAGES_DIR ajouté: {PACKAGES_DIR}")
-    main()
+    try:
+        # Import direct depuis le paquet installé par Poetry
+        # Poetry a installé phoenix_letters dans l'environnement
+        from phoenix_letters.app import main
+        
+        print("✅ Architecture Poetry package activée")
+        main()
+        
+    except ImportError as e:
+        # Diagnostic avancé si l'architecture n'est pas encore déployée
+        import streamlit as st
+        import os
+        import sys
+        
+        st.set_page_config(
+            page_title="🚀 Phoenix Letters",
+            page_icon="🔥", 
+            layout="wide"
+        )
+        
+        st.error("❌ **Architecture Poetry en cours de déploiement**")
+        
+        st.info(f"""
+        **🏗️ Solution Poetry Package**
+        
+        L'architecture finale est en cours d'installation :
+        
+        1. 📦 **phoenix_event_bridge** (package partagé)
+        2. 🚀 **phoenix_letters** (application principale)
+        
+        **Status :** {str(e)}
+        """)
+        
+        # Diagnostic de l'environnement
+        st.subheader("🔍 Diagnostic Architecture")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.write("**📦 Packages Poetry attendus :**")
+            packages_to_check = ["phoenix_event_bridge", "phoenix_letters"]
+            
+            for pkg in packages_to_check:
+                try:
+                    __import__(pkg)
+                    st.success(f"✅ {pkg}")
+                except ImportError:
+                    st.error(f"❌ {pkg}")
+        
+        with col2:
+            st.write("**🐍 Python Path :**")
+            for i, path in enumerate(sys.path[:6]):
+                if any(keyword in path.lower() for keyword in ['phoenix', 'packages', 'apps']):
+                    st.success(f"{i+1}. {path}")
+                else:
+                    st.code(f"{i+1}. {path}")
+        
+        st.markdown("---")
+        st.success("""
+        **🎯 Poetry va installer automatiquement :**
+        
+        1. Package `phoenix_letters` depuis `apps/phoenix-letters/`
+        2. Package `phoenix_event_bridge` depuis `packages/`
+        3. Toutes les dépendances (84 packages)
+        4. Phoenix Letters se lance automatiquement !
+        """)
+        
+        if st.button("🔄 Recharger l'application"):
+            st.rerun()
