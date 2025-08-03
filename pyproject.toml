@@ -1,28 +1,27 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+# 🚀 Phoenix Ecosystem - Configuration Poetry Monorepo Finale
+# Solution Gemini Pro Oracle pour Poetry + Streamlit Cloud
 
-[project]
+[tool.poetry]
 name = "phoenix-ecosystem"
 version = "1.0.0"
-description = "Le monorepo complet de l'écosystème Phoenix - Générateur IA pour reconversions professionnelles"
+description = "Orchestrateur du monorepo pour l'écosystème Phoenix - Générateur IA reconversions"
+authors = ["Matthieu Rubia <contact.phoenixletters@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.9"
-authors = [
-  { name="Matthieu Rubia", email="contact.phoenixletters@gmail.com" },
-]
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+
+# Section cruciale : Poetry où trouver les vrais packages
+packages = [
+    { include = "phoenix_letters", from = "apps" },
+    { include = "phoenix_event_bridge", from = "packages" },
 ]
 
-# Pas de dépendances listées ici, elles sont dans les sous-paquets.
+[tool.poetry.dependencies]
+python = ">=3.9"
 
-[tool.setuptools.packages.find]
-# Indique à setuptools de trouver automatiquement tous les paquets 
-# dans les sous-dossiers spécifiés.
-where = [
-    "apps",
-    "packages",
-]
+# Dépendances de développement avec chemins relatifs (Poetry style)
+phoenix_letters = { path = "apps/phoenix-letters", develop = true }
+phoenix_event_bridge = { path = "packages/phoenix_event_bridge", develop = true }
+
+[build-system]
+# Backend Poetry pour monorepo
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

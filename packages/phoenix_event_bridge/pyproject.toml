@@ -1,27 +1,18 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+# 🌉 Phoenix Event Bridge - Configuration Poetry
+# Package partagé pour Event-Sourcing Supabase
 
-[project]
+[tool.poetry]
 name = "phoenix_event_bridge"
 version = "1.0.0"
-authors = [
-  { name="Matthieu Rubia", email="contact.phoenixletters@gmail.com" },
-]
 description = "Le bus d'événements partagé de l'écosystème Phoenix - Event-Sourcing avec Supabase"
+authors = ["Matthieu Rubia <contact.phoenixletters@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.9"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
 
-# Dependencies spécifiques au package phoenix_event_bridge
-dependencies = [
-    "supabase",
-    "python-dotenv"
-]
+[tool.poetry.dependencies]
+python = ">=3.9"
+supabase = "*"
+python-dotenv = "*"
 
-[tool.setuptools.packages.find]
-where = ["."]
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
