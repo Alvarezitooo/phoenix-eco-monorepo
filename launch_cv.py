@@ -4,7 +4,7 @@ import streamlit as st
 import sys
 
 # --- CONFIGURATION DU CONTEXTE ---
-APP_ROOT = Path(__file__).resolve().parent / "apps" / "phoenix-cv"
+APP_ROOT = Path(__file__).resolve().parent / "apps" / "phoenix-cv" / "phoenix_cv"
 os.chdir(APP_ROOT)
 
 # --- BLOC DE DÉBOGAGE D'IMPORTATION ---

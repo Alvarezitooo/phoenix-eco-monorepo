@@ -6,7 +6,6 @@ name = "phoenix_cv"
 version = "1.0.0"
 description = "L'application Phoenix CV de l'écosystème Phoenix - Générateur IA de CV pour reconversions professionnelles"
 authors = ["Matthieu Rubia <contact.phoenixletters@gmail.com>"]
-packages = [{include = "*"}]
 
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
