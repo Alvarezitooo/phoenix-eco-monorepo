@@ -70,11 +70,6 @@ export default function CarbonCalculator({
     [],
   );
 
-  // Calcul automatique quand les paramètres changent
-  useEffect(() => {
-    calculateImpact();
-  }, [lettersCount, userType, calculateImpact]);
-
   const calculateImpact = useCallback(async () => {
     setIsCalculating(true);
 
@@ -116,6 +111,11 @@ export default function CarbonCalculator({
 
     setIsCalculating(false);
   }, [lettersCount, userType, CO2_CONSTANTS, USER_MULTIPLIERS, setResult, setIsCalculating]);
+
+  // Calcul automatique quand les paramètres changent
+  useEffect(() => {
+    calculateImpact();
+  }, [lettersCount, userType, calculateImpact]);
 
   // Formatage des nombres
   const formatCO2 = (grams: number): string => {
