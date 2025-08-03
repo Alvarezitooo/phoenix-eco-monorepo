@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '../ui/button';
 import { ArrowRight, Sparkles, Leaf } from 'lucide-react';
 import GreenAIBadge from '@/components/green/GreenAIBadge';
 import Image from 'next/image';

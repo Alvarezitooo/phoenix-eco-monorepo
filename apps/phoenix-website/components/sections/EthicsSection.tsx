@@ -1,5 +1,5 @@
 import { Heart, Shield, TrendingUp } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
 export default function EthicsSection() {
   return (

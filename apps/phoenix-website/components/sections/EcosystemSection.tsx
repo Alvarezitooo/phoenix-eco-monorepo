@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '../ui/badge';
 import { ArrowDown, ArrowRight, CheckCircle, Shield, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
 

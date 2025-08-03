@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button } from './ui/button';
 import { Menu, X, Zap } from 'lucide-react';
 import GreenAIBadge from '@/components/green/GreenAIBadge';
 
