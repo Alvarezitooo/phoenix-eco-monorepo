@@ -10,7 +10,7 @@ readme = "README.md"
 
 # Section cruciale : Poetry où trouver les vrais packages
 packages = [
-    { include = "phoenix_letters", from = "apps" },
+    { include = "phoenix_letters", from = "apps/phoenix-letters" },
     { include = "phoenix_event_bridge", from = "packages" },
 ]
 
