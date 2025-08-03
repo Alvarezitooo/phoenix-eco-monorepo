@@ -8,9 +8,9 @@ description = "Orchestrateur du monorepo pour l'écosystème Phoenix - Générat
 authors = ["Matthieu Rubia <contact.phoenixletters@gmail.com>"]
 readme = "README.md"
 
-# Section cruciale : Poetry où trouver les vrais packages
+# Section cruciale : Poetry où trouver les vrais packages - SYMÉTRIE CORRECTE
 packages = [
-    { include = "phoenix_letters", from = "apps/phoenix-letters" },
+    { include = "phoenix_letters", from = "apps" },
     { include = "phoenix_event_bridge", from = "packages" },
 ]
 
