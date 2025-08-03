@@ -6,7 +6,6 @@ name = "phoenix_letters"
 version = "1.0.0"
 description = "L'application Phoenix Letters de l'écosystème Phoenix - Générateur IA de lettres de motivation pour reconversions professionnelles"
 authors = ["Matthieu Rubia <contact.phoenixletters@gmail.com>"]
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
