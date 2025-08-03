@@ -1,27 +1,19 @@
-# 🚀 Phoenix Ecosystem - Configuration Poetry Monorepo Finale
-# Solution Gemini Pro Oracle pour Poetry + Streamlit Cloud
-
 [tool.poetry]
-name = "phoenix-ecosystem"
+name = "phoenix-ecosystem-workspace"
 version = "1.0.0"
-description = "Orchestrateur du monorepo pour l'écosystème Phoenix - Générateur IA reconversions"
+description = "Workspace orchestrator for the Phoenix Ecosystem. This is a meta-package and should not be installed directly."
 authors = ["Matthieu Rubia <contact.phoenixletters@gmail.com>"]
-readme = "README.md"
 
-# Section cruciale : Poetry où trouver les vrais packages - SYMÉTRIE CORRECTE
-packages = [
-    { include = "phoenix_letters", from = "apps" },
-    { include = "phoenix_event_bridge", from = "packages" },
-]
+# IMPORTANT : Il n'y a PAS de section [tool.poetry.packages] ici.
 
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
 
-# Dépendances de développement avec chemins relatifs (Poetry style)
+# C'est la SEULE manière de déclarer vos paquets locaux.
+# C'est direct, explicite et sans ambiguïté pour tous les outils.
 phoenix_letters = { path = "apps/phoenix-letters", develop = true }
 phoenix_event_bridge = { path = "packages/phoenix_event_bridge", develop = true }
 
 [build-system]
-# Backend Poetry pour monorepo
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
