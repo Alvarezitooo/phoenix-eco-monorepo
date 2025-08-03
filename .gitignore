@@ -32,6 +32,8 @@ eggs/
 .eggs/
 lib/
 lib64/
+# Exception: autoriser lib/ pour Next.js phoenix-website
+!apps/phoenix-website/lib/
 parts/
 sdist/
 var/
