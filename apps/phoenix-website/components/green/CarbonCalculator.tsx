@@ -61,11 +61,14 @@ export default function CarbonCalculator({
   };
 
   // Multiplicateurs selon le type d'utilisateur
-  const USER_MULTIPLIERS = useMemo(() => ({
-    individual: { letters: 1, label: 'Particulier en reconversion' },
-    recruiter: { letters: 10, label: 'Recruteur/RH' },
-    consultant: { letters: 25, label: 'Consultant carrière' },
-  }), []);
+  const USER_MULTIPLIERS = useMemo(
+    () => ({
+      individual: { letters: 1, label: 'Particulier en reconversion' },
+      recruiter: { letters: 10, label: 'Recruteur/RH' },
+      consultant: { letters: 25, label: 'Consultant carrière' },
+    }),
+    [],
+  );
 
   // Calcul automatique quand les paramètres changent
   useEffect(() => {
