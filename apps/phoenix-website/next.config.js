@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 🔧 Résolution de chemin explicite pour build Netlify
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve(__dirname),
+    };
+    return config;
+  },
   // 🛡️ Headers de sécurité HTTP obligatoires
   async headers() {
     return [
