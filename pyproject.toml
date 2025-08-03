@@ -16,6 +16,7 @@ python = ">=3.9, <4.0"
 # C'est direct, explicite et sans ambiguïté pour tous les outils.
 phoenix_letters = { path = "apps/phoenix-letters", develop = true }
 phoenix_cv = { path = "apps/phoenix-cv", develop = true }
+phoenix_rise = { path = "apps/phoenix-rise", develop = true }
 phoenix_event_bridge = { path = "packages/phoenix_event_bridge", develop = true }
 
 [build-system]

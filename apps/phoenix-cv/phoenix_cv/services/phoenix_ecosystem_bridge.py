@@ -417,7 +417,8 @@ class PhoenixEcosystemBridge:
         }
 
         identifier_string = json.dumps(identifier_data, sort_keys=True)
-        return hashlib.md5(identifier_string.encode()).hexdigest()[:16]
+        # SÉCURITÉ: Utilisation de SHA-256 au lieu de MD5 (vulnérable)
+        return hashlib.sha256(identifier_string.encode()).hexdigest()[:16]
 
     def _generate_transfer_token(self, user_data: Dict[str, Any]) -> str:
         """Génère un token sécurisé pour le transfert de données"""

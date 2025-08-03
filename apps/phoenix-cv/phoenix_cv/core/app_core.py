@@ -82,8 +82,7 @@ class SecurePhoenixCVApp:
         """Initialisation sécurisée des services"""
         try:
             self.gemini_client = SecureGeminiClient()
-            # self.cv_parser = SecureCVParser(self.gemini_client)  # À implémenter si besoin
-            self.cv_parser = None  # Temporaire pour le refactoring
+            self.cv_parser = SecureCVParser(self.gemini_client)
             self.ats_optimizer = SecureATSOptimizer(self.gemini_client)
             self.template_engine = SecureTemplateEngine()
 

@@ -14,13 +14,13 @@ const BundlePricing: React.FC = () => {
         {/* Starter Bundle */}
         <Card className="border-2 border-blue-200 shadow-lg">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-blue-700">Starter Bundle</CardTitle>
+            <CardTitle className="text-2xl text-blue-700">Bundle Phoenix</CardTitle>
             <p className="text-gray-600 mt-2">Letters + CV</p>
             <div className="mt-4">
-              <span className="text-4xl font-bold text-blue-800">12,99€</span>
+              <span className="text-4xl font-bold text-blue-800">15,99€</span>
               <span className="text-gray-600">/mois</span>
             </div>
-            <Badge className="mt-2 bg-blue-500 text-white">Économisez 20%</Badge>
+            <Badge className="mt-2 bg-blue-500 text-white">vs 17,98€ séparément</Badge>
           </CardHeader>
           <CardContent className="space-y-4">
             <ul className="space-y-2 text-gray-700">
@@ -31,68 +31,80 @@ const BundlePricing: React.FC = () => {
                 <Check className="h-5 w-5 text-green-500 mr-2" /> Toutes les fonctionnalités CV
               </li>
             </ul>
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-              Choisir Starter
-            </Button>
+            <a href="https://phoenixcreator.netlify.app/" target="_blank" rel="noopener noreferrer">
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                Découvrir Bundle Phoenix
+              </Button>
+            </a>
           </CardContent>
         </Card>
 
-        {/* Complete Bundle */}
-        <Card className="relative border-2 border-purple-500 shadow-lg">
+        {/* Future Bundle - Phoenix Rise Coming Soon */}
+        <Card className="relative border-2 border-gray-300 shadow-lg opacity-75">
           <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-            <Badge className="bg-purple-500 text-white px-4 py-1">Recommandé</Badge>
+            <Badge className="bg-gray-500 text-white px-4 py-1">Bientôt</Badge>
           </div>
           <CardHeader className="text-center pt-8">
-            <CardTitle className="text-2xl text-purple-700">Complete Bundle</CardTitle>
+            <CardTitle className="text-2xl text-gray-700">Bundle Complet</CardTitle>
             <p className="text-gray-600 mt-2">Letters + CV + Rise</p>
             <div className="mt-4">
-              <span className="text-4xl font-bold text-purple-800">17,99€</span>
-              <span className="text-gray-600">/mois</span>
+              <span className="text-4xl font-bold text-gray-500">Bientôt</span>
+              <span className="text-gray-600"> disponible</span>
             </div>
-            <Badge className="mt-2 bg-purple-500 text-white">Économisez 25%</Badge>
+            <Badge className="mt-2 bg-gray-500 text-white">Avec Phoenix Rise</Badge>
           </CardHeader>
           <CardContent className="space-y-4">
             <ul className="space-y-2 text-gray-700">
               <li className="flex items-center">
-                <Check className="h-5 w-5 text-green-500 mr-2" /> Toutes les fonctionnalités Letters
+                <Check className="h-5 w-5 text-gray-400 mr-2" /> Toutes les fonctionnalités Letters
               </li>
               <li className="flex items-center">
-                <Check className="h-5 w-5 text-green-500 mr-2" /> Toutes les fonctionnalités CV
+                <Check className="h-5 w-5 text-gray-400 mr-2" /> Toutes les fonctionnalités CV
               </li>
               <li className="flex items-center">
-                <Check className="h-5 w-5 text-green-500 mr-2" /> Toutes les fonctionnalités Rise
+                <Check className="h-5 w-5 text-gray-400 mr-2" /> Toutes les fonctionnalités Rise
               </li>
             </ul>
-            <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-              Choisir Complet
+            <Button className="w-full bg-gray-400 text-white" disabled>
+              Bientôt disponible
             </Button>
           </CardContent>
         </Card>
 
-        {/* Annuel Complete Bundle */}
-        <Card className="border-2 border-green-200 shadow-lg">
+        {/* Information Card */}
+        <Card className="border-2 border-blue-200 shadow-lg bg-blue-50">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-green-700">Annuel Complet</CardTitle>
-            <p className="text-gray-600 mt-2">Paiement annuel</p>
-            <div className="mt-4">
-              <span className="text-4xl font-bold text-green-800">179€</span>
-              <span className="text-gray-600">/an</span>
-            </div>
-            <Badge className="mt-2 bg-green-500 text-white">Économisez 35%</Badge>
+            <CardTitle className="text-2xl text-blue-700">💡 Pourquoi Bundle ?</CardTitle>
+            <p className="text-gray-600 mt-2">L'écosystème complet</p>
           </CardHeader>
           <CardContent className="space-y-4">
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex items-center">
-                <Check className="h-5 w-5 text-green-500 mr-2" /> Accès illimité aux 3 apps pendant
-                1 an
+            <ul className="space-y-3 text-gray-700">
+              <li className="flex items-start">
+                <Check className="h-5 w-5 text-blue-500 mr-2 mt-0.5" /> 
+                <div>
+                  <strong>CV optimisé</strong><br/>
+                  <small>Phoenix CV crée votre profil professionnel</small>
+                </div>
               </li>
-              <li className="flex items-center">
-                <Check className="h-5 w-5 text-green-500 mr-2" /> Support prioritaire
+              <li className="flex items-start">
+                <Check className="h-5 w-5 text-blue-500 mr-2 mt-0.5" /> 
+                <div>
+                  <strong>Lettres personnalisées</strong><br/>
+                  <small>Phoenix Letters adapte selon chaque offre</small>
+                </div>
+              </li>
+              <li className="flex items-start">
+                <Check className="h-5 w-5 text-blue-500 mr-2 mt-0.5" /> 
+                <div>
+                  <strong>Données interconnectées</strong><br/>
+                  <small>Plus vous utilisez, plus c'est précis</small>
+                </div>
               </li>
             </ul>
-            <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-              Choisir Annuel
-            </Button>
+            <div className="text-center text-sm text-gray-600 mt-4 p-3 bg-white rounded">
+              <strong>Économisez 1,99€/mois</strong><br/>
+              vs achat séparé
+            </div>
           </CardContent>
         </Card>
       </div>

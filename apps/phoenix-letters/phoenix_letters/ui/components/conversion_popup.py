@@ -13,7 +13,7 @@ class ConversionPopup:
 
     def show_limit_reached_popup(self) -> bool:
         """
-        Affiche popup quand limite Free atteinte.
+        Affiche message bienveillant quand limite Free atteinte.
         Returns: True si CTA cliqué, False sinon
         """
 
@@ -21,37 +21,34 @@ class ConversionPopup:
         if st.session_state.get(self.session_key_shown, False):
             return False
 
-        # Modal avec urgence et bénéfices
+        # Message bienveillant non-bloquant
+        st.success("🎉 **Félicitations !** Vous avez découvert le potentiel de Phoenix Letters")
+        
         st.markdown(
             """
-        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-                    background: rgba(0,0,0,0.7); z-index: 999; display: flex; 
-                    align-items: center; justify-content: center;">
-            <div style="background: white; padding: 2rem; border-radius: 20px; 
-                        max-width: 500px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-                <h2 style="color: #ff6b35; margin-bottom: 1rem;">🚫 Limite Atteinte !</h2>
-                <p style="font-size: 1.2rem; margin-bottom: 1.5rem;">
-                    Vous avez utilisé vos <strong>2 lettres gratuites</strong> ce mois.
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                        padding: 2rem; border-radius: 15px; color: white; text-align: center; margin: 1rem 0;">
+                <h3 style="margin: 0 0 1rem 0;">✨ Continuez votre réussite avec Premium</h3>
+                <p style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 1.5rem;">
+                    Vous avez utilisé vos <strong>2 lettres d'essai</strong> ce mois. 
+                    C'est le moment parfait pour débloquer tout le potentiel !
                 </p>
-                <div style="background: #fff8dc; padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem;">
-                    <h3 style="color: #28a745; margin: 0;">🚀 Débloquez MAINTENANT</h3>
-                    <p style="margin: 0.5rem 0;"><strong>Lettres ILLIMITÉES</strong></p>
-                    <p style="margin: 0;"><span style="text-decoration: line-through;">29€</span> 
-                       <strong style="color: #28a745; font-size: 1.5rem;">19€/mois</strong></p>
-                    <p style="color: #ff6b35; font-size: 0.9rem; margin: 0;">⏰ Offre limitée -33%</p>
+                <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px;">
+                    <div style="margin-bottom: 0.5rem;">🚀 <strong>Lettres illimitées</strong></div>
+                    <div style="margin-bottom: 0.5rem;">🎯 <strong>Analyses avancées</strong></div>
+                    <div style="margin-bottom: 0.5rem;">🧠 <strong>Coach IA personnalisé</strong></div>
                 </div>
             </div>
-        </div>
-        """,
+            """,
             unsafe_allow_html=True,
         )
 
         col1, col2, col3 = st.columns([1, 2, 1])
 
         with col2:
-            # CTA principal
+            # CTA principal bienveillant
             if st.button(
-                "🚀 PASSER PREMIUM MAINTENANT",
+                "✨ Découvrir Premium (9,99€/mois)",
                 use_container_width=True,
                 type="primary",
                 key="popup_cta_premium",
@@ -60,29 +57,29 @@ class ConversionPopup:
                 self._track_event("popup_conversion_clicked")
                 return True
 
-            # Lien alternative
+            # Option alternative respectueuse
             if st.button(
-                "⏰ Rappel dans 7 jours",
+                "📅 Me rappeler le mois prochain",
                 use_container_width=True,
                 key="popup_remind_later",
             ):
                 st.session_state[self.session_key_shown] = True
                 self._track_event("popup_remind_later")
-                st.info("📅 Nous vous rappellerons le mois prochain !")
+                st.info("💙 Parfait ! Nous respectons votre rythme. À bientôt sur Phoenix Letters !")
                 return False
 
         return False
 
     def show_feature_locked_popup(self, feature_name: str) -> bool:
         """
-        Popup quand utilisateur Free tente d'accéder fonctionnalité Premium.
+        Information transparente quand utilisateur Free découvre fonctionnalité Premium.
 
         Args:
             feature_name: Nom de la fonctionnalité (ex: "Mirror Match")
         Returns: True si conversion déclenchée
         """
 
-        st.warning(f"🔒 **{feature_name}** est une fonctionnalité Premium")
+        st.info(f"✨ **{feature_name}** fait partie de l'offre Premium")
 
         col1, col2 = st.columns([1, 1])
 
@@ -90,7 +87,7 @@ class ConversionPopup:
             st.markdown(
                 f"""
             ### 🎯 Avec {feature_name} Premium:
-            - Analyses approfondies IA
+            - Analyses IA approfondies
             - Personnalisation avancée  
             - Résultats détaillés
             - Support prioritaire
@@ -100,11 +97,11 @@ class ConversionPopup:
         with col2:
             st.markdown(
                 """
-            ### 💰 Offre Spéciale
-            <div style="text-align: center;">
-                <span style="text-decoration: line-through;">29€/mois</span><br>
-                <span style="color: #28a745; font-size: 2rem; font-weight: bold;">19€/mois</span><br>
-                <span style="color: #ff6b35;">🎉 -33% Lancement</span>
+            ### 💰 Tarif Transparent
+            <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px;">
+                <div style="color: #28a745; font-size: 2rem; font-weight: bold;">9,99€/mois</div>
+                <div style="color: #6c757d; margin-top: 0.5rem;">Phoenix Letters Premium</div>
+                <div style="color: #6c757d; font-size: 0.9rem;">Sans engagement</div>
             </div>
             """,
                 unsafe_allow_html=True,
@@ -149,7 +146,7 @@ class ConversionPopup:
                 """
                 )
 
-                if st.button("🚀 Voir Premium (19€/mois)", key="success_upsell_1"):
+                if st.button("🚀 Voir Premium (9,99€/mois)", key="success_upsell_1"):
                     self._track_event(
                         "success_upsell_clicked", {"letter_count": letter_count}
                     )

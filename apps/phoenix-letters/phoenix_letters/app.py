@@ -55,38 +55,95 @@ logger = logging.getLogger(__name__)
 
 
 def render_choice_page():
-    """Affiche la page de choix initial (Invité ou Connexion)."""
-    st.title("🔥 Phoenix Letters")
-    st.write(
-        "Bienvenue sur Phoenix Letters, votre assistant pour des lettres de motivation percutantes."
+    """Affiche la page d'accueil avec message clair et parcours guidé."""
+    # Hero Section Claire et Rassurante
+    st.markdown(
+        """
+        <div style="text-align: center; padding: 3rem 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; color: white; margin-bottom: 2rem;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 1rem; font-weight: 600;">✨ Phoenix Letters</h1>
+            <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; opacity: 0.9; font-weight: 400;">Votre Assistant Lettres de Motivation Personnalisées</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0; opacity: 0.8;">Créez une lettre unique qui valorise votre reconversion en 3 minutes</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-    st.write("Choisissez comment vous souhaitez commencer :")
-
-    col1, col2 = st.columns(2)
-    if col1.button(
-        "🚀 Commencer ma lettre (gratuit)",
-        use_container_width=True,
-        key="guest_access_button",
-    ):
-        st.session_state.auth_flow_choice = "guest"
-        st.session_state.guest_user_id = (
-            f"guest_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    
+    # Promesse Claire et Rassurante
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        st.markdown(
+            """
+            ### 🎯 Démarrez maintenant
+            
+            **Aucune inscription requise** • **Données sécurisées** • **Résultat immédiat**
+            
+            Votre lettre sera générée en transformant votre expérience passée en atout pour votre nouvelle carrière.
+            """
         )
-        st.session_state.user_tier = UserTier.FREE
-        st.rerun()
-    if col2.button(
-        "🔑 Se connecter / S'inscrire",
-        use_container_width=True,
-        key="login_register_button",
-    ):
-        st.session_state.auth_flow_choice = "login"
-        st.rerun()
+        
+        # CTA Principal Clair
+        if st.button(
+            "▶️ Créer ma première lettre",
+            type="primary",
+            use_container_width=True,
+            key="start_letter_button",
+        ):
+            st.session_state.auth_flow_choice = "guest"
+            st.session_state.guest_user_id = (
+                f"guest_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            )
+            st.session_state.user_tier = UserTier.FREE
+            st.rerun()
+        
+        # Option Secondaire Claire
+        st.markdown("---")
+        st.markdown("##### 💾 Vous avez déjà un compte ?")
+        if st.button(
+            "🔑 Me connecter pour retrouver mes lettres",
+            use_container_width=True,
+            key="login_existing_button",
+        ):
+            st.session_state.auth_flow_choice = "login"
+            st.rerun()
 
 
 def render_login_page(auth_middleware):
-    """Affiche le formulaire de connexion/inscription."""
-    st.title("🔥 Phoenix Letters - Connexion / Inscription")
-    auth_middleware.login_form()
+    """Affiche le formulaire de connexion/inscription esthétique."""
+    # Hero Section de connexion
+    st.markdown(
+        """
+        <div style="text-align: center; padding: 2rem 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; color: white; margin-bottom: 2rem;">
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem; font-weight: 600;">🔑 Connexion Phoenix Letters</h1>
+            <p style="font-size: 1.1rem; margin-bottom: 0; opacity: 0.9;">Accédez à vos lettres sauvegardées et fonctionnalités Premium</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    
+    # Centrage du formulaire
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        # Formulaire d'authentification centré
+        with st.container():
+            st.markdown(
+                """
+                <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 1px solid #e1e5e9;">
+                """,
+                unsafe_allow_html=True,
+            )
+            
+            auth_middleware.login_form()
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        # Informations rassurantes
+        st.markdown("---")
+        st.info(
+            "🔒 **Sécurité garantie** : Vos données sont chiffrées et protégées selon les standards RGPD. "
+            "Création de compte gratuite et sans engagement."
+        )
 
 
 def render_main_app(current_user, auth_middleware, settings):

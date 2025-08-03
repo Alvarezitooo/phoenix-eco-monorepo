@@ -5,11 +5,14 @@ import uuid
 from datetime import datetime, timezone
 from phoenix_shared_models.events import BaseEvent
 
-DB_HOST = "localhost"
-DB_NAME = "postgres"
-DB_USER = "postgres"
-DB_PASSWORD = "mysecretpassword"
-DB_PORT = 5432
+import os
+
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_NAME = os.getenv("DB_NAME", "postgres")
+DB_USER = os.getenv("DB_USER", "postgres")
+# SÉCURITÉ: Mot de passe depuis variable d'environnement
+DB_PASSWORD = os.getenv("DB_PASSWORD", "change_me_in_production")
+DB_PORT = int(os.getenv("DB_PORT", "5432"))
 
 RABBITMQ_HOST = 'localhost'
 RABBITMQ_PORT = 5672

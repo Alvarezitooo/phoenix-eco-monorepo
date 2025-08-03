@@ -39,6 +39,7 @@ from .services.smart_coach import (
     smart_coach,
 )
 from .utils.html_sanitizer import html_sanitizer
+from .ui.login_page import handle_authentication_flow
 
 
 def safe_markdown(content: str, allow_styles: bool = True):
@@ -2014,14 +2015,21 @@ def render_footer():
 
 
 def main():
-    """Application principale Enhanced"""
+    """Application principale Enhanced avec authentification"""
     # Chargement .env
     load_env_file()
 
     # Configuration page
     configure_page()
+    
+    # Gestion de l'authentification
+    is_authenticated = handle_authentication_flow()
+    
+    # Si l'utilisateur n'est pas encore passé par l'auth, on s'arrête ici
+    if not is_authenticated:
+        return
 
-    # Header
+    # Header (affiché seulement après authentification)
     render_header()
 
     # Navigation

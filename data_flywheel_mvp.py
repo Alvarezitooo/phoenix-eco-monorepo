@@ -139,7 +139,8 @@ class DataFlywheelMVP:
         ]
 
         profile_signature = "_".join(map(str, key_elements))
-        return hashlib.md5(profile_signature.encode()).hexdigest()[:16]
+        # SÉCURITÉ: Utilisation de SHA-256 au lieu de MD5 (vulnérable)
+        return hashlib.sha256(profile_signature.encode()).hexdigest()[:16]
 
     def collect_interaction(
         self,

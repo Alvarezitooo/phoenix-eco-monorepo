@@ -50,8 +50,8 @@ export default function EcosystemSection() {
                   Analyse de compatibilité offre/profil
                 </li>
               </ul>
-              <Link href="https://phoenix-creator.netlify.app/" target="_blank">
-                <Button className="w-full bg-blue-500 hover:bg-blue-600">Tester la béta</Button>
+              <Link href="https://phoenix-cv.streamlit.app/" target="_blank">
+                <Button className="w-full bg-blue-500 hover:bg-blue-600">Tester Phoenix CV</Button>
               </Link>
             </CardContent>
           </Card>
@@ -89,7 +89,7 @@ export default function EcosystemSection() {
               </ul>
               <Link href="https://phoenix-letters.streamlit.app/" target="_blank">
                 <Button className="w-full bg-orange-500 hover:bg-orange-600">
-                  Commencer à écrire
+                  Tester Phoenix Letters
                 </Button>
               </Link>
             </CardContent>
@@ -233,22 +233,22 @@ export default function EcosystemSection() {
 
             <div className="grid md:grid-cols-2 gap-8">
               <div className="text-center">
-                <div className="bg-red-100 rounded-lg p-6 mb-4">
-                  <h5 className="font-bold text-red-800 mb-2">Candidature classique</h5>
-                  <p className="text-red-700 text-sm mb-4">CV générique + lettre standard</p>
-                  <div className="text-4xl font-bold text-red-600">2%</div>
-                  <p className="text-red-600 text-sm">de réponses</p>
+                <div className="bg-gray-100 rounded-lg p-6 mb-4">
+                  <h5 className="font-bold text-gray-800 mb-2">Approche traditionnelle</h5>
+                  <p className="text-gray-700 text-sm mb-4">CV générique + lettre standard</p>
+                  <div className="text-2xl font-bold text-gray-600">📄</div>
+                  <p className="text-gray-600 text-sm">Même contenu pour tous</p>
                 </div>
               </div>
 
               <div className="text-center">
-                <div className="bg-green-100 rounded-lg p-6 mb-4">
-                  <h5 className="font-bold text-green-800 mb-2">Candidature Phoenix</h5>
-                  <p className="text-green-700 text-sm mb-4">
+                <div className="bg-blue-100 rounded-lg p-6 mb-4">
+                  <h5 className="font-bold text-blue-800 mb-2">Approche Phoenix</h5>
+                  <p className="text-blue-700 text-sm mb-4">
                     Données interconnectées + IA personnalisée
                   </p>
-                  <div className="text-4xl font-bold text-green-600">15%</div>
-                  <p className="text-green-600 text-sm">de réponses</p>
+                  <div className="text-2xl font-bold text-blue-600">✨</div>
+                  <p className="text-blue-600 text-sm">Personnalisé pour vous</p>
                 </div>
               </div>
             </div>
@@ -256,7 +256,7 @@ export default function EcosystemSection() {
             <div className="text-center mt-8">
               <p className="text-lg text-gray-700 mb-2">
                 <em>
-                  Pourquoi cette différence ? Parce que Phoenix ne génère pas du contenu standard.
+                  La différence ? Phoenix ne génère pas du contenu standard.
                 </em>
               </p>
               <p className="text-xl font-bold text-gray-900">
@@ -301,12 +301,12 @@ export default function EcosystemSection() {
               Commencez gratuitement avec Phoenix CV. Plus vous utilisez l'écosystème, plus il
               devient puissant.
             </p>
-            <Link href="https://phoenix-cv.streamlit.app/" target="_blank">
+            <Link href="https://phoenixcreator.netlify.app/" target="_blank">
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-3 text-lg"
               >
-                Commencer maintenant →
+                Découvrir l'écosystème →
               </Button>
             </Link>
           </div>

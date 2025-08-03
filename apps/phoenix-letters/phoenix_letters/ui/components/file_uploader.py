@@ -68,7 +68,8 @@ class SecureFileUploader:
             )
 
             # Feedback utilisateur
-            file_hash = hashlib.md5(file_content).hexdigest()[:8]
+            # SÉCURITÉ: Utilisation de SHA-256 au lieu de MD5 (vulnérable)
+            file_hash = hashlib.sha256(file_content).hexdigest()[:8]
             st.success(f"✅ {uploaded_file.name} chargé (ID: {file_hash})")
 
             # Callback si défini

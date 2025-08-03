@@ -67,11 +67,12 @@ class GeneratorPage:
 
     def render(self) -> None:
         """Affiche la page de génération."""
-        st.markdown("### 🚀 Générateur de Lettres Phoenix")
+        st.markdown("### ✨ Créez votre lettre de motivation personnalisée")
+        st.markdown("**Étape simple** : Uploadez vos documents, personnalisez le ton, et obtenez votre lettre unique")
 
         # Indicateur de progression
         progress = self.session_manager.get("generation_progress", 0)
-        self.progress_indicator.render(progress, "Progression de la génération")
+        self.progress_indicator.render(progress, "Création de votre lettre")
 
         # Section d'upload de fichiers
         self._render_file_upload_section()
@@ -85,15 +86,24 @@ class GeneratorPage:
         self._render_generated_letter()
 
     def _render_file_upload_section(self) -> None:
-        """Affiche la section d'upload de fichiers."""
+        """Affiche la section d'upload de fichiers avec infos RGPD."""
+        # Message de Confiance RGPD
+        st.info(
+            "🔒 **Vos données sont protégées** : Votre CV et l'offre sont traités localement, "
+            "utilisés uniquement pour générer votre lettre, puis automatiquement supprimés. "
+            "**Conformité RGPD garantie**."
+        )
+        
         col1, col2 = st.columns(2)
 
         with col1:
+            st.markdown("#### 📄 Étape 1 : Votre CV")
+            st.markdown("*Uploadez votre CV pour que l'IA comprenne votre profil*")
             cv_content = self.file_uploader.render(
-                label="📄 Votre CV",
+                label="Sélectionner mon CV",
                 accepted_types=["pdf", "txt"],
                 key="cv_upload",
-                help_text="Votre CV au format PDF ou TXT",
+                help_text="Formats acceptés : PDF ou TXT • Taille max : 10MB",
                 on_upload=self._on_cv_upload,
             )
 
@@ -103,11 +113,13 @@ class GeneratorPage:
                 )
 
         with col2:
+            st.markdown("#### 📋 Étape 2 : L'offre d'emploi")
+            st.markdown("*Ajoutez l'offre pour une personnalisation parfaite*")
             job_offer_content = self.file_uploader.render(
-                label="📋 Offre d'emploi",
+                label="Sélectionner l'offre d'emploi",
                 accepted_types=["txt", "pdf"],
                 key="job_offer_upload",
-                help_text="L'offre d'emploi au format TXT ou PDF",
+                help_text="Copiez-collez le texte ou uploadez le PDF de l'offre",
                 on_upload=self._on_job_offer_upload,
             )
 
@@ -118,8 +130,8 @@ class GeneratorPage:
                 )
 
     def _render_ai_configuration(self) -> None:
-        """Affiche la configuration IA avec compteur d'usage."""
-        st.markdown("### ⚙️ Configuration de l'IA")
+        """Affiche la personnalisation avec compteur d'usage."""
+        st.markdown("### 📝 Personnalisez votre lettre")
 
         # Affichage compteur usage pour utilisateurs FREE
         self._render_usage_counter()
@@ -746,8 +758,9 @@ class GeneratorPage:
                 if request.is_career_change and (
                     not request.old_domain or not request.new_domain
                 ):
-                    st.error(
-                        "❌ Veuillez renseigner l'ancien et le nouveau domaine pour la reconversion."
+                    st.info(
+                        "💡 **Presque prêt !** Pour personnaliser parfaitement votre lettre de reconversion, "
+                        "ajoutez votre ancien et nouveau domaine dans la section ci-dessus."
                     )
                     self.session_manager.set("generation_progress", 0)
                     return
@@ -793,13 +806,16 @@ class GeneratorPage:
                         st.switch_page("Offres Premium")
 
         except ValidationError as e:
-            st.error(f"❌ Erreur de validation: {e}")
+            st.warning(f"💡 **Petit ajustement nécessaire** : {e}")
+            st.info("✨ **Conseil** : Vérifiez que vos fichiers sont bien uploadés et que tous les champs requis sont remplis.")
             logger.warning(f"Validation error in generation: {e}")
         except LetterGenerationError as e:
-            st.error(f"❌ Erreur de génération: {e}")
+            st.warning(f"🔄 **Génération temporairement indisponible** : {e}")
+            st.info("⏰ **Pas de panique** : Essayez à nouveau dans quelques instants. Si le problème persiste, contactez notre support.")
             logger.error(f"Generation error: {e}")
         except Exception as e:
-            st.error("❌ Erreur inattendue lors de la génération")
+            st.warning("🔧 **Service temporairement perturbé**")
+            st.info("💙 **Nous nous excusons** : Une erreur technique s'est produite. Notre équipe a été notifiée et travaille sur une solution.")
             logger.error(f"Unexpected error in generation: {e}")
         finally:
             # Reset du progress en cas d'erreur

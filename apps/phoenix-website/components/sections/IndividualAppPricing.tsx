@@ -16,7 +16,7 @@ const IndividualAppPricing: React.FC = () => {
             <CardTitle className="text-2xl text-purple-700">Phoenix Letters</CardTitle>
             <p className="text-gray-600 mt-2">Lettres de motivation IA</p>
             <div className="mt-4">
-              <span className="text-4xl font-bold text-purple-800">7,99€</span>
+              <span className="text-4xl font-bold text-purple-800">9,99€</span>
               <span className="text-gray-600">/mois</span>
             </div>
           </CardHeader>
@@ -65,9 +65,11 @@ const IndividualAppPricing: React.FC = () => {
                 </small>
               </li>
             </ul>
-            <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-              Choisir Letters
-            </Button>
+            <a href="https://phoenix-letters.streamlit.app/" target="_blank" rel="noopener noreferrer">
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                Tester Letters Premium
+              </Button>
+            </a>
             <p className="text-center text-sm text-gray-500">vs 23,70€ Zety</p>
           </CardContent>
         </Card>
@@ -94,9 +96,11 @@ const IndividualAppPricing: React.FC = () => {
                 <Check className="h-5 w-5 text-green-500 mr-2" /> Passe filtres ATS
               </li>
             </ul>
-            <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-              Choisir CV
-            </Button>
+            <a href="https://phoenix-cv.streamlit.app/" target="_blank" rel="noopener noreferrer">
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                Tester CV Premium
+              </Button>
+            </a>
             <p className="text-center text-sm text-gray-500">vs outils CV premium</p>
           </CardContent>
         </Card>
@@ -107,8 +111,8 @@ const IndividualAppPricing: React.FC = () => {
             <CardTitle className="text-2xl text-purple-700">Phoenix Rise</CardTitle>
             <p className="text-gray-600 mt-2">Coach carrière IA</p>
             <div className="mt-4">
-              <span className="text-4xl font-bold text-purple-800">7,99€</span>
-              <span className="text-gray-600">/mois</span>
+              <span className="text-4xl font-bold text-gray-500">Bientôt</span>
+              <span className="text-gray-600"> disponible</span>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -123,8 +127,8 @@ const IndividualAppPricing: React.FC = () => {
                 <Check className="h-5 w-5 text-green-500 mr-2" /> Plan de carrière
               </li>
             </ul>
-            <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-              Choisir Rise
+            <Button className="w-full bg-gray-400 text-white" disabled>
+              Bientôt disponible
             </Button>
             <p className="text-center text-sm text-gray-500">vs coaching 50€/h</p>
           </CardContent>

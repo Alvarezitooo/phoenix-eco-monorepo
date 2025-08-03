@@ -1,0 +1,32 @@
+# 🚀 Phoenix Rise - Configuration Poetry
+# Compatible avec l'orchestrateur Poetry du monorepo
+
+[tool.poetry]
+name = "phoenix_rise"
+version = "1.0.0"
+description = "L'application Phoenix Rise de l'écosystème Phoenix - Coach IA pour bien-être et développement personnel lors des reconversions"
+authors = ["Matthieu Rubia <contact.phoenixletters@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.9, <4.0"
+streamlit = "*"
+google-generativeai = "*"
+tenacity = "*"
+python-dotenv = "*"
+protobuf = "*"
+PyJWT = "*"
+requests = "*"
+bcrypt = "*"
+supabase = "*"
+# Dépendances spécifiques Phoenix Rise
+plotly = ">=5.0.0"
+pandas = ">=1.5.0"
+cryptography = ">=3.4.8"
+# Analytics et visualisations
+matplotlib = "*"
+# Dépendance locale gérée par l'orchestrateur racine
+phoenix_event_bridge = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -868,7 +868,8 @@ class AITrajectoryBuilder:
         import hashlib
 
         data = f"{profile.get('current_sector', '')}{target_job}{datetime.now().strftime('%Y%m%d')}"
-        return hashlib.md5(data.encode()).hexdigest()[:16]
+        # SÉCURITÉ: Utilisation de SHA-256 au lieu de MD5 (vulnérable)
+        return hashlib.sha256(data.encode()).hexdigest()[:16]
 
     def _identify_transferable_skills(
         self, skills: str, current_sector: str

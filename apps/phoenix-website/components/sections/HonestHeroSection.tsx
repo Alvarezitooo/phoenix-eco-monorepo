@@ -12,7 +12,7 @@ const HonestHeroSection: React.FC = () => {
 
       <div className="early-adopter-cta mt-8">
         <a
-          href="https://phoenix-creator.netlify.app/"
+          href="https://phoenixcreator.netlify.app/"
           target="_blank"
           rel="noopener noreferrer"
           className="btn-primary bg-white text-purple-700 hover:bg-gray-100 font-bold py-3 px-8 rounded-full text-lg transition duration-300 ease-in-out shadow-lg"
