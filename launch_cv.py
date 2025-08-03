@@ -12,7 +12,7 @@ if str(APPS_DIR) not in sys.path:
 
 # 3. On importe et on exécute l'application.
 try:
-    # 🚀 ULTIMATE CACHE BUST - STREAMLIT_APP.PY 03/08/2025 10:30
+    # 🔥 SYMMETRY PERFECT - LAUNCH_CV.PY 03/08/2025 11:00
     from phoenix_cv.phoenix_cv_app import main
     
     if __name__ == "__main__":
