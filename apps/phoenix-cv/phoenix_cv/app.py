@@ -13,6 +13,7 @@ if __name__ == "__main__":
 # === LEGACY IMPORTS POUR COMPATIBILITÉ ===
 import os
 import tempfile
+import time
 from datetime import datetime
 from io import BytesIO
 
