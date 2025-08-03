@@ -1,10 +1,13 @@
 [tool.poetry]
 name = "phoenix-ecosystem-workspace"
 version = "1.0.0"
-description = "Workspace orchestrator for the Phoenix Ecosystem. This is a meta-package and should not be installed directly."
+description = "Workspace orchestrator for the Phoenix Ecosystem. Not a package."
 authors = ["Matthieu Rubia <contact.phoenixletters@gmail.com>"]
 
-# IMPORTANT : Il n'y a PAS de section [tool.poetry.packages] ici.
+# LA LIGNE QUI DÉVERROUILLE TOUT
+# "Poetry, utilise ce fichier pour gérer les dépendances, 
+# mais n'essaie PAS d'installer le projet racine lui-même."
+package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
