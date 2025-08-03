@@ -1,0 +1,13 @@
+"""
+=€ Phoenix Letters - Application principale de l'écosystème Phoenix
+Générateur IA de lettres de motivation pour reconversions professionnelles
+"""
+
+__version__ = "1.0.0"
+__author__ = "Matthieu Rubia"
+__email__ = "contact.phoenixletters@gmail.com"
+
+# Import principal pour l'architecture monorepo
+from .app import main
+
+__all__ = ["main"]
