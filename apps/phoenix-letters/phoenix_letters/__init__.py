@@ -1,6 +1,6 @@
 """
-=€ Phoenix Letters - Application principale de l'écosystème Phoenix
-Générateur IA de lettres de motivation pour reconversions professionnelles
+Phoenix Letters - Application principale de l'ecosysteme Phoenix
+Generateur IA de lettres de motivation pour reconversions professionnelles
 """
 
 __version__ = "1.0.0"
