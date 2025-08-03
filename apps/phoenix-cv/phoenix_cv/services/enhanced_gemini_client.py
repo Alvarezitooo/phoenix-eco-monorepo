@@ -73,9 +73,9 @@ class EnhancedGeminiClient:
         """Configuration sécurisée du client Gemini Enhanced"""
         api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key:
-            # En mode dev, pas besoin de l'API key
-            if os.environ.get("DEV_MODE", "false").lower() == "true":
-                secure_logger.log_security_event("DEV_MODE_NO_API_KEY", {})
+            # En mode dev ou déploiement, pas besoin de l'API key
+            if os.environ.get("DEV_MODE", "false").lower() == "true" or not api_key:
+                secure_logger.log_security_event("NO_API_KEY_FALLBACK", {})
                 self.model = None
                 return
             raise SecurityException("API key Gemini non configurée")
