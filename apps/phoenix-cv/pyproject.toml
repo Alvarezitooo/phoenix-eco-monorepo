@@ -25,6 +25,7 @@ stripe = "*"
 # Dépendances spécifiques Phoenix CV
 python-docx = "*"
 PyPDF2 = "*"
+bleach = "*"
 # Dépendance locale gérée par l'orchestrateur racine
 phoenix_event_bridge = "*"
 
