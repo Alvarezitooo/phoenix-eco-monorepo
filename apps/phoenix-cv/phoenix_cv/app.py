@@ -19,23 +19,23 @@ from io import BytesIO
 import docx
 import PyPDF2
 import streamlit as st
-from services.ai_trajectory_builder import (
+from .services.ai_trajectory_builder import (
     CareerStage,
     TrajectoryDifficulty,
     ai_trajectory_builder,
 )
 
 # Import des services enhanced
-from services.enhanced_gemini_client import get_enhanced_gemini_client
-from services.mirror_match_engine import MatchType, mirror_match_engine
-from services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
-from services.smart_coach import (
+from .services.enhanced_gemini_client import get_enhanced_gemini_client
+from .services.mirror_match_engine import MatchType, mirror_match_engine
+from .services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
+from .services.smart_coach import (
     CoachingContext,
     CoachingTone,
     UrgencyLevel,
     smart_coach,
 )
-from utils.html_sanitizer import html_sanitizer
+from .utils.html_sanitizer import html_sanitizer
 
 
 def safe_markdown(content: str, allow_styles: bool = True):
