@@ -8,10 +8,10 @@ from functools import wraps
 from typing import Any, Dict
 
 import google.generativeai as genai
-from utils.exceptions import SecurityException
-from utils.rate_limiter import rate_limit
-from utils.secure_logging import secure_logger
-from utils.secure_validator import SecureValidator
+from ..utils.exceptions import SecurityException
+from ..utils.rate_limiter import rate_limit
+from ..utils.secure_logging import secure_logger
+from ..utils.secure_validator import SecureValidator
 
 
 class SecureGeminiClient:

@@ -37,11 +37,11 @@ from ui import (
     render_templates_page_secure,
     render_upload_cv_page_secure,
 )
-from utils.exceptions import SecurityException, ValidationException
-from utils.rate_limiter import rate_limiter
-from utils.secure_crypto import secure_crypto
-from utils.secure_logging import secure_logger
-from utils.secure_validator import SecureValidator
+from ..utils.exceptions import SecurityException, ValidationException
+from ..utils.rate_limiter import rate_limiter
+from ..utils.secure_crypto import secure_crypto
+from ..utils.secure_logging import secure_logger
+from ..utils.secure_validator import SecureValidator
 
 # from services.secure_cv_parser import SecureCVParser  # À implémenter si besoin
 

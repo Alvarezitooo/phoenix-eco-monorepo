@@ -5,10 +5,10 @@ from enum import Enum
 
 from phoenix_shared_models.user_profile import UserProfile
 from services.secure_gemini_client import SecureGeminiClient
-from utils.exceptions import SecurityException
-from utils.rate_limiter import rate_limit
-from utils.secure_logging import secure_logger
-from utils.secure_validator import SecureValidator
+from ..utils.exceptions import SecurityException
+from ..utils.rate_limiter import rate_limit
+from ..utils.secure_logging import secure_logger
+from ..utils.secure_validator import SecureValidator
 
 
 class ATSScore(Enum):

@@ -9,9 +9,9 @@ from phoenix_shared_models.user_profile import UserProfile, Skill, Experience, C
 from phoenix_shared_auth.entities.phoenix_user import UserTier
 from phoenix_shared_auth.entities.phoenix_user import UserTier
 from services.secure_session_manager import secure_session
-from utils.exceptions import SecurityException, ValidationException
-from utils.secure_logging import secure_logger
-from utils.secure_validator import SecureValidator
+from ..utils.exceptions import SecurityException, ValidationException
+from ..utils.secure_logging import secure_logger
+from ..utils.secure_validator import SecureValidator
 
 
 def render_create_cv_page_secure(gemini_client, display_generated_cv_secure_func):

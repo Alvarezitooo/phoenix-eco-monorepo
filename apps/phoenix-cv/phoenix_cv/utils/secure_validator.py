@@ -6,8 +6,8 @@ from typing import Any, Dict
 import bleach
 from config.security_config import SecurityConfig
 from marshmallow import Schema, ValidationError, fields, validate
-from utils.exceptions import SecurityException, ValidationException
-from utils.secure_logging import secure_logger
+from .exceptions import SecurityException, ValidationException
+from .secure_logging import secure_logger
 
 
 class SecureValidator:

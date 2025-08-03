@@ -7,8 +7,8 @@ from typing import Any, Tuple
 import streamlit as st
 from config.security_config import SecurityConfig
 from phoenix_shared_auth.entities.phoenix_user import UserTier
-from utils.secure_crypto import secure_crypto
-from utils.secure_logging import secure_logger
+from ..utils.secure_crypto import secure_crypto
+from ..utils.secure_logging import secure_logger
 
 
 class SecureSessionManager:

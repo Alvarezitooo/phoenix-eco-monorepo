@@ -3,7 +3,7 @@ import time
 from functools import wraps
 
 import streamlit as st
-from utils.secure_logging import secure_logger
+from .secure_logging import secure_logger
 
 
 class RateLimiter:

@@ -8,8 +8,8 @@ from config.security_config import SecurityConfig
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from utils.exceptions import SecurityException
-from utils.secure_logging import secure_logger
+from .exceptions import SecurityException
+from .secure_logging import secure_logger
 
 
 class SecureCrypto:

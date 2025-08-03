@@ -5,8 +5,8 @@ from typing import Tuple
 import docx
 import PyPDF2
 from config.security_config import SecurityConfig
-from utils.secure_logging import secure_logger
-from utils.secure_validator import SecureValidator
+from ..utils.secure_logging import secure_logger
+from ..utils.secure_validator import SecureValidator
 
 
 class SecureFileHandler:

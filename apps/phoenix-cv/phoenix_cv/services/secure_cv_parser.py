@@ -6,10 +6,10 @@ import docx
 import PyPDF2
 from models.cv_data import CVProfile, Education, Experience, PersonalInfo, Skill
 from services.secure_gemini_client import SecureGeminiClient
-from utils.exceptions import SecurityException, ValidationException
-from utils.rate_limiter import rate_limit
-from utils.secure_logging import secure_logger
-from utils.secure_validator import SecureValidator
+from ..utils.exceptions import SecurityException, ValidationException
+from ..utils.rate_limiter import rate_limit
+from ..utils.secure_logging import secure_logger
+from ..utils.secure_validator import SecureValidator
 
 
 class SecureCVParser:
