@@ -252,7 +252,7 @@ QUALITÉ: Niveau Fortune 500, prêt pour comité de direction
                 clean_value = SecureValidator.validate_text_input(value, 1000, key)
                 # Filtrage injection prompts
                 clean_value = re.sub(
-                    r"(ignore|forget|disregard).*(previous|above|instruction)",
+                    r"(ignore|forget|disregard).*?(previous|above|instruction)",
                     "[FILTERED]",
                     clean_value,
                     flags=re.IGNORECASE,
@@ -297,7 +297,7 @@ QUALITÉ: Niveau Fortune 500, prêt pour comité de direction
                     master_prompt = master_prompt.replace(placeholder, str(value))
 
             # Nettoyage des placeholders non remplacés
-            master_prompt = re.sub(r"\{[^}]*\}", "[NON_SPÉCIFIÉ]", master_prompt)
+            master_prompt = re.sub(r"\{[^}]*?\}", "[NON_SPÉCIFIÉ]", master_prompt)
 
             return master_prompt
 

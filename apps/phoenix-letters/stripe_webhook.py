@@ -94,7 +94,7 @@ def stripe_webhook():
         logger.error(f"Erreur traitement webhook: {e}")
         return jsonify({
             'status': 'error',
-            'message': str(e)
+            'message': 'An internal error occurred while processing the webhook.'
         }), 500
 
 
@@ -123,7 +123,7 @@ def health_check():
         logger.error(f"Health check failed: {e}")
         return jsonify({
             'status': 'unhealthy',
-            'message': str(e)
+            'message': 'Health check failed due to internal error.'
         }), 500
 
 
@@ -155,7 +155,7 @@ def test_webhook():
         logger.error(f"Erreur test webhook: {e}")
         return jsonify({
             'status': 'test_error',
-            'message': str(e)
+            'message': 'An internal error occurred during test webhook processing.'
         }), 500
 
 

@@ -5,7 +5,18 @@ Protection des données sensibles selon principes RGPD.
 
 import html
 import re
+import bleach
 from typing import Optional
+
+# Configuration de base pour bleach (tags et attributs autorisés)
+ALLOWED_TAGS = [
+    'a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol',
+    'p', 'strong', 'ul', 'br', 'div', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
+]
+ALLOWED_ATTRIBUTES = {
+    'a': ['href', 'title'],
+    '*': ['class', 'style']
+}
 
 
 class InputValidator:
@@ -35,18 +46,19 @@ class InputValidator:
         # Suppression des caractères de contrôle dangereux
         text = re.sub(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]", "", text)
 
-        # Échappement HTML pour prévenir XSS
-        text = html.escape(text, quote=True)
+        # Échappement HTML pour prévenir XSS (première passe)
+        escaped_text = html.escape(text, quote=True)
 
-        # Suppression des scripts potentiels
-        text = re.sub(
-            r"<script.*?>.*?</script>", "", text, flags=re.IGNORECASE | re.DOTALL
+        # Assainissement HTML avec bleach pour une protection robuste
+        # Ceci remplace les regex moins fiables pour le HTML
+        sanitized_text = bleach.clean(
+            escaped_text,
+            tags=ALLOWED_TAGS,
+            attributes=ALLOWED_ATTRIBUTES,
+            strip=True  # Supprime les balises non autorisées
         )
-        text = re.sub(r"javascript:", "", text, flags=re.IGNORECASE)
-        text = re.sub(r"vbscript:", "", text, flags=re.IGNORECASE)
-        text = re.sub(r"on\w+\s*=", "", text, flags=re.IGNORECASE)
 
-        return text.strip()
+        return sanitized_text.strip()
 
     @staticmethod
     def validate_mood_score(score: any) -> Optional[int]:
