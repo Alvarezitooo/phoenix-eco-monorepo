@@ -67,7 +67,7 @@ def render_home_page_secure():
             🔐 Chiffrement AES-256 • 🛡️ RGPD Compliant • ⚡ Optimisation ATS Securisee
         </p>
     </div>
-    "
+    """
     )
 
     # Fonctionnalites securisees
