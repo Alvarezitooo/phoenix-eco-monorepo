@@ -6,6 +6,10 @@ name = "phoenix_rise"
 version = "1.0.0"
 description = "L'application Phoenix Rise de l'écosystème Phoenix - Coach IA pour bien-être et développement personnel lors des reconversions"
 authors = ["Matthieu Rubia <contact.phoenixletters@gmail.com>"]
+packages = [{include = "phoenix_rise"}]
+
+[tool.poetry.scripts]
+phoenix-rise = "phoenix_rise.main:main"
 
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
@@ -26,6 +30,7 @@ cryptography = ">=3.4.8"
 matplotlib = "*"
 # Dépendance locale gérée par l'orchestrateur racine
 phoenix_event_bridge = "*"
+phoenix_shared_ui = { path = "../../packages/phoenix-shared-ui", develop = true }
 
 [build-system]
 requires = ["poetry-core"]

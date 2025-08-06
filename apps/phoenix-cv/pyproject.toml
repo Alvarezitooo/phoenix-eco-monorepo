@@ -6,6 +6,10 @@ name = "phoenix_cv"
 version = "1.0.0"
 description = "L'application Phoenix CV de l'écosystème Phoenix - Générateur IA de CV optimisés pour reconversions professionnelles"
 authors = ["Matthieu Rubia <contact.phoenixletters@gmail.com>"]
+packages = [{include = "phoenix_cv"}]
+
+[tool.poetry.scripts]
+phoenix-cv = "phoenix_cv.main:main"
 
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
@@ -28,6 +32,7 @@ PyPDF2 = "*"
 bleach = "*"
 # Dépendance locale gérée par l'orchestrateur racine
 phoenix_event_bridge = "*"
+phoenix_shared_ui = { path = "../../packages/phoenix-shared-ui", develop = true }
 
 [build-system]
 requires = ["poetry-core"]
