@@ -1,14 +1,13 @@
 """Scanner de sécurité personnalisé pour Phoenix Letters."""
 
 import ast
-import hashlib
 import json
 import logging
 import os
 import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List
 
 
 @dataclass

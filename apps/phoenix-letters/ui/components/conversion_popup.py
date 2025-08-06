@@ -183,8 +183,8 @@ class ConversionPopup:
     def _track_event(self, event: str, properties: Optional[dict] = None):
         """Track conversion events."""
         try:
+            import streamlit as st
             from core.services.analytics_service import AnalyticsService
-            import logging
 
             analytics = AnalyticsService()
             user_id = st.session_state.get("user_id", "anonymous")
@@ -198,5 +198,7 @@ class ConversionPopup:
                 properties=properties,
             )
         except Exception as e:
+            import logging
+
             logger = logging.getLogger(__name__)
             logger.warning(f"Analytics tracking failed: {e}")

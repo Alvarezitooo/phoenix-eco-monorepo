@@ -6,12 +6,10 @@ import re
 import secrets
 import time
 from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
-from unittest.mock import Mock
+from datetime import datetime
+from typing import List, Optional
 
 import bcrypt
-import requests
 
 
 @dataclass

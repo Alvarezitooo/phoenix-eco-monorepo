@@ -34,8 +34,8 @@ from ui.pages.premium_page import PremiumPage
 from ui.pages.settings_page import SettingsPage
 from utils.monitoring import APIUsageTracker, render_api_monitoring_dashboard
 
-# Import Event-Sourcing Bridge
-from phoenix_event_bridge import PhoenixEventFactory
+# Import Event-Sourcing Bridge (temporairement désactivé)
+# from packages.phoenix_event_bridge.phoenix_event_bridge import PhoenixEventFactory
 
 
 class PhoenixLettersAuthApp:

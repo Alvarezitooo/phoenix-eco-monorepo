@@ -352,6 +352,7 @@ class RAGPersonalizationService:
 
     def _get_user_letter_history(self, user_id: str) -> List[Dict[str, Any]]:
         """Récupère historique lettres utilisateur."""
+        # TODO: Implémenter récupération depuis BDD
         return []
 
     def retrieve_relevant_context(
@@ -404,6 +405,7 @@ class RAGPersonalizationService:
         """Trouve exemples similaires dans base de connaissances."""
 
         # Pour démo, retourner exemples statiques
+        # TODO: Implémenter recherche par embeddings
 
         examples = []
 

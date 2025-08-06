@@ -18,9 +18,7 @@ class MockGeminiClient(AIServiceInterface):
 
     def __init__(self):
         """Initialise le faux client."""
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.info("🔄 Initialisation MockGeminiClient pour démonstration")
+        print("--- INITIALIZING MOCK GEMINI CLIENT ---")
 
     def generate_content(
         self,

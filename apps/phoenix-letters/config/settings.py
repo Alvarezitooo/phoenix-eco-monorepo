@@ -2,7 +2,6 @@
 
 import os
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Optional
 
 from dotenv import find_dotenv, load_dotenv
@@ -75,6 +74,7 @@ class Settings:
         )
         object.__setattr__(self, "jwt_secret_key", os.getenv("JWT_SECRET_KEY"))
         object.__setattr__(self, "jwt_refresh_secret", os.getenv("JWT_REFRESH_SECRET"))
+        print(f"DEBUG: JWT_SECRET_KEY loaded: {self.jwt_secret_key}")
 
         # JWT expiration times
         jwt_access_expire = os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES")

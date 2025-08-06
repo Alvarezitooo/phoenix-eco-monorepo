@@ -24,6 +24,7 @@ cryptography = ">=3.4.8"
 stripe = "*"
 # Dépendance locale gérée par l'orchestrateur racine
 phoenix_event_bridge = "*"
+phoenix_shared_ui = { path = "../../packages/phoenix-shared-ui", develop = true }
 
 [build-system]
 requires = ["poetry-core"]

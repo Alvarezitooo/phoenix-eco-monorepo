@@ -167,6 +167,8 @@ class UserEngagementService:
 
         self.logger.info(f"Engagement Event: {engagement_data}")
 
+        # TODO: Sauvegarder en BDD pour analytics
+        # TODO: Déclencher notifications push/email si configuré
 
     def get_retention_strategies(self, user_segment: str) -> List[Dict[str, Any]]:
         """Retourne stratégies de rétention par segment."""

@@ -1,6 +1,5 @@
 """Monitoring sécurité temps réel pour Phoenix Letters."""
 
-import json
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta

@@ -46,10 +46,7 @@ class StreamlitAuthMiddleware:
         """Affiche un formulaire de connexion/inscription et gère la soumission."""
         st.subheader("Connectez-vous ou créez un compte")
 
-        # Protection contre la traduction automatique des navigateurs
-        st.markdown('<div translate="no">', unsafe_allow_html=True)
         login_tab, register_tab = st.tabs(["Connexion", "Inscription"])
-        st.markdown('</div>', unsafe_allow_html=True)
 
         with login_tab:
             with st.form("login_form"):

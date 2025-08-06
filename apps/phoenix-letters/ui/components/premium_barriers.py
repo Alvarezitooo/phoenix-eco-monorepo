@@ -280,6 +280,7 @@ class PremiumBarrier:
         """Track les tentatives d'upgrade pour analytics."""
         try:
             user_id = st.session_state.get('user_id', 'anonymous')
+            # TODO: Intégrer avec service analytics
             logger.info(f"Upgrade attempt tracked: user={user_id}, feature={feature_name}")
         except Exception as e:
             logger.error(f"Erreur tracking upgrade: {e}")
@@ -373,9 +374,9 @@ class SmartUpgradePrompts:
     def show_time_sensitive_offer() -> None:
         """Affiche offre limitée dans le temps."""
 
-        from datetime import datetime, date, timedelta
+        import datetime
 
-        end_date = date.today() + timedelta(days=7)
+        end_date = datetime.date.today() + datetime.timedelta(days=7)
 
         st.markdown(
             f"""

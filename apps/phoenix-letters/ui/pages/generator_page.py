@@ -23,8 +23,8 @@ from ui.components.premium_results_renderer import (
 )
 from ui.components.progress_bar import ProgressIndicator
 
-# Event-Sourcing
-from phoenix_event_bridge import PhoenixEventFactory
+# Event-Sourcing (temporairement désactivé)
+# from packages.phoenix_event_bridge.phoenix_event_bridge import PhoenixEventFactory
 
 logger = logging.getLogger(__name__)
 
@@ -179,15 +179,7 @@ class GeneratorPage:
                 placeholder="Ex: Marketing, Comptabilité",
                 key="old_domain_input",
             )
-            # Validation sécurisée avant stockage
-            try:
-                validated_old_domain = self.mirror_match_service.input_validator.validate_text_input(
-                    old_domain, "Ancien domaine", 100
-                )
-                self.session_manager.set("old_domain", validated_old_domain)
-            except Exception as e:
-                st.error(f"⚠️ {str(e)}")
-                self.session_manager.set("old_domain", "")
+            self.session_manager.set("old_domain", old_domain)
 
         with col2:
             new_domain = st.text_input(
@@ -196,15 +188,7 @@ class GeneratorPage:
                 placeholder="Ex: Cybersécurité, Développement",
                 key="new_domain_input",
             )
-            # Validation sécurisée avant stockage
-            try:
-                validated_new_domain = self.mirror_match_service.input_validator.validate_text_input(
-                    new_domain, "Nouveau domaine", 100
-                )
-                self.session_manager.set("new_domain", validated_new_domain)
-            except Exception as e:
-                st.error(f"⚠️ {str(e)}")
-                self.session_manager.set("new_domain", "")
+            self.session_manager.set("new_domain", new_domain)
 
         # Compétences transférables
         # Assurez-vous que la clé existe dans st.session_state avant de l'utiliser
@@ -219,18 +203,6 @@ class GeneratorPage:
             help="Listez les compétences de votre ancienne carrière pertinentes pour le nouveau poste",
             key="transferable_skills",
         )
-        
-        # Validation sécurisée des compétences transférables
-        if transferable_skills != st.session_state.get("transferable_skills", ""):
-            try:
-                validated_skills = self.mirror_match_service.input_validator.validate_text_input(
-                    transferable_skills, "Compétences transférables", 1000
-                )
-                st.session_state.transferable_skills = validated_skills
-                self.session_manager.set("transferable_skills", validated_skills)
-            except Exception as e:
-                st.error(f"⚠️ {str(e)}")
-                st.session_state.transferable_skills = ""
 
         # Afficher le bouton de suggestion de compétences uniquement si les domaines sont renseignés
         if old_domain and new_domain:
@@ -294,25 +266,12 @@ class GeneratorPage:
                 help="Collez ici des informations qui décrivent la culture de l'entreprise.",
                 disabled=not is_premium,
             )
-            
-            # Validation sécurisée des informations entreprise
-            if company_culture_info and is_premium:
-                try:
-                    validated_culture_info = self.mirror_match_service.input_validator.validate_text_input(
-                        company_culture_info, "Informations entreprise", 2000
-                    )
-                except Exception as e:
-                    st.error(f"⚠️ {str(e)}")
-                    validated_culture_info = ""
-            else:
-                validated_culture_info = company_culture_info
-            
             if st.button(
                 "Analyser la culture",
                 key="analyze_culture_button",
                 disabled=not is_premium,
             ):
-                self._process_mirror_match(validated_culture_info)
+                self._process_mirror_match(company_culture_info)
 
         # ATS Analyzer
         with st.expander("🔍 ATS Analyzer - Optimisez pour les recruteurs"):
@@ -957,9 +916,7 @@ class GeneratorPage:
                         ):
                             st.balloons()  # Animation célébration
                             st.success("Redirection vers les offres Premium...")
-# Utiliser une approche différente car switch_page ne fonctionne pas avec les onglets
-                            st.session_state.current_tab = "premium"
-                            st.rerun()
+                            st.switch_page("Offres Premium")
 
                 # Barre de progression visuelle
                 progress_value = max(0, remaining) / 2
@@ -968,8 +925,7 @@ class GeneratorPage:
                 if remaining == 0:
                     # Afficher popup conversion optimisé
                     if self.conversion_popup.show_limit_reached_popup():
-                        st.session_state.current_tab = "premium"
-                        st.rerun()
+                        st.switch_page("Offres Premium")
                     st.warning(
                         "💡 **Astuce**: Passez Premium pour une génération illimitée de lettres !"
                     )

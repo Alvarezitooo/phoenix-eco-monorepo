@@ -56,6 +56,8 @@ class AnalyticsService:
         # Log pour debugging et analytics locales
         self.logger.info(f"Analytics Event: {json.dumps(asdict(event), default=str)}")
 
+        # TODO: Intégrer avec service analytics externe
+        # self._send_to_analytics_service(event)
 
     def track_conversion_funnel(
         self,
@@ -163,6 +165,7 @@ class AnalyticsService:
             Dict avec métriques de conversion
         """
 
+        # TODO: Implémenter récupération depuis BDD/Analytics
         # Pour l'instant, retour mock data
         return {
             "total_events": 0,
@@ -179,6 +182,7 @@ class AnalyticsService:
             event: Événement à envoyer
         """
 
+        # TODO: Intégrer avec Google Analytics, Mixpanel, etc.
         # Exemple implémentation:
 
         # Google Analytics 4

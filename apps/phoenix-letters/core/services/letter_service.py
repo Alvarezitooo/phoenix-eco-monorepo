@@ -3,6 +3,7 @@
 import logging
 from datetime import datetime
 from typing import Optional
+import streamlit as st
 
 from core.entities.letter import GenerationRequest, Letter, UserTier
 from core.services.job_offer_parser import JobOfferParser
@@ -173,6 +174,7 @@ class LetterService:
             return None, None
 
     @track_api_call("suggest_transferable_skills")
+    @st.cache_data(ttl=3600) # Cache for 1 hour
     def suggest_transferable_skills(
         self, old_domain: str, new_domain: str, user_tier: UserTier
     ) -> str:
