@@ -4,11 +4,11 @@ from pathlib import Path
 # 1. On détermine la racine du monorepo.
 ROOT_DIR = Path(__file__).resolve().parent
 
-# 2. On ajoute le dossier 'apps' au chemin de Python.
-#    Ceci permet à Python de trouver le paquet 'phoenix_cv'.
-APPS_DIR = ROOT_DIR / "apps"
-if str(APPS_DIR) not in sys.path:
-    sys.path.insert(0, str(APPS_DIR))
+# 2. On ajoute le dossier de l'application 'phoenix-cv' au chemin Python.
+#    Ceci permet des imports absolus cohérents comme 'from phoenix_cv.services...'.
+APP_ROOT = ROOT_DIR / "apps" / "phoenix-cv"
+if str(APP_ROOT) not in sys.path:
+    sys.path.insert(0, str(APP_ROOT))
 
 # 3. On importe et on exécute l'application.
 try:
