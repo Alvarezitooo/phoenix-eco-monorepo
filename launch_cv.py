@@ -15,6 +15,15 @@ MONOREPO_ROOT = ROOT_DIR
 if str(MONOREPO_ROOT) not in sys.path:
     sys.path.insert(0, str(MONOREPO_ROOT))
 
+# 4. Debug pour Streamlit Cloud - Vérifier les chemins
+import os
+print(f"DEBUG - Current working directory: {os.getcwd()}")
+print(f"DEBUG - ROOT_DIR: {ROOT_DIR}")
+print(f"DEBUG - APP_ROOT: {APP_ROOT}")
+print(f"DEBUG - sys.path premiers éléments: {sys.path[:3]}")
+print(f"DEBUG - Phoenix CV existe: {os.path.exists(APP_ROOT)}")
+print(f"DEBUG - Models existe: {os.path.exists(APP_ROOT / 'phoenix_cv' / 'models')}")
+
 # 3. On importe et on exécute l'application.
 try:
     # 🔥 SYMMETRY PERFECT - LAUNCH_CV.PY 03/08/2025 11:00
