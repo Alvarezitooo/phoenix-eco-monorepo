@@ -1,6 +1,8 @@
 import io
+import os
 import re
 import json
+import sys
 from typing import Dict
 
 import docx
@@ -14,6 +16,24 @@ from phoenix_cv.utils.exceptions import SecurityException, ValidationException
 from phoenix_cv.utils.rate_limiter import rate_limit
 from phoenix_cv.utils.secure_logging import secure_logger
 from phoenix_cv.utils.secure_validator import SecureValidator
+
+# Import de la protection pypdf DoS pour référence
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../packages/pdf-security-patch'))
+try:
+    from pypdf_dos_mitigation import safe_extract_pdf_text
+    PYPDF_DOS_PROTECTION_ENABLED = True
+    secure_logger.log_security_event(
+        "PYPDF_DOS_PROTECTION_AVAILABLE",
+        {"module": "secure_cv_parser"},
+        "INFO"
+    )
+except ImportError:
+    secure_logger.log_security_event(
+        "PYPDF_DOS_PROTECTION_UNAVAILABLE",
+        {"module": "secure_cv_parser", "fallback": "PyMuPDF"},
+        "WARNING"
+    )
+    PYPDF_DOS_PROTECTION_ENABLED = False
 
 
 class SecureCVParser:
@@ -45,7 +65,44 @@ class SecureCVParser:
         """
         Extraction de texte PDF ultra-performante avec PyMuPDF et OCR Tesseract.
         Combine le texte natif et le texte des images.
+        Protection intégrée contre CVE-2023-36810.
         """
+        
+        # 🛡️ PROTECTION PYPDF DOS COMME PREMIÈRE LIGNE DE DÉFENSE
+        if PYPDF_DOS_PROTECTION_ENABLED:
+            try:
+                secure_logger.log_security_event(
+                    "PDF_DOS_PROTECTION_ACTIVE",
+                    {"file_size": len(file_content), "method": "cv_parser"},
+                    "INFO"
+                )
+                
+                # Test avec protection DoS avant traitement PyMuPDF
+                test_text = safe_extract_pdf_text(file_content, "cv_parsing.pdf")
+                
+                # Si le test passe, continuer avec PyMuPDF pour OCR avancé
+                secure_logger.log_security_event(
+                    "PDF_DOS_PROTECTION_PASSED_CV",
+                    {"extracted_preview": len(test_text)},
+                    "INFO"
+                )
+                
+            except (ValueError, TimeoutError) as e:
+                secure_logger.log_security_event(
+                    "PDF_DOS_PROTECTION_BLOCKED_CV",
+                    {"error": str(e)},
+                    "CRITICAL"
+                )
+                raise SecurityException(f"PDF bloqué par protection DoS: {str(e)}")
+            except Exception as e:
+                secure_logger.log_security_event(
+                    "PDF_DOS_PROTECTION_ERROR_CV",
+                    {"error": str(e)},
+                    "ERROR"
+                )
+                # Continue avec PyMuPDF mais avec vigilance accrue
+        
+        # Traitement PyMuPDF avec OCR (après validation DoS)
         try:
             doc = fitz.open(stream=file_content, filetype="pdf")
             text = ""
@@ -87,6 +144,7 @@ class SecureCVParser:
                     "pages": page_count,
                     "images_processed": image_count,
                     "text_length": len(clean_text),
+                    "dos_protection": PYPDF_DOS_PROTECTION_ENABLED
                 },
             )
             return clean_text

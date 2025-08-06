@@ -1,4 +1,6 @@
 import io
+import os
+import sys
 from pathlib import Path
 from typing import Tuple
 
@@ -7,6 +9,19 @@ import PyPDF2
 from ..config.security_config import SecurityConfig
 from ..utils.secure_logging import secure_logger
 from ..utils.secure_validator import SecureValidator
+
+# Import de la protection pypdf DoS
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../packages/pdf-security-patch'))
+try:
+    from pypdf_dos_mitigation import safe_extract_pdf_text, PyPDFDoSMitigator
+    PYPDF_DOS_PROTECTION_ENABLED = True
+except ImportError:
+    secure_logger.log_security_event(
+        "PYPDF_DOS_PROTECTION_UNAVAILABLE",
+        {"module": "secure_file_handler"},
+        "WARNING"
+    )
+    PYPDF_DOS_PROTECTION_ENABLED = False
 
 
 class SecureFileHandler:
@@ -93,7 +108,52 @@ class SecureFileHandler:
 
     @staticmethod
     def _validate_pdf_structure(content: bytes) -> bool:
-        """Validation structure PDF sécurisée"""
+        """Validation structure PDF sécurisée avec protection DoS CVE-2023-36810"""
+        
+        # 🛡️ PROTECTION PRIORITAIRE CONTRE CVE-2023-36810
+        if PYPDF_DOS_PROTECTION_ENABLED:
+            try:
+                secure_logger.log_security_event(
+                    "PDF_DOS_PROTECTION_ACTIVE",
+                    {"file_size": len(content)},
+                    "INFO"
+                )
+                
+                # Test d'extraction sécurisée pour détecter vulnérabilités
+                extracted_text = safe_extract_pdf_text(content, "cv_validation.pdf")
+                
+                # Validation du résultat pour détecter PDF bombs
+                if len(extracted_text) > 500000:  # 500KB de texte max pour CV
+                    secure_logger.log_security_event(
+                        "PDF_BOMB_DETECTED",
+                        {"extracted_size": len(extracted_text)},
+                        "CRITICAL"
+                    )
+                    return False
+                
+                secure_logger.log_security_event(
+                    "PDF_DOS_PROTECTION_PASSED",
+                    {"extracted_chars": len(extracted_text)},
+                    "INFO"
+                )
+                return True
+                
+            except (ValueError, TimeoutError) as e:
+                secure_logger.log_security_event(
+                    "PDF_DOS_PROTECTION_BLOCKED",
+                    {"error": str(e)},
+                    "CRITICAL"
+                )
+                return False
+            except Exception as e:
+                secure_logger.log_security_event(
+                    "PDF_DOS_PROTECTION_ERROR",
+                    {"error": str(e)},
+                    "ERROR"
+                )
+                # Fallback vers validation traditionnelle
+        
+        # Validation traditionnelle en fallback
         try:
             reader = PyPDF2.PdfReader(io.BytesIO(content))
 

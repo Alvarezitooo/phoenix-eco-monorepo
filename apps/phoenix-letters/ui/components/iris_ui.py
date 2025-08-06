@@ -1,10 +1,11 @@
 import streamlit as st
 import httpx
 import logging
+import os
 from typing import Optional
 
 # Define the URL of the Iris agent API
-IRIS_API_URL = "http://localhost:8003/api/v1/chat"
+IRIS_API_URL = os.getenv("IRIS_API_URL", "http://localhost:8003/api/v1/chat")
 
 logger = logging.getLogger(__name__)
 

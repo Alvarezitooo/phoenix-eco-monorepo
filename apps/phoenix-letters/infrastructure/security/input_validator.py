@@ -1,12 +1,23 @@
-"""Service de validation d'entrée sécurisé avec sandboxing renforcé."""
+"""Service de validation d'entrée sécurisé avec sandboxing renforcé et protection pypdf DoS."""
 
 import logging
 import tempfile
 import subprocess
 import hashlib
 import time
+import sys
+import os
 from pathlib import Path
 from typing import Dict, Optional
+
+# Import de la protection pypdf DoS
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../packages/pdf-security-patch'))
+try:
+    from pypdf_dos_mitigation import PyPDFDoSMitigator, safe_extract_pdf_text
+    PYPDF_DOS_PROTECTION_ENABLED = True
+except ImportError:
+    logger.warning("pypdf DoS protection not available")
+    PYPDF_DOS_PROTECTION_ENABLED = False
 
 from core.entities.letter import GenerationRequest, ToneType
 from shared.exceptions.specific_exceptions import ValidationError
@@ -240,32 +251,84 @@ class InputValidator:
             raise ValueError("PDF avec compression excessive (possiblement malveillant).")
     
     def _validate_pdf_with_external_tools(self, content: bytes) -> None:
-        """Valide le PDF avec des outils externes en sandbox."""
+        """Valide le PDF avec des outils externes en sandbox et protection DoS pypdf CVE-2023-36810."""
+        
+        # 🛡️ PROTECTION PRIORITAIRE CONTRE CVE-2023-36810 (pypdf DoS)
+        if PYPDF_DOS_PROTECTION_ENABLED:
+            try:
+                logger.info("Testing PDF with pypdf DoS protection (CVE-2023-36810)")
+                # Test d'extraction sécurisée pour détecter vulnérabilités
+                extracted_text = safe_extract_pdf_text(content, "validation_test.pdf")
+                
+                # Validation du résultat pour détecter PDF bombs
+                if len(extracted_text) > 1000000:  # 1MB de texte max
+                    logger.warning("PDF extraction produced excessive text - potential PDF bomb")
+                    raise ValueError("PDF produit trop de texte - potentiel PDF bomb")
+                
+                logger.info(f"✅ PDF DoS protection passed - extracted {len(extracted_text)} chars safely")
+                
+            except (ValueError, TimeoutError) as e:
+                logger.error(f"🛡️ PDF DoS protection blocked malicious file: {e}")
+                raise ValueError(f"PDF bloqué par protection DoS (CVE-2023-36810): {str(e)}")
+            except Exception as e:
+                logger.error(f"Unexpected error in PDF DoS protection: {e}")
+                # Continue avec validation traditionnelle en fallback
+        else:
+            logger.warning("⚠️ pypdf DoS protection not available - using traditional validation only")
+        
+        # Validation traditionnelle renforcée en complément
         try:
             with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp_file:
                 tmp_file.write(content)
                 tmp_file.flush()
                 
-                # Validation avec qpdf (si disponible)
+                # Validation avec PyMuPDF (plus sûr que pypdf pour validation)
                 result = subprocess.run([
                     'python3', '-c', 
                     f'''
 import sys
+import signal
+
+def timeout_handler(signum, frame):
+    raise TimeoutError("PDF validation timeout - potential DoS")
+
+signal.signal(signal.SIGALRM, timeout_handler)
+signal.alarm(8)  # Timeout 8 secondes (réduit de 10)
+
 try:
     import fitz  # PyMuPDF
     doc = fitz.open("{tmp_file.name}")
-    if len(doc) > 500:  # Max 500 pages
-        raise Exception("PDF trop volumineux")
+    
+    # Limitations strictes pour prévenir DoS (renforcées)
+    if len(doc) > 200:  # Réduit de 500 à 200 pages
+        raise Exception("PDF trop volumineux (>200 pages)")
+    
+    # Test d'extraction limitée pour détecter boucles infinies
+    total_chars = 0
+    for i, page in enumerate(doc):
+        if i >= 5:  # Max 5 pages pour test (réduit de 10)
+            break
+        text = page.get_text()
+        total_chars += len(text)
+        if total_chars > 50000:  # Max 50KB pour test (réduit de 100KB)
+            raise Exception("PDF extraction excessive - potentiel DoS")
+    
     doc.close()
     print("OK")
+    
+except TimeoutError:
+    print("ERROR: Timeout - possible DoS attempt detected")
+    sys.exit(1)
 except Exception as e:
     print(f"ERROR: {{e}}")
     sys.exit(1)
+finally:
+    signal.alarm(0)  # Nettoyer l'alarme
 '''
                 ], 
                     capture_output=True, 
                     text=True, 
-                    timeout=10,  # Timeout strict
+                    timeout=10,  # Timeout global strict
                     cwd='/tmp'  # Exécution en répertoire temporaire
                 )
                 
@@ -278,7 +341,7 @@ except Exception as e:
                     raise ValueError(f"PDF invalide: {error_msg}")
                     
         except subprocess.TimeoutExpired:
-            logger.warning("PDF validation timeout")
+            logger.warning("PDF validation timeout - possible DoS attempt")
             raise ValueError("Validation PDF timeout (fichier possiblement malveillant).")
         except Exception as e:
             logger.warning(f"PDF validation error: {str(e)}")
