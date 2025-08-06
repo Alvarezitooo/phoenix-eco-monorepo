@@ -23,8 +23,13 @@ from ui.components.premium_results_renderer import (
 )
 from ui.components.progress_bar import ProgressIndicator
 
-# Event-Sourcing (temporairement désactivé)
-# from packages.phoenix_event_bridge.phoenix_event_bridge import PhoenixEventFactory
+# Event-Sourcing (import conditionnel)
+try:
+    from packages.phoenix_event_bridge.phoenix_event_bridge import PhoenixEventFactory
+    PHOENIX_EVENT_AVAILABLE = True
+except ImportError:
+    PHOENIX_EVENT_AVAILABLE = False
+    PhoenixEventFactory = None
 
 logger = logging.getLogger(__name__)
 
@@ -62,8 +67,13 @@ class GeneratorPage:
         self.conversion_popup = ConversionPopup()
         # Optimiseur de conversion
         self.conversion_optimizer = ConversionOptimizer()
-        # Event-Sourcing Helper
-        self.event_helper = PhoenixEventFactory.create_letters_helper()
+        # Event-Sourcing Helper (conditionnel)
+        if PHOENIX_EVENT_AVAILABLE and PhoenixEventFactory:
+            self.event_helper = PhoenixEventFactory.create_letters_helper()
+            logger.info("Event-Sourcing activé pour GeneratorPage")
+        else:
+            self.event_helper = None
+            logger.warning("Event-Sourcing non disponible - mode dégradé activé")
 
     def render(self) -> None:
         """Affiche la page de génération."""
@@ -778,18 +788,19 @@ class GeneratorPage:
                 self.session_manager.set("last_generation_time", time.time())
 
                 # 🚀 Event-Sourcing: Tracer la génération de lettre
-                try:
-                    asyncio.create_task(
-                        self.event_helper.track_letter_generated(
-                            user_id=user_id,
-                            job_title=request.job_offer.get("job_title", "Non spécifié"),
-                            company=request.job_offer.get("company", "Non spécifié"),
-                            personalization_score=85.0,  # Score par défaut, à améliorer
-                            generation_time=generation_time
+                if self.event_helper:
+                    try:
+                        asyncio.create_task(
+                            self.event_helper.track_letter_generated(
+                                user_id=user_id,
+                                job_title=request.job_offer.get("job_title", "Non spécifié"),
+                                company=request.job_offer.get("company", "Non spécifié"),
+                                personalization_score=85.0,  # Score par défaut, à améliorer
+                                generation_time=generation_time
+                            )
                         )
-                    )
-                except Exception as e:
-                    logger.warning(f"Event-Sourcing failed: {e}")  # Ne pas bloquer l'UX
+                    except Exception as e:
+                        logger.warning(f"Event-Sourcing failed: {e}")  # Ne pas bloquer l'UX
 
                 st.success("✅ Lettre générée avec succès!")
 
