@@ -14,7 +14,7 @@ import streamlit as st
 
 # Import du service de synchronisation cross-app
 try:
-    from phoenix_shared_auth.services.cross_app_session_sync import session_sync_service, PhoenixApp
+    from packages.phoenix_shared_auth.services.cross_app_session_sync import session_sync_service, PhoenixApp
     CROSS_APP_SYNC_AVAILABLE = True
 except ImportError:
     CROSS_APP_SYNC_AVAILABLE = False
@@ -23,9 +23,9 @@ except ImportError:
 
 # Import du système d'auth partagé
 try:
-    from phoenix_shared_auth.services.phoenix_auth_service import PhoenixAuthService
+    from packages.phoenix_shared_auth.services.phoenix_auth_service import PhoenixAuthService
     from ..models.phoenix_user import PhoenixUser, UserTier
-    from phoenix_shared_auth.database.phoenix_db_connection import get_phoenix_db_connection
+    from packages.phoenix_shared_auth.database.phoenix_db_connection import get_phoenix_db_connection
     SHARED_AUTH_AVAILABLE = True
 except ImportError:
     # Fallback si le module partagé n'est pas disponible

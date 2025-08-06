@@ -18,6 +18,7 @@ phoenix_letters = { path = "apps/phoenix-letters", develop = true }
 phoenix_cv = { path = "apps/phoenix-cv", develop = true }
 phoenix_rise = { path = "apps/phoenix-rise", develop = true }
 phoenix_event_bridge = { path = "packages/phoenix_event_bridge", develop = true }
+phoenix_shared_ui = { path = "packages/phoenix-shared-ui", develop = true }
 
 [build-system]
 requires = ["poetry-core"]

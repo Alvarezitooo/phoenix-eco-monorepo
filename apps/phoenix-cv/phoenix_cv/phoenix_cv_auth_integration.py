@@ -18,7 +18,7 @@ load_dotenv() # Déplacé ici pour s'assurer que les variables d'environnement s
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from phoenix_shared_auth import (
+from packages.phoenix_shared_auth import (
     JWTManager,
     PhoenixApp,
     PhoenixAuthService,

@@ -2,8 +2,8 @@ import pika
 import json
 import uuid
 from datetime import datetime
-from phoenix_shared_models.user_profile import UserProfile
-from phoenix_shared_models.events import BaseEvent, UserProfileCreatedEvent, UserProfileUpdatedEvent
+from packages.phoenix_shared_models.user_profile import UserProfile
+from packages.phoenix_shared_models.events import BaseEvent, UserProfileCreatedEvent, UserProfileUpdatedEvent
 
 RABBITMQ_HOST = 'localhost'
 RABBITMQ_PORT = 5672

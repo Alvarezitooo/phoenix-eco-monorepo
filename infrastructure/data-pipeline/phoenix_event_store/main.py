@@ -3,7 +3,7 @@ import json
 import pika
 import uuid
 from datetime import datetime, timezone
-from phoenix_shared_models.events import BaseEvent
+from packages.phoenix_shared_models.events import BaseEvent
 
 import os
 

@@ -5,11 +5,10 @@ Simplifie l'Event-Sourcing pour les applications Streamlit existantes
 """
 
 import asyncio
-import json
 import logging
 import os
 import uuid
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
@@ -76,6 +75,10 @@ class PhoenixEventData:
 # 🌉 PHOENIX EVENT BRIDGE
 # ========================================
 
+class SupabaseError(Exception):
+    """Erreur spécifique à Supabase."""
+    pass
+
 class PhoenixEventBridge:
     """
     Pont entre les applications Phoenix et le Event Store Supabase
@@ -133,8 +136,10 @@ class PhoenixEventBridge:
                 logger.info(f"📤 Événement publié: {event_data.event_type.value} - {event_id}")
                 return event_id
             else:
-                raise Exception("Aucune donnée retournée par Supabase")
+                raise SupabaseError("Aucune donnée retournée par Supabase")
             
+        except SupabaseError:
+            raise
         except Exception as e:
             logger.error(f"❌ Erreur publication événement: {e}")
             raise
@@ -175,7 +180,7 @@ class PhoenixEventBridge:
 
     async def get_ecosystem_stats(self, days: int = 30) -> Dict[str, Any]:
         """
-        Génère des statistiques de l'écosystème Phoenix
+        Génère des statistiques de l'écosystème Phoenix.
         
         Args:
             days: Nombre de jours à analyser
@@ -184,41 +189,19 @@ class PhoenixEventBridge:
             Dict: Statistiques globales
         """
         try:
-            from datetime import timedelta
             cutoff_date = datetime.now() - timedelta(days=days)
             
-            response = self.supabase.table('events')\
-                .select('app_source, event_type, stream_id')\
-                .gte('timestamp', cutoff_date.isoformat())\
-                .execute()
+            events = await self._fetch_events_for_stats(cutoff_date)
             
-            events = response.data
-            
-            # Calculs statistiques
+            if not events:
+                logger.info("📊 Aucune donnée d'événement pour la période.")
+                return self._empty_stats_report(days)
+
             total_events = len(events)
             unique_users = len(set(event['stream_id'] for event in events))
             
-            # Répartition par app
-            app_stats = {}
-            for event in events:
-                app = event['app_source']
-                if app not in app_stats:
-                    app_stats[app] = {"events": 0, "users": set()}
-                app_stats[app]["events"] += 1
-                app_stats[app]["users"].add(event['stream_id'])
-            
-            # Convertir sets en counts
-            for app in app_stats:
-                app_stats[app]["unique_users"] = len(app_stats[app]["users"])
-                del app_stats[app]["users"]
-            
-            # Top événements
-            event_counts = {}
-            for event in events:
-                event_type = event['event_type']
-                event_counts[event_type] = event_counts.get(event_type, 0) + 1
-            
-            top_events = dict(sorted(event_counts.items(), key=lambda x: x[1], reverse=True)[:10])
+            app_stats = self._calculate_app_statistics(events)
+            top_events = self._calculate_top_events(events)
             
             stats = {
                 "period_days": days,
@@ -235,7 +218,59 @@ class PhoenixEventBridge:
             
         except Exception as e:
             logger.error(f"❌ Erreur génération stats: {e}")
-            return {}
+            return self._empty_stats_report(days)
+
+    async def _fetch_events_for_stats(self, cutoff_date: datetime) -> List[Dict[str, Any]]:
+        """
+        Récupère les événements depuis Supabase pour l'analyse statistique.
+        """
+        response = await self.supabase.table('events')\
+            .select('app_source, event_type, stream_id')\
+            .gte('timestamp', cutoff_date.isoformat())\
+            .execute()
+        return response.data
+
+    def _calculate_app_statistics(self, events: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Calcule les statistiques de répartition par application.
+        """
+        app_stats = {}
+        for event in events:
+            app = event['app_source']
+            if app not in app_stats:
+                app_stats[app] = {"events": 0, "users": set()}
+            app_stats[app]["events"] += 1
+            app_stats[app]["users"].add(event['stream_id'])
+        
+        for app in app_stats:
+            app_stats[app]["unique_users"] = len(app_stats[app]["users"])
+            del app_stats[app]["users"]
+        return app_stats
+
+    def _calculate_top_events(self, events: List[Dict[str, Any]]) -> Dict[str, int]:
+        """
+        Calcule les événements les plus fréquents.
+        """
+        event_counts = {}
+        for event in events:
+            event_type = event['event_type']
+            event_counts[event_type] = event_counts.get(event_type, 0) + 1
+        return dict(sorted(event_counts.items(), key=lambda x: x[1], reverse=True)[:10])
+
+    def _empty_stats_report(self, days: int) -> Dict[str, Any]:
+        """
+        Retourne un rapport de statistiques vide.
+        """
+        return {
+            "period_days": days,
+            "total_events": 0,
+            "unique_users": 0,
+            "avg_events_per_user": 0.0,
+            "app_statistics": {},
+            "top_events": {},
+            "generated_at": datetime.now().isoformat(),
+            "message": "No data available for the specified period."
+        }
 
 # ========================================
 # 🎯 HELPERS POUR APPLICATIONS PHOENIX

@@ -5,7 +5,7 @@ import uuid
 import os
 from datetime import datetime, timezone
 from dotenv import load_dotenv
-from phoenix_shared_models.events import BaseEvent
+from packages.phoenix_shared_models.events import BaseEvent
 
 # Load environment variables from .env file for local development
 load_dotenv()

@@ -13,7 +13,7 @@ if str(APPS_DIR) not in sys.path:
 # 3. On importe et on exécute l'application.
 try:
     # 🚀 PHOENIX RISE LAUNCHER - 03/08/2025
-    from phoenix_rise.rise_app import main
+    from phoenix_rise.main import main
     
     if __name__ == "__main__":
         main()

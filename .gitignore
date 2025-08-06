@@ -137,6 +137,17 @@ tmp/
 # ===============================================================================
 # Journal de bord (contient infos sensibles)
 **/journal_de_bord*.md
+mandat_pentest.md
+
+# Fichiers de notes et de planification
+senior_dev_todolist.md
+
+# Fichiers de dépendances obsolètes
+requirements_cv.txt
+
+# Rapports d'audit et de sécurité (déplacés dans security_reports/)
+BANDIT_SECURITY_AUDIT_REPORT.md
+IRIS_SECURITY_AUDIT_REPORT.md
 
 # Fichiers de contexte développement
 **/phoenix_*_context_rules.md

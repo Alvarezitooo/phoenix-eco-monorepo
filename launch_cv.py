@@ -18,7 +18,7 @@ if str(MONOREPO_ROOT) not in sys.path:
 # 3. On importe et on exécute l'application.
 try:
     # 🔥 SYMMETRY PERFECT - LAUNCH_CV.PY 03/08/2025 11:00
-    from phoenix_cv.phoenix_cv_app import main
+    from phoenix_cv.main import main
     
     if __name__ == "__main__":
         main()

@@ -13,7 +13,7 @@ from datetime import datetime
 sys.path.append(os.path.join(os.path.dirname(__file__), "../data-pipeline"))
 
 from data_flywheel_mvp import DataFlywheelMVP, PhoenixDataFlywheelIntegration
-from phoenix_event_bridge import PhoenixEventFactory
+from packages.phoenix_event_bridge.phoenix_event_bridge import PhoenixEventFactory
 
 
 async def test_event_bridge():

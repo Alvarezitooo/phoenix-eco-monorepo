@@ -10,31 +10,18 @@ import re
 
 import pandas as pd
 import streamlit as st
-
-# Imports sécurisés
 from ..config.security_config import SecurityConfig
-from ..models.user_profile import UserProfile, Skill, Experience, CV, Letter
-from ..models.user_profile import CV as SharedCVModel # Renommer pour éviter le conflit avec CVProfile si nécessaire
-
-# CVTier est une énumération spécifique à Phoenix CV, elle peut rester ici ou être déplacée si elle est partagée
-from ..config.constants import CVTier
+from ..models.phoenix_user import UserTier
 from ..services.secure_ats_optimizer import SecureATSOptimizer
+from ..services.secure_cv_parser import SecureCVParser
 from ..services.secure_gemini_client import SecureGeminiClient
-from ..services.secure_session_manager import secure_session
+from ..services.secure_session_manager import SecureSessionManager
 from ..services.secure_template_engine import SecureTemplateEngine
-
-# Imports UI modulaires
 from ..ui import (
-    create_demo_profile_secure,
-    display_ats_results_secure,
-    display_generated_cv_secure,
-    display_parsed_cv_secure,
+    render_about_page_secure,
     render_create_cv_page_secure,
     render_home_page_secure,
     render_pricing_page_secure,
-    render_secure_footer,
-    render_secure_header,
-    render_templates_page_secure,
     render_upload_cv_page_secure,
 )
 from ..utils.exceptions import SecurityException, ValidationException
@@ -44,7 +31,9 @@ from ..utils.secure_crypto import secure_crypto
 from ..utils.secure_logging import secure_logger
 from ..utils.secure_validator import SecureValidator
 
-# from ..services.secure_cv_parser import SecureCVParser  # À implémenter si besoin
+# Import du style global du Design System
+with open("../../packages/phoenix-shared-ui/style.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
 class SecurePhoenixCVApp:
@@ -183,46 +172,66 @@ class SecurePhoenixCVApp:
         render_secure_footer()
 
 
+def _configure_logging():
+    """Configure le logging sécurisé de l'application."""
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.StreamHandler()],
+    )
+    logger = logging.getLogger(__name__)
+    logger.info("🛡️ Démarrage Phoenix CV Secure Application")
+
+def _validate_environment_variables():
+    """Valide la présence et le format des variables d'environnement critiques."""
+    required_env_vars = ["GEMINI_API_KEY", "PHOENIX_MASTER_KEY"]
+
+    for env_var in required_env_vars:
+        if not os.environ.get(env_var):
+            st.error(f"🚫 Variable d'environnement manquante: {env_var}")
+            st.info("Veuillez configurer les variables d'environnement sécurisées.")
+            secure_logger.log_security_event(
+                "MISSING_ENV_VAR", {"var": env_var}, "CRITICAL"
+            )
+            st.stop()
+
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not re.match(r"^[A-Za-z0-9_-]{20,}$", api_key):
+        st.error("🚫 Format de clé API invalide")
+        secure_logger.log_security_event("INVALID_API_KEY_FORMAT", {}, "CRITICAL")
+        st.stop()
+
+    master_key = os.environ.get("PHOENIX_MASTER_KEY")
+    if len(master_key) < 32:
+        st.error("🚫 Clé maître trop faible (minimum 32 caractères)")
+        secure_logger.log_security_event("WEAK_MASTER_KEY", {}, "CRITICAL")
+        st.stop()
+
+def _handle_critical_error(e: Exception, error_type: str):
+    """Gère les erreurs critiques et arrête l'application."""
+    logger = logging.getLogger(__name__)
+    logger.critical(f"🚫 {error_type} critique: {str(e)}")
+
+    secure_logger.log_security_event(
+        f"CRITICAL_{error_type.replace(' ', '_').upper()}_VIOLATION", {"error": str(e)[:100]}, "CRITICAL"
+    )
+
+    st.error(f"🚫 {error_type.upper()} DÉTECTÉE")
+    st.error("L'application a été arrêtée pour votre protection.")
+    st.info("🛡️ Incident rapporté automatiquement à l'équipe sécurité.")
+
+    if "secure_session_id" in st.session_state:
+        secure_session.invalidate_session()
+
+    st.stop()
+
 def main_secure():
     """Point d'entrée sécurisé de Phoenix CV"""
+    _configure_logging()
 
     try:
-        # Configuration logging sécurisé
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            handlers=[logging.StreamHandler()],
-        )
+        _validate_environment_variables()
 
-        logger = logging.getLogger(__name__)
-        logger.info("🛡️ Démarrage Phoenix CV Secure Application")
-
-        # Vérifications de sécurité critiques
-        required_env_vars = ["GEMINI_API_KEY", "PHOENIX_MASTER_KEY"]
-
-        for env_var in required_env_vars:
-            if not os.environ.get(env_var):
-                st.error(f"🚫 Variable d'environnement manquante: {env_var}")
-                st.info("Veuillez configurer les variables d'environnement sécurisées.")
-                secure_logger.log_security_event(
-                    "MISSING_ENV_VAR", {"var": env_var}, "CRITICAL"
-                )
-                st.stop()
-
-        # Validation format des clés
-        api_key = os.environ.get("GEMINI_API_KEY")
-        if not re.match(r"^[A-Za-z0-9_-]{20,}$", api_key):
-            st.error("🚫 Format de clé API invalide")
-            secure_logger.log_security_event("INVALID_API_KEY_FORMAT", {}, "CRITICAL")
-            st.stop()
-
-        master_key = os.environ.get("PHOENIX_MASTER_KEY")
-        if len(master_key) < 32:
-            st.error("🚫 Clé maître trop faible (minimum 32 caractères)")
-            secure_logger.log_security_event("WEAK_MASTER_KEY", {}, "CRITICAL")
-            st.stop()
-
-        # Initialiser et lancer l'application sécurisée
         secure_logger.log_security_event("APP_INITIALIZATION_START", {})
 
         app = SecurePhoenixCVApp()
@@ -232,22 +241,7 @@ def main_secure():
         secure_logger.log_security_event("APP_RUNNING_SUCCESSFULLY", {})
 
     except SecurityException as e:
-        logger = logging.getLogger(__name__)
-        logger.critical(f"🚫 Violation de sécurité critique: {str(e)}")
-
-        secure_logger.log_security_event(
-            "CRITICAL_SECURITY_VIOLATION", {"error": str(e)[:100]}, "CRITICAL"
-        )
-
-        st.error("🚫 VIOLATION DE SÉCURITÉ DÉTECTÉE")
-        st.error("L'application a été arrêtée pour votre protection.")
-        st.info("🛡️ Incident rapporté automatiquement à l'équipe sécurité.")
-
-        # Invalidation de session en cas de violation critique
-        if "secure_session_id" in st.session_state:
-            secure_session.invalidate_session()
-
-        st.stop()
+        _handle_critical_error(e, "VIOLATION DE SÉCURITÉ")
 
     except Exception as e:
         logger = logging.getLogger(__name__)

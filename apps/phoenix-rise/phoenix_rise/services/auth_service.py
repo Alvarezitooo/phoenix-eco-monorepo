@@ -19,9 +19,9 @@ class AuthService:
     def sign_up(self, email, password):
         """Inscrit un nouvel utilisateur."""
         try:
-            res = self.client.auth.sign_up({"email": email, "password": password})
-            if res.user:
-                st.session_state["user"] = res.user
+            auth_response = self.client.auth.sign_up({"email": email, "password": password})
+            if auth_response.user:
+                st.session_state["user"] = auth_response.user
                 return True, None
             return False, "Erreur lors de la création de l'utilisateur."
         except Exception as e:
@@ -31,11 +31,11 @@ class AuthService:
     def sign_in(self, email, password):
         """Connecte un utilisateur existant."""
         try:
-            res = self.client.auth.sign_in_with_password(
+            auth_response = self.client.auth.sign_in_with_password(
                 {"email": email, "password": password}
             )
-            if res.user:
-                st.session_state["user"] = res.user
+            if auth_response.user:
+                st.session_state["user"] = auth_response.user
                 return True, None
             return False, "Email ou mot de passe incorrect."
         except Exception as e:

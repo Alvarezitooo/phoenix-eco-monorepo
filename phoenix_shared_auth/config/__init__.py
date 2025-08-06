@@ -1,3 +1,0 @@
-"""
-Configuration Phoenix partagée
-"""
