@@ -44,18 +44,20 @@ from utils.monitoring import (
 )
 # from phoenix_shared_ui.components import render_primary_button, render_info_card, render_section_header, render_alert, render_ariadne_thread  # Module non trouvé
 
-# Import du style global du Design System (safe mode)
-try:
-    with open("../../packages/phoenix-shared-ui/style.css") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-except FileNotFoundError:
-    logger.warning("Phoenix Shared UI style non trouvé - utilisation styles par défaut")
-
 # Configuration du logger
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
+# Import du style global du Design System (safe mode)
+try:
+    import os
+    style_path = os.path.join(os.path.dirname(__file__), "..", "..", "packages", "phoenix-shared-ui", "phoenix_shared_ui", "style.css")
+    with open(style_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+except FileNotFoundError:
+    logger.warning("Phoenix Shared UI style non trouvé - utilisation styles par défaut")
 
 # --- Fonctions de Rendu des Pages ---
 
