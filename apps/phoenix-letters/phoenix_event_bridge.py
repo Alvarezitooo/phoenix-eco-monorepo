@@ -93,12 +93,19 @@ class PhoenixEventBridge:
         self.supabase_url = supabase_url or os.getenv("SUPABASE_URL")
         self.supabase_key = supabase_key or os.getenv("SUPABASE_KEY")
         
+        # Mode dégradé si configuration manquante
+        self.degraded_mode = False
         if not self.supabase_url or not self.supabase_key:
-            raise ValueError("SUPABASE_URL et SUPABASE_KEY requis")
+            self.degraded_mode = True
+            logger.warning("⚠️ EventBridge en mode dégradé - Configuration Supabase manquante")
+            # Configuration mock pour éviter les crashes
+            self.supabase_url = "mock://localhost"
+            self.supabase_key = "mock_key"
+            self.supabase = None
+        else:
+            self.supabase: Client = create_client(self.supabase_url, self.supabase_key)
         
-        self.supabase: Client = create_client(self.supabase_url, self.supabase_key)
-        
-        logger.info("✅ PhoenixEventBridge initialisé")
+        logger.info("✅ PhoenixEventBridge initialisé" + (" (mode dégradé)" if self.degraded_mode else ""))
 
     async def publish_event(self, event_data: PhoenixEventData) -> str:
         """
@@ -110,6 +117,12 @@ class PhoenixEventBridge:
         Returns:
             str: ID de l'événement créé
         """
+        # Mode dégradé : log local uniquement
+        if self.degraded_mode:
+            mock_id = f"mock_{uuid.uuid4().hex[:8]}"
+            logger.debug(f"🔄 Mode dégradé - Événement {event_data.event_type.value} logé localement (ID: {mock_id})")
+            return mock_id
+            
         try:
             # Préparer les données pour Supabase
             supabase_event = {
@@ -428,7 +441,7 @@ async def example_phoenix_cv_integration():
     # 3. Génération CV
     await cv_helper.track_cv_generated(user_id, "Modern Pro", 87.5, 12, 3)
     
-    print("✅ Événements Phoenix CV publiés")
+    logger.info("✅ Événements Phoenix CV publiés")
 
 async def example_phoenix_letters_integration():
     """Exemple d'intégration pour Phoenix Letters"""
@@ -453,7 +466,7 @@ async def example_phoenix_letters_integration():
         12.5
     )
     
-    print("✅ Événements Phoenix Letters publiés")
+    logger.info("✅ Événements Phoenix Letters publiés")
 
 async def example_analytics():
     """Exemple d'analytics écosystème"""
@@ -461,11 +474,11 @@ async def example_analytics():
     
     # Stats globales
     stats = await bridge.get_ecosystem_stats(30)
-    print(f"📊 Stats écosystème: {stats}")
+    logger.info(f"📊 Stats écosystème: {stats}")
     
     # Événements utilisateur spécifique
     events = await bridge.get_user_events("user-example-cv", limit=10)
-    print(f"📥 Événements utilisateur: {len(events)}")
+    logger.info(f"📥 Événements utilisateur: {len(events)}")
 
 if __name__ == "__main__":
     # Tests des intégrations
