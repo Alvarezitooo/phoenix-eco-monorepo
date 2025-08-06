@@ -4,6 +4,7 @@ Header et footer avec indicateurs de securite
 """
 
 import streamlit as st
+from ..utils.safe_markdown import safe_markdown
 
 
 def render_secure_header():

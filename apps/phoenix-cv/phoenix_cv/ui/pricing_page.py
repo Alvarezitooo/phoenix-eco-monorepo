@@ -21,7 +21,7 @@ def render_pricing_page_secure():
     safe_markdown(
         """
     <div style="text-align: center; margin-bottom: 30px;">
-        <span style="background: #28a745; color: white; padding: 8px 20px; border-radius: 20px; font-weight: bold;">
+        <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 20px; border-radius: 20px; font-weight: bold;">
             🛡️ CERTIFICATION SECURISE ENTERPRISE - ISO 27001 Compliant
         </span>
     </div>
@@ -52,12 +52,12 @@ def render_pricing_page_secure():
     }
     
     .card-gratuit { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-    .card-letters { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
-    .card-cv { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+    .card-letters { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .card-cv { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
     .card-bundle { 
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); 
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
         color: white; 
-        border: 3px solid gold;
+        border: 3px solid #764ba2;
         transform: scale(1.02);
     }
     

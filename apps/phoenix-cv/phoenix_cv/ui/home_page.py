@@ -5,6 +5,7 @@ Module UI pour la page d'accueil avec navigation et metriques securisees
 
 import streamlit as st
 from ..models.phoenix_user import UserTier
+from ..utils.safe_markdown import safe_markdown
 
 
 def render_home_page_secure():
@@ -55,7 +56,7 @@ def render_home_page_secure():
             st.success("🛡️ Protection Enterprise")
 
     # Contenu principal securise
-    st.markdown(
+    safe_markdown(
         """
     <div style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border-radius: 15px; color: white; margin-bottom: 30px;">
         <h2>🛡️ Votre Reconversion en Toute Securite</h2>
@@ -66,8 +67,7 @@ def render_home_page_secure():
             🔐 Chiffrement AES-256 • 🛡️ RGPD Compliant • ⚡ Optimisation ATS Securisee
         </p>
     </div>
-    """,
-        unsafe_allow_html=True,
+    "
     )
 
     # Fonctionnalites securisees

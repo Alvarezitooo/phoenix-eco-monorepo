@@ -177,6 +177,7 @@ class SecureCVParser:
             )
             raise SecurityException("Erreur lors de l'extraction du DOCX")
 
+    @st.cache_data(ttl=3600, show_spinner=False) # Cache for 1 hour, no spinner as it's internal
     def parse_cv_with_ai_secure(self, cv_text: str) -> CVProfile:
         """Parsing sécurisé de CV avec IA (bénéficie d'un meilleur texte en entrée)"""
         try:
@@ -229,15 +230,15 @@ class SecureCVParser:
             anonymized = re.sub(pattern, replacement, anonymized, flags=re.IGNORECASE)
         return anonymized
 
-    def _parse_json_response_secure(self, response: str) -> Dict:
+    def _parse_json_response_secure(self, ai_raw_response: str) -> Dict:
         """Parsing sécurisé de la réponse JSON de l'IA."""
         try:
             # Nettoyage préliminaire pour extraire le JSON d'un bloc de code markdown
-            match = re.search(r"```json\n(.*?)```", response, re.DOTALL)
+            match = re.search(r"```json\n(.*?)```", ai_raw_response, re.DOTALL)
             if match:
                 json_str = match.group(1)
             else:
-                json_str = response
+                json_str = ai_raw_response
 
             if len(json_str) > 20000: # Limite de sécurité
                 raise ValidationException("Réponse IA JSON trop volumineuse")

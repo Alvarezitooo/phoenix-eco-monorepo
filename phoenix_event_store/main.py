@@ -2,23 +2,37 @@ import psycopg2
 import json
 import pika
 import uuid
+import os
 from datetime import datetime, timezone
+from dotenv import load_dotenv
 from phoenix_shared_models.events import BaseEvent
 
-DB_HOST = "localhost"
-DB_NAME = "postgres"
-DB_USER = "postgres"
-DB_PASSWORD = "mysecretpassword"
-DB_PORT = 5432
+# Load environment variables from .env file for local development
+load_dotenv()
 
-RABBITMQ_HOST = 'localhost'
-RABBITMQ_PORT = 5672
+# --- Database Configuration (from environment variables) ---
+# SECURITY: Credentials are loaded from environment variables, not hardcoded.
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_NAME = os.getenv("DB_NAME", "postgres")
+DB_USER = os.getenv("DB_USER", "postgres")
+DB_PASSWORD = os.getenv("DB_PASSWORD") # No default for password, it must be set in environment
+DB_PORT = int(os.getenv("DB_PORT", 5432))
+
+# --- RabbitMQ Configuration (from environment variables) ---
+# SECURITY: Connection details are loaded from environment variables.
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'localhost')
+RABBITMQ_PORT = int(os.getenv('RABBITMQ_PORT', 5672))
 EXCHANGE_NAME = 'phoenix_events'
 QUEUE_NAME = 'event_store_queue'
 ROUTING_KEY = 'phoenix.#' # Listen to all phoenix events
 
 def get_db_connection():
     """Établit une connexion à la base de données PostgreSQL."""
+    # SECURITY (Defense in Depth): Explicitly check for the database password.
+    # This prevents attempting to connect with an empty password, failing fast and clearly.
+    if not DB_PASSWORD:
+        raise ValueError("CRITICAL: DB_PASSWORD environment variable is not set.")
+        
     conn = psycopg2.connect(
         host=DB_HOST,
         database=DB_NAME,

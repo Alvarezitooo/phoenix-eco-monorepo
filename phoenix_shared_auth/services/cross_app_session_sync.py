@@ -14,6 +14,9 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List
 from enum import Enum
 
+# Configuration du logger
+logger = logging.getLogger(__name__)
+
 # Configuration pour chaque application Phoenix
 class PhoenixApp(Enum):
     LETTERS = "phoenix_letters"

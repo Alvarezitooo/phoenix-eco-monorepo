@@ -10,6 +10,11 @@ APP_ROOT = ROOT_DIR / "apps" / "phoenix-cv"
 if str(APP_ROOT) not in sys.path:
     sys.path.insert(0, str(APP_ROOT))
 
+# 3. Ajout explicite du répertoire racine pour éviter les erreurs d'import
+MONOREPO_ROOT = ROOT_DIR
+if str(MONOREPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(MONOREPO_ROOT))
+
 # 3. On importe et on exécute l'application.
 try:
     # 🔥 SYMMETRY PERFECT - LAUNCH_CV.PY 03/08/2025 11:00

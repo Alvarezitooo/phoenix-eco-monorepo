@@ -39,6 +39,7 @@ from ..ui import (
 )
 from ..utils.exceptions import SecurityException, ValidationException
 from ..utils.rate_limiter import rate_limiter
+from ..utils.safe_markdown import safe_markdown
 from ..utils.secure_crypto import secure_crypto
 from ..utils.secure_logging import secure_logger
 from ..utils.secure_validator import SecureValidator

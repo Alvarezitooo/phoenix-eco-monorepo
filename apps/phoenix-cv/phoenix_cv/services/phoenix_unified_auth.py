@@ -8,7 +8,7 @@ Version: 1.0.0 - Production Ready
 
 import os
 import logging
-from typing import Optional, Dict, Any, Tuple
+from typing import Optional, Dict, Any, Tuple, List
 from datetime import datetime, timedelta
 import streamlit as st
 

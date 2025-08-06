@@ -82,13 +82,15 @@ class SecureValidator:
     @staticmethod
     def validate_filename(filename: str) -> str:
         """Validation sécurisée nom de fichier"""
-        if not filename or len(filename) > SecurityConfig.MAX_FILENAME_LENGTH:
+        config = SecurityConfig()
+        if not filename or len(filename) > config.max_filename_length:
             raise ValidationException("Nom de fichier invalide")
 
-        safe_filename = re.sub(r"[\w\-_\.]", "_", filename)
+        # Garder uniquement les caractères sûrs
+        safe_filename = re.sub(r"[^\w\-_\.]", "_", filename)
 
-        file_ext = Path(safe_filename).suffix.lower()
-        if file_ext not in SecurityConfig.ALLOWED_EXTENSIONS:
+        file_ext = Path(filename).suffix.lower()  # Utiliser le nom original pour l'extension
+        if file_ext not in config.allowed_extensions:
             raise ValidationException(f"Extension non autorisée: {file_ext}")
 
         if ".." in safe_filename or "/" in safe_filename or "\\" in safe_filename:
@@ -99,10 +101,11 @@ class SecureValidator:
     @staticmethod
     def sanitize_html_output(html_content: str) -> str:
         """Sanitisation HTML pour output sécurisé"""
+        config = SecurityConfig()
         cleaned = bleach.clean(
             html_content,
-            tags=SecurityConfig.ALLOWED_HTML_TAGS,
-            attributes=SecurityConfig.ALLOWED_HTML_ATTRIBUTES,
+            tags=config.allowed_html_tags,
+            attributes=config.allowed_html_attributes,
             strip=True,
         )
 

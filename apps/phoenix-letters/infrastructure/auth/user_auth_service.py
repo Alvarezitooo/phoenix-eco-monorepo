@@ -9,8 +9,9 @@ from datetime import datetime
 from typing import Optional, Tuple
 
 import bcrypt
+from password_strength import PasswordPolicy
 from core.entities.user import User, UserSubscription, UserTier
-from infrastructure.auth.jwt_manager import JWTManager
+from phoenix_shared_auth.services.jwt_manager import JWTManager
 from infrastructure.database.db_connection import DatabaseConnection
 from shared.exceptions.specific_exceptions import (
     AuthenticationError,
@@ -27,6 +28,14 @@ class UserAuthService:
     def __init__(self, jwt_manager: JWTManager, db_connection: DatabaseConnection):
         self.jwt_manager = jwt_manager
         self.client = db_connection.get_client()
+        # SECURITY FIX: Define a strong password policy, enforced server-side.
+        self.password_policy = PasswordPolicy.from_names(
+            length=12,  # min length: 12
+            uppercase=1,  # need min. 1 uppercase
+            numbers=1,  # need min. 1 number
+            special=1,  # need min. 1 special character
+            nonletters=1,  # need min. 1 non-letter
+        )
 
     def register_user(
         self,
@@ -36,6 +45,13 @@ class UserAuthService:
         newsletter_opt_in: bool = False,
     ) -> User:
         """Enregistre un nouvel utilisateur dans la base de données."""
+        # SECURITY FIX: Server-side password strength validation.
+        # This prevents weak passwords from ever being stored.
+        errors = self.password_policy.test(password)
+        if errors:
+            error_messages = ", ".join(str(e) for e in errors)
+            raise AuthenticationError(f"Le mot de passe est trop faible: {error_messages}")
+
         # Vérifier si l'utilisateur existe déjà
         response = self.client.from_("users").select("id").eq("email", email).execute()
         if response.data:

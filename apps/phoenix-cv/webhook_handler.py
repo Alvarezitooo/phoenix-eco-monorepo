@@ -9,7 +9,7 @@ Version: 1.0.0 - Production Ready
 import streamlit as st
 import json
 import logging
-from services.stripe_service import stripe_service
+from phoenix_cv.services.stripe_service import stripe_service
 
 logger = logging.getLogger(__name__)
 

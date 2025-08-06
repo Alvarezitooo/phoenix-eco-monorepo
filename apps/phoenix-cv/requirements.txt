@@ -39,4 +39,5 @@ stripe>=8.0.0
 
 # Intégration Phoenix Auth
 requests>=2.31.0
+phoenix-shared-auth>=1.0.0
 

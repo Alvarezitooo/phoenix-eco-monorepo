@@ -392,7 +392,7 @@ def render_header():
     # Indicateur de mode
     mode_indicator = ""
     if is_dev_mode():
-        mode_indicator = '<div style="background: #fff3cd; padding: 0.75rem; border-radius: 5px; margin-bottom: 1rem; border-left: 4px solid #ffc107;"><p style="margin: 0; color: #856404;"><strong>🎭 MODE DÉMONSTRATION</strong> - Résultats d\'exemple pour présentation. En production, Phoenix CV génère des contenus personnalisés avec l\'IA.</p></div>'
+        mode_indicator = '<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0.75rem; border-radius: 5px; margin-bottom: 1rem; border-left: 4px solid #764ba2;"><p style="margin: 0; color: white;"><strong>🚀 PRÊT À VOUS ACCOMPAGNER</strong> - Découvrez la puissance de Phoenix CV avec nos exemples. Votre reconversion professionnelle commence ici !</p></div>'
 
     st.markdown(
         f"""

@@ -3,6 +3,7 @@ import os
 import re
 import threading
 import time
+from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from functools import wraps
 from typing import Any, Dict
@@ -239,12 +240,29 @@ RÉPONSE ATTENDUE: JSON avec score, recommandations et mots-clés manquants uniq
         return clean_response.strip()
 
     def _log_api_usage(self, prompt_length: int, response_length: int):
-        """Log d'utilisation API"""
+        """Log d'utilisation API avec tracking coût"""
         with self._lock:
+            # Estimation coût Gemini 1.5 Flash (prix approximatifs)
+            estimated_input_tokens = prompt_length // 4  # ~4 chars par token
+            estimated_output_tokens = response_length // 4
+            
+            # Prix estimés USD (à ajuster selon tarifs réels)
+            cost_per_million_input = 0.075  # $0.075 per 1M input tokens
+            cost_per_million_output = 0.30   # $0.30 per 1M output tokens
+            
+            estimated_cost = (
+                (estimated_input_tokens * cost_per_million_input / 1_000_000) +
+                (estimated_output_tokens * cost_per_million_output / 1_000_000)
+            )
+            
             usage_event = {
                 "timestamp": datetime.utcnow().isoformat(),
                 "prompt_length": prompt_length,
                 "response_length": response_length,
+                "estimated_input_tokens": estimated_input_tokens,
+                "estimated_output_tokens": estimated_output_tokens,
+                "estimated_cost_usd": round(estimated_cost, 6),
+                "total_tokens": estimated_input_tokens + estimated_output_tokens,
             }
 
             self._request_history.append(usage_event)
@@ -253,3 +271,23 @@ RÉPONSE ATTENDUE: JSON avec score, recommandations et mots-clés manquants uniq
                 self._request_history = self._request_history[-50:]
 
             secure_logger.log_security_event("GEMINI_API_USAGE", usage_event)
+    
+    def get_usage_stats(self) -> Dict[str, Any]:
+        """Retourne les statistiques d'usage et coût"""
+        with self._lock:
+            if not self._request_history:
+                return {"total_requests": 0, "total_cost_usd": 0.0}
+            
+            total_cost = sum(event.get("estimated_cost_usd", 0) for event in self._request_history)
+            total_tokens = sum(event.get("total_tokens", 0) for event in self._request_history)
+            
+            return {
+                "total_requests": len(self._request_history),
+                "total_cost_usd": round(total_cost, 6),
+                "total_tokens": total_tokens,
+                "avg_cost_per_request": round(total_cost / len(self._request_history), 6) if self._request_history else 0,
+                "last_24h_requests": len([
+                    event for event in self._request_history 
+                    if datetime.fromisoformat(event["timestamp"]) > datetime.utcnow() - timedelta(days=1)
+                ])
+            }
