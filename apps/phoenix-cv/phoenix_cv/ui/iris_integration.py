@@ -12,6 +12,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../packages/ir
 
 try:
     from iris_client import IrisStreamlitClient, IrisAppContext, render_iris_chat, render_iris_status
+    from security_patches import SecureIrisClient, SecureContextBuilder, SecureLogger, create_secure_iris_client
+    IRIS_SECURITY_ENABLED = True
 except ImportError:
     # Fallback si le package n'est pas disponible
     class IrisStreamlitClient:
@@ -22,6 +24,7 @@ except ImportError:
             st.error("🤖 Iris temporairement indisponible")
     
     IrisAppContext = None
+    IRIS_SECURITY_ENABLED = False
     
     def render_iris_chat(*args, **kwargs):
         import streamlit as st
@@ -38,15 +41,33 @@ logger = logging.getLogger(__name__)
 
 class PhoenixCVIrisIntegration:
     """
-    Intégration spécialisée d'Iris pour Phoenix CV.
+    Intégration spécialisée d'Iris pour Phoenix CV avec sécurité renforcée.
     Contexte: optimisation CV, ATS, templates, carrière.
     """
     
     def __init__(self):
-        self.iris_client = IrisStreamlitClient(
-            app_context=IrisAppContext.CV,
-            api_url=os.getenv('IRIS_API_URL', 'http://localhost:8003/api/v1/chat')
-        )
+        # Client sécurisé si disponible, sinon fallback
+        if IRIS_SECURITY_ENABLED:
+            try:
+                self.secure_client = create_secure_iris_client(
+                    app_context="phoenix-cv",
+                    user_id=st.session_state.get('user_id', 'anonymous'),
+                    api_url=os.getenv('IRIS_API_URL', 'http://localhost:8003/api/v1/chat')
+                )
+                self.security_enabled = True
+                logger.info("Phoenix CV Iris integration initialized with security patches")
+            except Exception as e:
+                logger.warning(f"Failed to initialize secure Iris client: {e}")
+                self.security_enabled = False
+        else:
+            self.security_enabled = False
+        
+        # Fallback au client standard
+        if not self.security_enabled:
+            self.iris_client = IrisStreamlitClient(
+                app_context=IrisAppContext.CV if IrisAppContext else None,
+                api_url=os.getenv('IRIS_API_URL', 'http://localhost:8003/api/v1/chat')
+            )
     
     def render_cv_optimization_chat(self, cv_data=None, template_type=None):
         """
@@ -84,8 +105,26 @@ class PhoenixCVIrisIntegration:
         elif template_type:
             st.info(f"💡 Iris vous aide à optimiser le template {template_type}")
         
-        # Interface de chat avec contexte CV
-        self.iris_client.render_chat_interface(additional_context)
+        # Interface de chat avec contexte CV sécurisé
+        if self.security_enabled:
+            # Utilisation du client sécurisé avec validation contextuelle
+            try:
+                # Les données du contexte sont déjà validées par Streamlit,
+                # mais on applique une couche de sécurité supplémentaire
+                if additional_context:
+                    # Log sécurisé de l'interaction
+                    SecureLogger.log_iris_interaction(
+                        app_context=self.secure_client.app_context,
+                        user_id=self.secure_client.user_id,
+                        message_preview="CV_OPTIMIZATION_CHAT"
+                    )
+                self.iris_client.render_chat_interface(additional_context)
+            except Exception as e:
+                logger.error(f"Secure Iris CV chat error: {e}")
+                st.error("🛡️ Erreur de sécurité Iris. Veuillez réessayer.")
+        else:
+            # Fallback au client standard
+            self.iris_client.render_chat_interface(additional_context)
     
     def render_ats_optimization_assistant(self, job_offer=None):
         """

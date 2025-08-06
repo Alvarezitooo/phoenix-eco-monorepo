@@ -4,7 +4,7 @@ import hmac
 import os
 import secrets
 
-from config.security_config import SecurityConfig
+from ..config.security_config import SecurityConfig
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC

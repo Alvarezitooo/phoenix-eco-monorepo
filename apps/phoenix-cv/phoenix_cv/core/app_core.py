@@ -12,19 +12,19 @@ import pandas as pd
 import streamlit as st
 
 # Imports sécurisés
-from config.security_config import SecurityConfig
-from phoenix_shared_models.user_profile import UserProfile, Skill, Experience, CV, Letter
-from phoenix_shared_models.user_profile import CV as SharedCVModel # Renommer pour éviter le conflit avec CVProfile si nécessaire
+from ..config.security_config import SecurityConfig
+from ..models.user_profile import UserProfile, Skill, Experience, CV, Letter
+from ..models.user_profile import CV as SharedCVModel # Renommer pour éviter le conflit avec CVProfile si nécessaire
 
 # CVTier est une énumération spécifique à Phoenix CV, elle peut rester ici ou être déplacée si elle est partagée
-from config.constants import CVTier
-from services.secure_ats_optimizer import SecureATSOptimizer
-from services.secure_gemini_client import SecureGeminiClient
-from services.secure_session_manager import secure_session
-from services.secure_template_engine import SecureTemplateEngine
+from ..config.constants import CVTier
+from ..services.secure_ats_optimizer import SecureATSOptimizer
+from ..services.secure_gemini_client import SecureGeminiClient
+from ..services.secure_session_manager import secure_session
+from ..services.secure_template_engine import SecureTemplateEngine
 
 # Imports UI modulaires
-from ui import (
+from ..ui import (
     create_demo_profile_secure,
     display_ats_results_secure,
     display_generated_cv_secure,
@@ -43,7 +43,7 @@ from ..utils.secure_crypto import secure_crypto
 from ..utils.secure_logging import secure_logger
 from ..utils.secure_validator import SecureValidator
 
-# from services.secure_cv_parser import SecureCVParser  # À implémenter si besoin
+# from ..services.secure_cv_parser import SecureCVParser  # À implémenter si besoin
 
 
 class SecurePhoenixCVApp:

@@ -1,10 +1,27 @@
-
-# config/constants.py
+"""
+Constantes pour Phoenix CV
+"""
 
 from enum import Enum
 
 class CVTier(Enum):
-    """Niveaux d'abonnement Phoenix CV"""
-    FREE = "free"
-    PRO = "pro"
-    ECOSYSTEM = "ecosystem"
+    """Niveaux de qualité des CV"""
+    BASIC = "basic"
+    PROFESSIONAL = "professional"  
+    PREMIUM = "premium"
+    EXECUTIVE = "executive"
+
+class CVTemplate(Enum):
+    """Templates de CV disponibles"""
+    MODERN = "modern"
+    CLASSIC = "classic"
+    CREATIVE = "creative"
+    MINIMAL = "minimal"
+    ATS_FRIENDLY = "ats_friendly"
+
+class ATSLevel(Enum):
+    """Niveaux d'optimisation ATS"""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    EXCELLENT = "excellent"

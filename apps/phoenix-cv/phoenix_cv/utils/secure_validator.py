@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 import bleach
-from config.security_config import SecurityConfig
+from ..config.security_config import SecurityConfig
 from marshmallow import Schema, ValidationError, fields, validate
 from .exceptions import SecurityException, ValidationException
 from .secure_logging import secure_logger

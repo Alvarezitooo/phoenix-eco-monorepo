@@ -4,7 +4,7 @@ Plans tarifaires avec garanties securite enterprise
 """
 
 import streamlit as st
-from services.stripe_service import stripe_service
+from ..services.stripe_service import stripe_service
 
 
 def safe_markdown(content):

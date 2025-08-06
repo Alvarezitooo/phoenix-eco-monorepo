@@ -4,8 +4,8 @@ Import et analyse securisee de CV existants avec validation et scanning
 """
 
 import streamlit as st
-from config.security_config import SecurityConfig
-from services.secure_file_handler import SecureFileHandler
+from ..config.security_config import SecurityConfig
+from ..services.secure_file_handler import SecureFileHandler
 from ..utils.exceptions import SecurityException
 from ..utils.rate_limiter import rate_limiter
 from ..utils.secure_logging import secure_logger

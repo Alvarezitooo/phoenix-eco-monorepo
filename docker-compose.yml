@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  iris-agent:
+    build:
+      context: .
+      dockerfile: ./packages/iris-agent/Dockerfile
+    ports:
+      - "8003:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - ./packages/iris-agent/.env
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - phoenix_network
+
+networks:
+  phoenix_network:
+    driver: bridge

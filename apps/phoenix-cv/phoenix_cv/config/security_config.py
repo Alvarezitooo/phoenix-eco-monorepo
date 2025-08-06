@@ -1,47 +1,45 @@
-import base64
+"""
+Configuration de sécurité pour Phoenix CV
+"""
+
 import os
+from dataclasses import dataclass
+from typing import List
 
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from ..utils.exceptions import SecurityException
-
-
+@dataclass
 class SecurityConfig:
-    """Configuration sécurisée centralisée"""
-
-    ENCRYPTION_KEY_LENGTH = 32
-    SALT_LENGTH = 16
-    PBKDF2_ITERATIONS = 100000
-
-    MAX_INPUT_LENGTH = 10000
-    MAX_FILENAME_LENGTH = 255
-    ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt"}
-    MAX_FILE_SIZE = 10 * 1024 * 1024
-
-    API_CALLS_PER_MINUTE = 10
-    FILE_UPLOADS_PER_HOUR = 5
-    CV_GENERATION_PER_DAY = 20
-
-    SESSION_TIMEOUT_MINUTES = 30
-    MAX_SESSIONS_PER_USER = 3
-
-    LOG_RETENTION_DAYS = 90
-    MAX_LOG_FILE_SIZE = 50 * 1024 * 1024
-
-    ALLOWED_HTML_TAGS = ["b", "i", "u", "br", "p", "div", "span"]
-    ALLOWED_HTML_ATTRIBUTES = {"class": [], "id": []}
-
-    @staticmethod
-    def get_encryption_key() -> bytes:
-        key_material = os.environ.get("PHOENIX_MASTER_KEY")
-        if not key_material:
-            raise SecurityException("Master key not configured")
-
-        salt = b"phoenix_cv_salt_2025"
-        kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
-            length=SecurityConfig.ENCRYPTION_KEY_LENGTH,
-            salt=salt,
-            iterations=SecurityConfig.PBKDF2_ITERATIONS,
+    """Configuration de sécurité centralisée"""
+    
+    # Limites de sécurité
+    max_file_size_mb: int = 10
+    max_sessions_per_user: int = 5
+    session_timeout_minutes: int = 30
+    
+    # Rate limiting
+    max_requests_per_minute: int = 60
+    max_cv_generations_per_hour: int = 10
+    
+    # Chiffrement
+    encryption_key: str = os.getenv('PHOENIX_CV_ENCRYPTION_KEY', 'default-dev-key-change-in-prod')
+    
+    # Validation des fichiers
+    allowed_file_types: List[str] = None
+    max_text_length: int = 100000
+    
+    # API Keys
+    gemini_api_key: str = os.getenv('GEMINI_API_KEY', '')
+    
+    def __post_init__(self):
+        if self.allowed_file_types is None:
+            self.allowed_file_types = ['pdf', 'docx', 'txt']
+    
+    @classmethod
+    def get_production_config(cls):
+        """Configuration sécurisée pour la production"""
+        return cls(
+            max_file_size_mb=5,  # Plus restrictif en production
+            max_sessions_per_user=3,
+            session_timeout_minutes=15,
+            max_requests_per_minute=30,
+            max_cv_generations_per_hour=5
         )
-        return base64.urlsafe_b64encode(kdf.derive(key_material.encode()))

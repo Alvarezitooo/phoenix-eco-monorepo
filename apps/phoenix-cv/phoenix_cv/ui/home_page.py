@@ -4,7 +4,7 @@ Module UI pour la page d'accueil avec navigation et metriques securisees
 """
 
 import streamlit as st
-from phoenix_shared_auth.entities.phoenix_user import UserTier
+from ..models.phoenix_user import UserTier
 
 
 def render_home_page_secure():

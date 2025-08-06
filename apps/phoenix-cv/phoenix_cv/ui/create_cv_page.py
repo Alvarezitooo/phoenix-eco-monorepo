@@ -5,10 +5,9 @@ Formulaire securise de creation CV avec validation et chiffrement
 
 import streamlit as st
 import uuid
-from phoenix_shared_models.user_profile import UserProfile, Skill, Experience, CV, Letter
-from phoenix_shared_auth.entities.phoenix_user import UserTier
-from phoenix_shared_auth.entities.phoenix_user import UserTier
-from services.secure_session_manager import secure_session
+from ..models.user_profile import UserProfile, Skill, Experience, CV, Letter
+from ..models.phoenix_user import UserTier
+from ..services.secure_session_manager import secure_session
 from ..utils.exceptions import SecurityException, ValidationException
 from ..utils.secure_logging import secure_logger
 from ..utils.secure_validator import SecureValidator

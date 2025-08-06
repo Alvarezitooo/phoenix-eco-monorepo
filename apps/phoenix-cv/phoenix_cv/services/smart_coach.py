@@ -18,8 +18,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 # Imports conditionnels
 try:
-    from services.ai_trajectory_builder import ai_trajectory_builder
-    from services.enhanced_gemini_client import get_enhanced_gemini_client
+    from .ai_trajectory_builder import ai_trajectory_builder
+    from .enhanced_gemini_client import get_enhanced_gemini_client
     from utils.exceptions import SecurityException
     from utils.secure_logging import secure_logger
 except ImportError:
