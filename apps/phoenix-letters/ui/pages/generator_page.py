@@ -248,7 +248,9 @@ class GeneratorPage:
                 suggestions = self.letter_service.suggest_transferable_skills(
                     old_domain, new_domain, user_tier
                 )
+                # Mettre à jour les deux stores
                 self.session_manager.set("transferable_skills", suggestions)
+                st.session_state.transferable_skills = suggestions
 
                 st.success("✅ Suggestions de compétences générées !")
                 st.rerun()

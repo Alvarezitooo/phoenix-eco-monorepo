@@ -14,6 +14,7 @@ from shared.exceptions.specific_exceptions import (
     LetterGenerationError,
     ValidationError,
 )
+from tenacity import RetryError
 from shared.interfaces.ai_interface import AIServiceInterface
 from shared.interfaces.prompt_interface import PromptServiceInterface
 from shared.interfaces.validation_interface import ValidationServiceInterface
@@ -95,10 +96,14 @@ class LetterService:
                     max_tokens=2000,
                     temperature=0.7,
                 )
-            except AIServiceError as e:
-                # AIServiceError est transformée en LetterGenerationError
+            except (AIServiceError, RetryError) as e:
+                # Gérer les erreurs d'IA et les erreurs de retry
                 logger.error(f"AI service error: {e}")
-                raise LetterGenerationError(f"Erreur du service IA: {e}")
+                if isinstance(e, RetryError) and e.last_attempt:
+                    original_error = e.last_attempt.exception()
+                    raise LetterGenerationError(f"Service temporairement indisponible: {original_error}")
+                else:
+                    raise LetterGenerationError(f"Erreur du service IA: {e}")
 
             # Création de l'entité Letter
             letter = Letter(
@@ -200,11 +205,13 @@ class LetterService:
                 prompt=prompt, user_tier=user_tier, max_tokens=500, temperature=0.7
             )
             return suggestions
-        except AIServiceError as e:
+        except (AIServiceError, RetryError) as e:
             logger.error(f"AI service error during skills suggestion: {e}")
-            raise AIServiceError(
-                f"Erreur du service IA lors de la suggestion de compétences: {e}"
-            )
+            if isinstance(e, RetryError) and e.last_attempt:
+                original_error = e.last_attempt.exception()
+                raise AIServiceError(f"Service de suggestions temporairement indisponible: {original_error}")
+            else:
+                raise AIServiceError(f"Erreur du service IA lors de la suggestion de compétences: {e}")
         except Exception as e:
             logger.exception(f"Unexpected error in skills suggestion: {e}")
             raise LetterGenerationError(
