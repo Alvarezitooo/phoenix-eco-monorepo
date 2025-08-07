@@ -176,7 +176,7 @@ class LetterService:
     @track_api_call("suggest_transferable_skills")
     @st.cache_data(ttl=3600) # Cache for 1 hour
     def suggest_transferable_skills(
-        self, old_domain: str, new_domain: str, user_tier: UserTier
+        _self, old_domain: str, new_domain: str, user_tier: UserTier
     ) -> str:
         """
         Suggère des compétences transférables basées sur les domaines.
@@ -193,10 +193,10 @@ class LetterService:
             AIServiceError: Si le service IA échoue.
         """
         try:
-            prompt = self._prompt_service.build_skills_suggestion_prompt(
+            prompt = _self._prompt_service.build_skills_suggestion_prompt(
                 old_domain, new_domain
             )
-            suggestions = self._ai_service.generate_content(
+            suggestions = _self._ai_service.generate_content(
                 prompt=prompt, user_tier=user_tier, max_tokens=500, temperature=0.7
             )
             return suggestions
