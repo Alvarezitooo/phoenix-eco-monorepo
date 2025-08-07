@@ -167,6 +167,15 @@ class EthicalDataExporter:
         print(f"Timestamp: {self.export_timestamp}")
         print(f"Format: {output_format.value}")
         print(f"Max utilisateurs: {max_users}")
+        
+        # 🛡️ VALIDATION SÉCURITÉ CRITIQUE: Vérifier DataAnonymizer
+        if not self.anonymizer:
+            print("🚨 ERREUR CRITIQUE: DataAnonymizer non disponible!")
+            print("❌ Export interrompu pour conformité RGPD")
+            raise ValueError("DataAnonymizer requis pour export sécurisé. Import manquant ou service indisponible.")
+        else:
+            print("✅ DataAnonymizer validé - Export sécurisé autorisé")
+        
         print("=" * 60)
         
         # Création du répertoire d'export
@@ -237,9 +246,9 @@ class EthicalDataExporter:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
                 
-                # Requête pour utilisateurs consentants uniquement
+                # 🛡️ CORRECTION RGPD: Requête SANS email (non utilisé)
                 query = """
-                SELECT u.user_id, u.email, u.created_at, u.research_consent,
+                SELECT u.user_id, u.created_at, u.research_consent,
                        u.age, u.location, u.last_login,
                        COUNT(s.session_id) as total_sessions,
                        AVG(s.duration_minutes) as avg_session_duration
@@ -326,17 +335,36 @@ class EthicalDataExporter:
             else:
                 activity_level = "high"
             
-            # Analyse NLP des notes (si disponibles)
+            # Analyse NLP des notes (si disponibles) - AVEC ANONYMISATION OBLIGATOIRE
             emotion_tags = []
             value_tags = []
             transition_phase = "questionnement"
             
             if user.get("notes") and self.nlp_tagger:
                 notes_text = " ".join(user["notes"])
-                nlp_result = self.nlp_tagger.tag_user_notes(notes_text, preserve_privacy=True)
-                emotion_tags = [tag.value for tag in nlp_result.emotion_tags]
-                value_tags = [tag.value for tag in nlp_result.value_tags]
-                transition_phase = nlp_result.transition_phase.value
+                
+                # 🛡️ CORRECTION RGPD: Anonymisation AVANT analyse NLP
+                if self.anonymizer:
+                    anonymization_result = self.anonymizer.anonymize_text(notes_text)
+                    if anonymization_result.success:
+                        anonymized_notes = anonymization_result.anonymized_text
+                        print(f"✅ Notes anonymisées pour utilisateur {user_hash[:8]}")
+                    else:
+                        print(f"⚠️ Échec anonymisation pour {user_hash[:8]}, skip analyse NLP")
+                        anonymized_notes = None
+                else:
+                    print(f"⚠️ DataAnonymizer indisponible, skip analyse NLP pour sécurité")
+                    anonymized_notes = None
+                
+                # Analyse NLP seulement sur les notes anonymisées
+                if anonymized_notes:
+                    nlp_result = self.nlp_tagger.tag_user_notes(anonymized_notes, preserve_privacy=True)
+                    emotion_tags = [tag.value for tag in nlp_result.emotion_tags]
+                    value_tags = [tag.value for tag in nlp_result.value_tags]
+                    transition_phase = nlp_result.transition_phase.value
+                    print(f"✅ Analyse NLP sécurisée: {len(emotion_tags)} émotions, {len(value_tags)} valeurs")
+                else:
+                    print(f"⚠️ Analyse NLP sautée pour préserver la confidentialité")
             
             # Création du profil anonymisé
             profile = AnonymizedUserProfile(
