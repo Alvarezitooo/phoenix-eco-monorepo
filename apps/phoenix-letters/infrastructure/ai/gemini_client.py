@@ -148,11 +148,7 @@ class GeminiClient(AIServiceInterface):
         }
 
         # Configuration spécifique par tier
-        if user_tier == UserTier.PREMIUM_PLUS:
-            base_config.update(
-                {"temperature": 0.8, "top_p": 0.9, "top_k": 40}  # Plus créatif
-            )
-        elif user_tier == UserTier.PREMIUM:
+        if user_tier == UserTier.PREMIUM:
             base_config.update({"temperature": 0.7, "top_p": 0.8, "top_k": 30})
         else:  # FREE
             base_config.update(

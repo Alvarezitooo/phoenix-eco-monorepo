@@ -223,8 +223,7 @@ def render_main_app(current_user, auth_middleware, settings, db_connection, init
     current_tier = st.session_state.user_tier
     tier_display = {
         UserTier.FREE: "🆓 FREE",
-        UserTier.PREMIUM: "⭐ PREMIUM", 
-        UserTier.PREMIUM_PLUS: "💎 PREMIUM+"
+        UserTier.PREMIUM: "⭐ PREMIUM"
     }
     
     st.sidebar.info(f"**Tier actuel:** {tier_display[current_tier]}")
@@ -232,11 +231,6 @@ def render_main_app(current_user, auth_middleware, settings, db_connection, init
     if st.sidebar.button("🚀 Switcher vers PREMIUM", key="dev_premium_button"):
         st.session_state.user_tier = UserTier.PREMIUM
         st.sidebar.success("✅ Passé en mode PREMIUM !")
-        st.rerun()
-    
-    if st.sidebar.button("💎 Switcher vers PREMIUM+", key="dev_premium_plus_button"):
-        st.session_state.user_tier = UserTier.PREMIUM_PLUS
-        st.sidebar.success("✅ Passé en mode PREMIUM+ !")
         st.rerun()
     
     if st.sidebar.button("🔄 Reset vers FREE", key="dev_reset_button"):

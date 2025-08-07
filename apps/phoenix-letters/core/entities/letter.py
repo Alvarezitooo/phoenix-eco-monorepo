@@ -24,7 +24,6 @@ class UserTier(Enum):
 
     FREE = "free"
     PREMIUM = "premium"
-    PREMIUM_PLUS = "premium_plus"
 
 
 @dataclass(frozen=True)

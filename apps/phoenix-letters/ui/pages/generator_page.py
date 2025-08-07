@@ -242,7 +242,15 @@ class GeneratorPage:
         """
         old_domain = self.session_manager.get("old_domain")
         new_domain = self.session_manager.get("new_domain")
-        user_tier = UserTier(self.session_manager.get("user_tier", "free"))
+        # Fix: utiliser st.session_state directement au lieu du session_manager
+        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
+        if isinstance(raw_tier, str):
+            try:
+                user_tier = UserTier(raw_tier)
+            except ValueError:
+                user_tier = UserTier.FREE
+        else:
+            user_tier = raw_tier
 
         if not old_domain or not new_domain:
             st.warning(
@@ -271,8 +279,20 @@ class GeneratorPage:
         """Affiche les fonctionnalités avancées (Mirror Match, ATS, Smart Coach, Trajectory Builder)."""
         st.markdown("### 🌟 Fonctionnalités Avancées")
 
-        user_tier = st.session_state.get("user_tier", UserTier.FREE)
+        # Fix: utiliser la même logique que dans les autres méthodes
+        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
+        if isinstance(raw_tier, str):
+            try:
+                user_tier = UserTier(raw_tier)
+            except ValueError:
+                user_tier = UserTier.FREE
+        else:
+            user_tier = raw_tier
+            
         is_premium = user_tier != UserTier.FREE
+        
+        # Debug temporaire
+        st.sidebar.write(f"🔍 DEBUG Advanced: user_tier = {user_tier}, is_premium = {is_premium}")
 
         # Mirror Match
         with st.expander("🎭 Mirror Match - Adaptez le ton à l'entreprise"):
@@ -344,7 +364,15 @@ class GeneratorPage:
 
     def _process_mirror_match(self, company_culture_info: str) -> None:
         """Traite l'analyse Mirror Match."""
-        user_tier = UserTier(self.session_manager.get("user_tier", "free"))
+        # Fix: utiliser st.session_state directement au lieu du session_manager
+        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
+        if isinstance(raw_tier, str):
+            try:
+                user_tier = UserTier(raw_tier)
+            except ValueError:
+                user_tier = UserTier.FREE
+        else:
+            user_tier = raw_tier
 
         # Vérification Premium avec barrière intelligente
         if user_tier != UserTier.PREMIUM:
@@ -465,7 +493,15 @@ class GeneratorPage:
         """Traite l'analyse ATS."""
         letter_content = self.session_manager.get("generated_letter")
         job_offer_content = self.session_manager.get("job_offer_content")
-        user_tier = UserTier(self.session_manager.get("user_tier", "free"))
+        # Fix: utiliser st.session_state directement au lieu du session_manager
+        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
+        if isinstance(raw_tier, str):
+            try:
+                user_tier = UserTier(raw_tier)
+            except ValueError:
+                user_tier = UserTier.FREE
+        else:
+            user_tier = raw_tier
         if not letter_content or not job_offer_content:
             st.warning(
                 "Veuillez d'abord générer une lettre et uploader l'offre d'emploi."
@@ -593,7 +629,15 @@ class GeneratorPage:
     def _process_smart_coach(self) -> None:
         """Traite le feedback Smart Coach."""
         letter_content = self.session_manager.get("generated_letter")
-        user_tier = UserTier(self.session_manager.get("user_tier", "free"))
+        # Fix: utiliser st.session_state directement au lieu du session_manager
+        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
+        if isinstance(raw_tier, str):
+            try:
+                user_tier = UserTier(raw_tier)
+            except ValueError:
+                user_tier = UserTier.FREE
+        else:
+            user_tier = raw_tier
         if not letter_content:
             st.warning("Veuillez d'abord générer une lettre.")
             return
@@ -665,7 +709,15 @@ class GeneratorPage:
         target_role = st.session_state.get("new_domain", "Nouveau Rôle")
         current_skills = self.session_manager.get("transferable_skills", "").split(",")
         current_skills = [s.strip() for s in current_skills if s.strip()]
-        user_tier = UserTier(self.session_manager.get("user_tier", "free"))
+        # Fix: utiliser st.session_state directement au lieu du session_manager
+        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
+        if isinstance(raw_tier, str):
+            try:
+                user_tier = UserTier(raw_tier)
+            except ValueError:
+                user_tier = UserTier.FREE
+        else:
+            user_tier = raw_tier
 
         if not current_role or not target_role or not current_skills:
             st.warning(
@@ -816,7 +868,15 @@ class GeneratorPage:
                 st.success("✅ Lettre générée avec succès!")
 
                 # Upsell contextuel post-génération
-                user_tier = UserTier(self.session_manager.get("user_tier", "free"))
+                # Fix: utiliser st.session_state directement au lieu du session_manager
+        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
+        if isinstance(raw_tier, str):
+            try:
+                user_tier = UserTier(raw_tier)
+            except ValueError:
+                user_tier = UserTier.FREE
+        else:
+            user_tier = raw_tier
                 if user_tier == UserTier.FREE:
                     # Compter lettres générées pour upsell contextuel
                     generation_count = (
@@ -908,7 +968,15 @@ class GeneratorPage:
 
     def _render_usage_counter(self) -> None:
         """Affiche le compteur d'usage pour les utilisateurs FREE."""
-        user_tier = UserTier(self.session_manager.get("user_tier", "free"))
+        # Fix: utiliser st.session_state directement au lieu du session_manager
+        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
+        if isinstance(raw_tier, str):
+            try:
+                user_tier = UserTier(raw_tier)
+            except ValueError:
+                user_tier = UserTier.FREE
+        else:
+            user_tier = raw_tier
 
         if user_tier == UserTier.FREE:
             remaining = self.letter_service.get_remaining_generations(user_tier)
