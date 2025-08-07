@@ -4,12 +4,12 @@ Import et analyse securisee de CV existants avec validation et scanning
 """
 
 import streamlit as st
-from ..config.security_config import SecurityConfig
-from ..services.secure_file_handler import SecureFileHandler
-from ..utils.exceptions import SecurityException
-from ..utils.rate_limiter import rate_limiter
-from ..utils.secure_logging import secure_logger
-from ..utils.secure_validator import SecureValidator
+from phoenix_cv.config.security_config import SecurityConfig
+from phoenix_cv.services.secure_file_handler import SecureFileHandler
+from phoenix_cv.utils.exceptions import SecurityException
+from phoenix_cv.utils.rate_limiter import rate_limiter
+from phoenix_cv.utils.secure_logging import secure_logger
+from phoenix_cv.utils.secure_validator import SecureValidator
 
 
 def render_upload_cv_page_secure(cv_parser, display_parsed_cv_secure_func):

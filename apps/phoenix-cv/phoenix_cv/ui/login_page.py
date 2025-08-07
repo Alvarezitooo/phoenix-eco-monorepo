@@ -8,7 +8,7 @@ Version: 1.0.0 - Production Ready
 
 import streamlit as st
 from typing import Optional
-from ..services.phoenix_unified_auth import phoenix_cv_auth
+from phoenix_cv.services.phoenix_unified_auth import phoenix_cv_auth
 
 
 def render_login_choice_page():

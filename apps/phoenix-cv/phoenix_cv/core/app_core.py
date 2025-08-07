@@ -10,26 +10,26 @@ import re
 
 import pandas as pd
 import streamlit as st
-from ..config.security_config import SecurityConfig
-from ..models.phoenix_user import UserTier
-from ..services.secure_ats_optimizer import SecureATSOptimizer
-from ..services.secure_cv_parser import SecureCVParser
-from ..services.secure_gemini_client import SecureGeminiClient
-from ..services.secure_session_manager import SecureSessionManager
-from ..services.secure_template_engine import SecureTemplateEngine
-from ..ui import (
+from phoenix_cv.config.security_config import SecurityConfig
+from phoenix_cv.models.phoenix_user import UserTier
+from phoenix_cv.services.secure_ats_optimizer import SecureATSOptimizer
+from phoenix_cv.services.secure_cv_parser import SecureCVParser
+from phoenix_cv.services.secure_gemini_client import SecureGeminiClient
+from phoenix_cv.services.secure_session_manager import SecureSessionManager
+from phoenix_cv.services.secure_template_engine import SecureTemplateEngine
+from phoenix_cv.ui import (
     render_about_page_secure,
     render_create_cv_page_secure,
     render_home_page_secure,
     render_pricing_page_secure,
     render_upload_cv_page_secure,
 )
-from ..utils.exceptions import SecurityException, ValidationException
-from ..utils.rate_limiter import rate_limiter
-from ..utils.safe_markdown import safe_markdown
-from ..utils.secure_crypto import secure_crypto
-from ..utils.secure_logging import secure_logger
-from ..utils.secure_validator import SecureValidator
+from phoenix_cv.utils.exceptions import SecurityException, ValidationException
+from phoenix_cv.utils.rate_limiter import rate_limiter
+from phoenix_cv.utils.safe_markdown import safe_markdown
+from phoenix_cv.utils.secure_crypto import secure_crypto
+from phoenix_cv.utils.secure_logging import secure_logger
+from phoenix_cv.utils.secure_validator import SecureValidator
 
 # Import du style global du Design System
 with open("../../packages/phoenix-shared-ui/style.css") as f:

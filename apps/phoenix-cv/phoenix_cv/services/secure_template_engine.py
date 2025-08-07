@@ -3,9 +3,9 @@ from dataclasses import dataclass
 from typing import Dict, List
 
 from models.cv_data import CVProfile, CVTier
-from ..utils.exceptions import SecurityException, ValidationException
-from ..utils.secure_logging import secure_logger
-from ..utils.secure_validator import SecureValidator
+from phoenix_cv.utils.exceptions import SecurityException, ValidationException
+from phoenix_cv.utils.secure_logging import secure_logger
+from phoenix_cv.utils.secure_validator import SecureValidator
 
 
 @dataclass

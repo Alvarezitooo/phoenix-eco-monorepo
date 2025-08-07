@@ -5,13 +5,13 @@ Formulaire securise de creation CV avec validation et chiffrement
 
 import streamlit as st
 import uuid
-from ..models.user_profile import UserProfile, Skill, Experience, CV, Letter
-from ..models.phoenix_user import UserTier
-from ..services.secure_session_manager import secure_session
-from ..utils.exceptions import SecurityException, ValidationException
-from ..utils.safe_markdown import safe_markdown
-from ..utils.secure_logging import secure_logger
-from ..utils.secure_validator import SecureValidator
+from phoenix_cv.models.user_profile import UserProfile, Skill, Experience, CV, Letter
+from phoenix_cv.models.phoenix_user import UserTier
+from phoenix_cv.services.secure_session_manager import secure_session
+from phoenix_cv.utils.exceptions import SecurityException, ValidationException
+from phoenix_cv.utils.safe_markdown import safe_markdown
+from phoenix_cv.utils.secure_logging import secure_logger
+from phoenix_cv.utils.secure_validator import SecureValidator
 
 
 def render_create_cv_page_secure(gemini_client, display_generated_cv_secure_func):

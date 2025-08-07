@@ -24,7 +24,7 @@ except ImportError:
 # Import du système d'auth partagé
 try:
     from packages.phoenix_shared_auth.services.phoenix_auth_service import PhoenixAuthService
-    from ..models.phoenix_user import PhoenixUser, UserTier
+    from phoenix_cv.models.phoenix_user import PhoenixUser, UserTier
     from packages.phoenix_shared_auth.database.phoenix_db_connection import get_phoenix_db_connection
     SHARED_AUTH_AVAILABLE = True
 except ImportError:

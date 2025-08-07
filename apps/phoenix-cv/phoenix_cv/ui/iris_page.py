@@ -5,7 +5,7 @@ Interface complète d'accompagnement CV et carrière.
 """
 
 import streamlit as st
-from .iris_integration import (
+from phoenix_cv.ui.iris_integration import (
     render_cv_iris_chat,
     render_ats_iris_assistant, 
     render_template_iris_assistant,

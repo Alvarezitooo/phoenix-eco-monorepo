@@ -13,7 +13,7 @@ import logging
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from dotenv import load_dotenv
-from .phoenix_auth_integration import phoenix_auth
+from phoenix_cv.services.phoenix_auth_integration import phoenix_auth
 
 logger = logging.getLogger(__name__)
 

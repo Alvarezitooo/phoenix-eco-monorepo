@@ -3,7 +3,7 @@
 Cœur de l'application sécurisée
 """
 
-from .app_core import (
+from phoenix_cv.core.app_core import (
     SecurePhoenixCVApp,
     main_secure,
     render_security_dashboard,

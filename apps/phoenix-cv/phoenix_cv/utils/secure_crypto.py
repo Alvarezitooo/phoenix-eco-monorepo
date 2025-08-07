@@ -4,12 +4,12 @@ import hmac
 import os
 import secrets
 
-from ..config.security_config import SecurityConfig
+from phoenix_cv.config.security_config import SecurityConfig
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from .exceptions import SecurityException
-from .secure_logging import secure_logger
+from phoenix_cv.utils.exceptions import SecurityException
+from phoenix_cv.utils.secure_logging import secure_logger
 
 
 class SecureCrypto:

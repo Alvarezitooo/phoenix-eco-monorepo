@@ -3,12 +3,12 @@ from typing import Dict, List
 
 from enum import Enum
 
-from ..models.user_profile import UserProfile
-from .secure_gemini_client import SecureGeminiClient
-from ..utils.exceptions import SecurityException
-from ..utils.rate_limiter import rate_limit
-from ..utils.secure_logging import secure_logger
-from ..utils.secure_validator import SecureValidator
+from phoenix_cv.models.user_profile import UserProfile
+from phoenix_cv.services.secure_gemini_client import SecureGeminiClient
+from phoenix_cv.utils.exceptions import SecurityException
+from phoenix_cv.utils.rate_limiter import rate_limit
+from phoenix_cv.utils.secure_logging import secure_logger
+from phoenix_cv.utils.secure_validator import SecureValidator
 
 
 class ATSScore(Enum):

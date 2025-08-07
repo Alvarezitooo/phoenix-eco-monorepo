@@ -4,8 +4,8 @@ Module UI pour la page d'accueil avec navigation et metriques securisees
 """
 
 import streamlit as st
-from ..models.phoenix_user import UserTier
-from ..utils.safe_markdown import safe_markdown
+from phoenix_cv.models.phoenix_user import UserTier
+from phoenix_cv.utils.safe_markdown import safe_markdown
 from phoenix_shared_ui.components import render_primary_button, render_info_card, render_section_header, render_alert, render_metric_card, render_ariadne_thread
 
 

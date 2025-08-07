@@ -6,7 +6,7 @@ Affichage et apercu securise des templates CV disponibles
 import html
 
 import streamlit as st
-from ..models.phoenix_user import UserTier
+from phoenix_cv.models.phoenix_user import UserTier
 
 
 def render_templates_page_secure(template_engine, create_demo_profile_secure_func):

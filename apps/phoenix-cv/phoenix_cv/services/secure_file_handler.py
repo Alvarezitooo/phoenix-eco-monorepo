@@ -6,9 +6,9 @@ from typing import Tuple
 
 import docx
 import PyPDF2
-from ..config.security_config import SecurityConfig
-from ..utils.secure_logging import secure_logger
-from ..utils.secure_validator import SecureValidator
+from phoenix_cv.config.security_config import SecurityConfig
+from phoenix_cv.utils.secure_logging import secure_logger
+from phoenix_cv.utils.secure_validator import SecureValidator
 
 # Import de la protection pypdf DoS
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../packages/pdf-security-patch'))

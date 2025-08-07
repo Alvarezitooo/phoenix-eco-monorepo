@@ -18,10 +18,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 # Imports conditionnels
 try:
-    from .ai_trajectory_builder import ai_trajectory_builder
-    from .enhanced_gemini_client import get_enhanced_gemini_client
-    from utils.exceptions import SecurityException
-    from utils.secure_logging import secure_logger
+    from phoenix_cv.services.ai_trajectory_builder import ai_trajectory_builder
+    from phoenix_cv.services.enhanced_gemini_client import get_enhanced_gemini_client
+    from phoenix_cv.utils.exceptions import SecurityException
+    from phoenix_cv.utils.secure_logging import secure_logger
 except ImportError:
     import logging
 

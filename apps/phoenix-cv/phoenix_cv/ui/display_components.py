@@ -6,12 +6,12 @@ Fonctions d'affichage des résultats CV, analyses ATS et profils démo
 import html
 
 import streamlit as st
-from ..models.user_profile import UserProfile, Skill, Experience, CV, Letter
-from ..models.phoenix_user import UserTier
-from ..services.secure_ats_optimizer import ATSAnalysis
-from ..utils.exceptions import SecurityException
-from ..utils.secure_crypto import secure_crypto
-from ..utils.secure_logging import secure_logger
+from phoenix_cv.models.user_profile import UserProfile, Skill, Experience, CV, Letter
+from phoenix_cv.models.phoenix_user import UserTier
+from phoenix_cv.services.secure_ats_optimizer import ATSAnalysis
+from phoenix_cv.utils.exceptions import SecurityException
+from phoenix_cv.utils.secure_crypto import secure_crypto
+from phoenix_cv.utils.secure_logging import secure_logger
 
 
 def display_generated_cv_secure(profile: UserProfile, template_engine, ats_optimizer):

@@ -22,24 +22,24 @@ import PyPDF2
 import streamlit as st
 st.toast("✅ VERSION DU 03/08/2025 - 09:15 AM CEST")
 # FORCE CACHE BUST - IMPORTS RELATIFS CORRECTS
-from .services.ai_trajectory_builder import (
+from phoenix_cv.services.ai_trajectory_builder import (
     CareerStage,
     TrajectoryDifficulty,
     ai_trajectory_builder,
 )
 
 # Import des services enhanced
-from .services.enhanced_gemini_client import get_enhanced_gemini_client
-from .services.mirror_match_engine import MatchType, mirror_match_engine
-from .services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
-from .services.smart_coach import (
+from phoenix_cv.services.enhanced_gemini_client import get_enhanced_gemini_client
+from phoenix_cv.services.mirror_match_engine import MatchType, mirror_match_engine
+from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
+from phoenix_cv.services.smart_coach import (
     CoachingContext,
     CoachingTone,
     UrgencyLevel,
     smart_coach,
 )
-from .utils.html_sanitizer import html_sanitizer
-from .ui.login_page import handle_authentication_flow
+from phoenix_cv.utils.html_sanitizer import html_sanitizer
+from phoenix_cv.ui.login_page import handle_authentication_flow
 
 
 def safe_markdown(content: str, allow_styles: bool = True):

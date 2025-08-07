@@ -10,8 +10,8 @@ import html
 from typing import Dict, List, Optional
 
 import bleach
-from .exceptions import SecurityException
-from .secure_logging import secure_logger
+from phoenix_cv.utils.exceptions import SecurityException
+from phoenix_cv.utils.secure_logging import secure_logger
 
 
 class HTMLSanitizer:
