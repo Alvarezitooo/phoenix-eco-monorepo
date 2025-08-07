@@ -8,6 +8,28 @@ from shared.interfaces.prompt_interface import PromptServiceInterface
 logger = logging.getLogger(__name__)
 
 
+def truncate_content(content: str, max_chars: int = 15000) -> str:
+    """
+    Tronque le contenu pour éviter les prompts trop longs.
+    
+    Args:
+        content: Contenu à tronquer
+        max_chars: Nombre maximum de caractères
+        
+    Returns:
+        str: Contenu tronqué avec indication si nécessaire
+    """
+    if not content:
+        return ""
+        
+    if len(content) <= max_chars:
+        return content
+        
+    # Tronquer au dernier espace pour éviter de couper un mot
+    truncated = content[:max_chars].rsplit(' ', 1)[0]
+    return f"{truncated}...\n\n[CONTENU TRONQUÉ POUR OPTIMISATION - INFORMATIONS PRINCIPALES CONSERVÉES]"
+
+
 class PromptService(PromptServiceInterface):
     """Service pour la construction des prompts destinés à l'IA."""
 
