@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phoenix-security"
+version = "1.0.0"
+description = "Services de sécurité et protection des données pour l'écosystème Phoenix"
+authors = [{name = "Claude Phoenix DevSecOps Guardian"}]
+requires-python = ">=3.9"
+dependencies = [
+    "bleach>=6.0.0",
+    "cryptography>=45.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+]

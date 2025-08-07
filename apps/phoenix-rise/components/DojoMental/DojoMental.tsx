@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ZazenTimer from '../../../../apps/phoenix-website/components/ZazenTimer/ZazenTimer';
-import KaizenGrid from '../../../../apps/phoenix-website/components/KaizenGrid/KaizenGrid';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_DOJO_API_URL || "http://127.0.0.1:8000";
+// ✅ CORRECTION ARCHITECTURE: Import depuis packages partagés
+import { ZazenTimer, KaizenGrid } from '../../../../packages/phoenix-shared-ui/components';
+// ✅ CORRECTION ARCHITECTURE: Logique réseau externalisée
+import { useDojoApi } from './hooks/useDojoApi';
 
 interface DojoMentalProps {
   userId: string;
@@ -11,71 +11,58 @@ interface DojoMentalProps {
 export default function DojoMental({ userId }: DojoMentalProps) {
   const [currentDialogue, setCurrentDialogue] = useState("");
   const [kaizenInput, setKaizenInput] = useState("");
-  const kaizenGridRef = useRef<{ refreshKaizenHistory: () => void }>(null); // Ref to access child method
+  const kaizenGridRef = useRef<{ refreshKaizenHistory: () => void }>(null);
+  
+  // ✅ CORRECTION ARCHITECTURE: Logique API externalisée
+  const { createKaizen, createZazenSession, isLoading, error } = useDojoApi();
 
   useEffect(() => {
     // Initial Iris dialogue based on Annexe 2
     setCurrentDialogue("Bienvenue dans le Dojo. Tu n’es pas ici pour tout résoudre, juste pour faire un pas. Lequel ?");
   }, []);
 
+  // ✅ CORRECTION ARCHITECTURE: Logique métier simplifiée
   const handleKaizenSubmit = async () => {
-    if (kaizenInput.trim()) {
-      const newKaizen = {
-        user_id: userId,
-        action: kaizenInput.trim(),
-        date: new Date().toISOString().split('T')[0],
-        completed: false,
-      };
-      try {
-        const response = await fetch(`${API_BASE_URL}/kaizen`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(newKaizen),
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log("Kaizen created:", data);
-        setKaizenInput("");
-        setCurrentDialogue("Un excellent choix. Ce Kaizen est enregistré. Que souhaites-tu faire ensuite ?");
-        if (kaizenGridRef.current) {
-          kaizenGridRef.current.refreshKaizenHistory(); // Refresh the grid
-        }
-      } catch (error) {
-        console.error("Error creating Kaizen:", error);
-        setCurrentDialogue("Désolé, une erreur est survenue lors de l'enregistrement de votre Kaizen.");
+    if (!kaizenInput.trim() || isLoading) return;
+
+    const kaizenData = {
+      user_id: userId,
+      action: kaizenInput.trim(),
+      date: new Date().toISOString().split('T')[0],
+      completed: false,
+    };
+
+    const result = await createKaizen(kaizenData);
+    
+    if (result.success) {
+      setKaizenInput("");
+      setCurrentDialogue("Un excellent choix. Ce Kaizen est enregistré. Que souhaites-tu faire ensuite ?");
+      if (kaizenGridRef.current) {
+        kaizenGridRef.current.refreshKaizenHistory();
       }
+    } else {
+      setCurrentDialogue(`Désolé, une erreur est survenue: ${result.error}`);
     }
   };
 
+  // ✅ CORRECTION ARCHITECTURE: Logique métier simplifiée
   const handleZazenStart = async () => {
+    if (isLoading) return;
+
     const sessionData = {
       user_id: userId,
       timestamp: new Date().toISOString(),
       duration: 120, // 2 minutes
       triggered_by: "user_request",
     };
-    try {
-      const response = await fetch(`${API_BASE_URL}/zazen-session`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(sessionData),
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log("Zazen session created:", data);
+
+    const result = await createZazenSession(sessionData);
+    
+    if (result.success) {
       setCurrentDialogue("Très bien. Commençons ce Zazen de 2 minutes. Concentre-toi sur ta respiration.");
       // Trigger ZazenTimer start here
-    } catch (error) {
-      console.error("Error creating Zazen session:", error);
-      setCurrentDialogue("Désolé, une erreur est survenue lors du démarrage de votre Zazen.");
+    } else {
+      setCurrentDialogue(`Désolé, une erreur est survenue: ${result.error}`);
     }
   };
 
@@ -101,16 +88,18 @@ export default function DojoMental({ userId }: DojoMentalProps) {
           }}
         />
         <button
-          className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+          className={`px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           onClick={handleKaizenSubmit}
+          disabled={isLoading}
         >
-          Enregistrer mon Kaizen
+          {isLoading ? 'Enregistrement...' : 'Enregistrer mon Kaizen'}
         </button>
         <button
-          className="px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+          className={`px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           onClick={handleZazenStart}
+          disabled={isLoading}
         >
-          Commencer un Zazen de 2 minutes
+          {isLoading ? 'Démarrage...' : 'Commencer un Zazen de 2 minutes'}
         </button>
       </div>
 

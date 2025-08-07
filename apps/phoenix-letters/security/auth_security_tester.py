@@ -283,6 +283,7 @@ class AuthSecurityTester:
         # Simuler différents algorithmes
         # Ces algorithmes sont utilisés ici à des fins de test et de démonstration de vulnérabilité.
         # Ils ne doivent JAMAIS être utilisés pour le hachage de données sensibles en production.
+        # CodeQL [query-id]: python/weak-cryptographic-hash -- Suppress because this is a security test case.
         hash_tests = [
             ("MD5", hashlib.md5(test_password.encode()).hexdigest(), "critical"),
             ("SHA1", hashlib.sha1(test_password.encode()).hexdigest(), "high"),
