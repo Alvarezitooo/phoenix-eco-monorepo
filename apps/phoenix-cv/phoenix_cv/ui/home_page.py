@@ -6,7 +6,35 @@ Module UI pour la page d'accueil avec navigation et metriques securisees
 import streamlit as st
 from phoenix_cv.models.phoenix_user import UserTier
 from phoenix_cv.utils.safe_markdown import safe_markdown
-from phoenix_shared_ui.components import render_primary_button, render_info_card, render_section_header, render_alert, render_metric_card, render_ariadne_thread
+# Import conditionnel des composants partagés
+try:
+    from phoenix_shared_ui.components import render_primary_button, render_info_card, render_section_header, render_alert, render_metric_card, render_ariadne_thread
+    SHARED_UI_AVAILABLE = True
+except ImportError:
+    SHARED_UI_AVAILABLE = False
+    # Fallbacks simples pour les composants
+    def render_primary_button(text, key=None, **kwargs):
+        return st.button(text, key=key, type="primary", **kwargs)
+    
+    def render_info_card(title, content, **kwargs):
+        st.info(f"**{title}**\n\n{content}")
+    
+    def render_section_header(title, **kwargs):
+        st.subheader(title)
+    
+    def render_alert(message, type="info", **kwargs):
+        if type == "warning":
+            st.warning(message)
+        elif type == "error":
+            st.error(message)
+        else:
+            st.info(message)
+    
+    def render_metric_card(title, value, **kwargs):
+        st.metric(title, value)
+    
+    def render_ariadne_thread(content, **kwargs):
+        st.markdown(content)
 
 
 def render_home_page_secure():
