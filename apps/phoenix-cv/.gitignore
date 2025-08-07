@@ -143,8 +143,12 @@ cache/
 # Streamlit
 .streamlit/
 
-# AI/ML models cache
-models/
+# AI/ML models cache (but not Python models modules)
+models/*.pkl
+models/*.joblib
+models/*.h5
+models/*.pt
+models/*.pth
 *.pkl
 *.joblib
 
