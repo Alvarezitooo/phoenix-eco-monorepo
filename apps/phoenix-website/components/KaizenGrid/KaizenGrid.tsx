@@ -10,8 +10,12 @@ const COLUMN_COUNT = 7; // Days of the week
 const ROW_HEIGHT = 30; // Height of each cell
 const COLUMN_WIDTH = 30; // Width of each cell
 
-export default function KaizenGrid() {
-  const { data, loading, error, toggleKaizenStatus } = useKaizenHistory();
+interface KaizenGridProps {
+  userId: string;
+}
+
+export default function KaizenGrid({ userId }: KaizenGridProps) {
+  const { data, loading, error, toggleKaizenStatus } = useKaizenHistory(userId);
   const { tooltipState, showTooltip, hideTooltip } = useTooltip();
 
   if (loading) {
@@ -31,9 +35,7 @@ export default function KaizenGrid() {
 
     const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
       const rect = e.currentTarget.getBoundingClientRect();
-      const content = item.isDone
-        ? `Kaizen accompli le ${item.date}`
-        : `Aucun Kaizen le ${item.date}`;
+      const content = item.completed ? `Kaizen accompli le ${item.date}` : `Aucun Kaizen le ${item.date}`;
       showTooltip(content, rect.left + rect.width / 2, rect.top - 10); // Position above cell
     };
 
@@ -45,7 +47,7 @@ export default function KaizenGrid() {
       <div style={style}>
         <KaizenCell
           date={item.date}
-          isDone={item.isDone}
+          isDone={item.completed}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={hideTooltip}
           onClick={handleClick}

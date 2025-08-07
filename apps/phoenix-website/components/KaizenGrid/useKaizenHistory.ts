@@ -1,8 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_DOJO_API_URL || "http://127.0.0.1:8000";
 
 interface KaizenData {
+  id?: number; // Optional for creation, present for fetched data
+  user_id: string;
+  action: string;
   date: string;
-  isDone: boolean;
+  completed: boolean;
 }
 
 interface UseKaizenHistoryResult {
@@ -10,78 +15,71 @@ interface UseKaizenHistoryResult {
   loading: boolean;
   error: string | null;
   toggleKaizenStatus: (date: string) => Promise<void>;
+  refreshKaizenHistory: () => void;
 }
 
-// Simulate fetching 365 days of data
-const simulateFetchKaizenHistory = (): Promise<KaizenData[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const history: KaizenData[] = [];
-      const today = new Date();
-      for (let i = 0; i < 365; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        history.push({
-          date: date.toISOString().split('T')[0], // YYYY-MM-DD
-          isDone: Math.random() > 0.5, // Randomly true/false
-        });
-      }
-      resolve(history.reverse()); // Oldest first
-    }, 1000); // Simulate network delay
-  });
-};
-
-// Simulate backend update
-const simulateUpdateKaizenStatus = (date: string, isDone: boolean): Promise<void> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log(`Backend updated: ${date} to ${isDone}`);
-      resolve();
-    }, 300); // Simulate network delay
-  });
-};
-
-export function useKaizenHistory(): UseKaizenHistoryResult {
+export function useKaizenHistory(userId: string): UseKaizenHistoryResult {
   const [data, setData] = useState<KaizenData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const result = await simulateFetchKaizenHistory();
-        setData(result);
-      } catch (err) {
-        setError('Failed to fetch Kaizen history.');
-      } finally {
-        setLoading(false);
+  const fetchKaizenHistory = useCallback(async () => {
+    if (!userId) return;
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/kaizen/${userId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
+      const result: KaizenData[] = await response.json();
+      setData(result);
+    } catch (err: any) {
+      setError(`Failed to fetch Kaizen history: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
 
-    fetchData();
-  }, []);
+  useEffect(() => {
+    fetchKaizenHistory();
+  }, [fetchKaizenHistory]);
 
-  const toggleKaizenStatus = async (dateToToggle: string) => {
+  const toggleKaizenStatus = useCallback(async (dateToToggle: string) => {
+    const itemToUpdate = data.find((item) => item.date === dateToToggle);
+    if (!itemToUpdate || itemToUpdate.id === undefined) {
+      console.error("Kaizen item not found or has no ID:", dateToToggle);
+      return;
+    }
+
     const originalData = [...data]; // Save original data for rollback
 
     // Optimistic UI update
     setData((prevData) =>
       prevData.map((item) =>
-        item.date === dateToToggle ? { ...item, isDone: !item.isDone } : item,
-      ),
+        item.date === dateToToggle ? { ...item, completed: !item.completed } : item
+      )
     );
 
     try {
-      const itemToUpdate = data.find((item) => item.date === dateToToggle);
-      if (itemToUpdate) {
-        await simulateUpdateKaizenStatus(dateToToggle, !itemToUpdate.isDone);
+      const updatedStatus = !itemToUpdate.completed;
+      const response = await fetch(`${API_BASE_URL}/kaizen/${itemToUpdate.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ completed: updatedStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    } catch (err) {
-      setError('Failed to update Kaizen status.');
+      // No need to parse response if we trust optimistic update, but good for logging
+      await response.json(); 
+    } catch (err: any) {
+      setError(`Failed to update Kaizen status: ${err.message}`);
       setData(originalData); // Rollback on error
     }
-  };
+  }, [data, userId]); // userId added to dependencies
 
-  return { data, loading, error, toggleKaizenStatus };
+  return { data, loading, error, toggleKaizenStatus, refreshKaizenHistory: fetchKaizenHistory };
 }
