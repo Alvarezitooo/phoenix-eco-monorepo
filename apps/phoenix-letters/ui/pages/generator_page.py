@@ -869,14 +869,15 @@ class GeneratorPage:
 
                 # Upsell contextuel post-génération
                 # Fix: utiliser st.session_state directement au lieu du session_manager
-        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
-        if isinstance(raw_tier, str):
-            try:
-                user_tier = UserTier(raw_tier)
-            except ValueError:
-                user_tier = UserTier.FREE
-        else:
-            user_tier = raw_tier
+                raw_tier = st.session_state.get("user_tier", UserTier.FREE)
+                if isinstance(raw_tier, str):
+                    try:
+                        user_tier = UserTier(raw_tier)
+                    except ValueError:
+                        user_tier = UserTier.FREE
+                else:
+                    user_tier = raw_tier
+                
                 if user_tier == UserTier.FREE:
                     # Compter lettres générées pour upsell contextuel
                     generation_count = (
