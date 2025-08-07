@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-import pytz
 from collections import deque
+import pytz
+import json
 
 @dataclass
 class EmotionalVectorState:
@@ -114,3 +115,12 @@ class EmotionalVectorState:
         
         self.calculate_burnout_risk()
         self.last_updated = datetime.now(pytz.utc)
+
+    def to_json(self) -> str:
+        # Convertir l'objet en dictionnaire, en gérant les types non sérialisables (datetime, deque)
+        obj_dict = self.__dict__.copy()
+        obj_dict['last_updated'] = self.last_updated.isoformat()
+        obj_dict['confidence_scores_30d'] = list(self.confidence_scores_30d) # Convertir deque en liste
+        obj_dict['event_history_7d'] = [ (ts.isoformat(), et, val) for ts, et, val in self.event_history_7d ]
+        obj_dict['event_history_30d'] = [ (ts.isoformat(), et, val) for ts, et, val in self.event_history_30d ]
+        return json.dumps(obj_dict, indent=2)

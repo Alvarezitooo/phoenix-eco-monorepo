@@ -7,13 +7,16 @@ Assure la compatibilité et la transition progressive vers l'Event Sourcing.
 
 import uuid
 import logging
-from typing import Any, Dict, List
+import json
+from typing import Any, Dict, List, Optional
 from datetime import datetime
 
 import streamlit as st
 from models.journal_entry import JournalEntry
 from .mock_db_service import MockDBService
 from .phoenix_rise_event_helper import phoenix_rise_event_helper
+from core.supabase_client import supabase_client
+from iris_core.event_processing.emotional_vector_state import EmotionalVectorState
 
 logger = logging.getLogger(__name__)
 
@@ -22,12 +25,24 @@ class HybridDBService:
     """
     Service de base de données hybride.
     Utilise MockDBService pour le stockage local ET publie les événements vers la data pipeline.
+    Supporte la persistance EmotionalVectorState via Event Sourcing.
     """
 
     def __init__(self):
         self.mock_service = MockDBService()
         self.event_helper = phoenix_rise_event_helper
-        logger.info("✅ HybridDBService initialisé (Mock + Event Sourcing)")
+        self._supabase_available = self._check_supabase_connection()
+        logger.info(f"✅ HybridDBService initialisé (Mock + Event Sourcing) - Supabase: {'✅' if self._supabase_available else '⚠️'}")
+    
+    def _check_supabase_connection(self) -> bool:
+        """Vérifie si Supabase est disponible."""
+        try:
+            # Test simple de connexion
+            result = supabase_client.table('events').select('event_id').limit(1).execute()
+            return True
+        except Exception as e:
+            logger.warning(f"⚠️ Supabase indisponible: {e}")
+            return False
 
     def get_profile(self, user_id: str) -> Dict[str, Any]:
         """Récupère un profil utilisateur."""
@@ -70,7 +85,7 @@ class HybridDBService:
             user_id, title, description, objective_type, target_date
         )
         
-        # 2. Publier événement
+        # 2. Publier événement (Event Bridge)
         try:
             self.event_helper.publish_objective_created(
                 user_id=user_id,
@@ -81,6 +96,23 @@ class HybridDBService:
             )
         except Exception as e:
             logger.warning(f"⚠️ Échec publication ObjectiveCreated: {e}")
+        
+        # 3. Stocker événement pour EEV
+        self.store_event_to_supabase(
+            user_id=user_id,
+            event_type="GoalSet",
+            payload={
+                "objective_id": objective["id"],
+                "title": title,
+                "objective_type": objective_type,
+                "target_date": target_date
+            }
+        )
+        
+        # 4. Mettre à jour l'EEV
+        evs = self.get_emotional_vector_state(user_id)
+        evs.update_action(datetime.utcnow(), "GoalSet")
+        self.save_emotional_vector_state(evs)
         
         return objective
 
@@ -105,7 +137,7 @@ class HybridDBService:
         # 1. Créer via Mock
         entry = self.mock_service.create_journal_entry(user_id, mood, confidence, notes)
         
-        # 2. Publier événement MoodLogged
+        # 2. Publier événement MoodLogged (Event Bridge)
         try:
             self.event_helper.publish_mood_logged(
                 user_id=user_id,
@@ -117,6 +149,24 @@ class HybridDBService:
             logger.info(f"✅ Événement MoodLogged publié pour entrée {entry.id}")
         except Exception as e:
             logger.warning(f"⚠️ Échec publication MoodLogged: {e}")
+        
+        # 3. Stocker événement dans Supabase pour EEV
+        self.store_event_to_supabase(
+            user_id=user_id,
+            event_type="MoodLogged",
+            payload={
+                "score": mood / 10.0,  # Normaliser 1-10 vers 0.1-1.0
+                "confidence": confidence,
+                "notes": notes,
+                "journal_entry_id": entry.id
+            }
+        )
+        
+        # 4. Mettre à jour l'EEV en temps réel
+        evs = self.get_emotional_vector_state(user_id)
+        evs.update_mood(datetime.utcnow(), mood / 10.0)
+        evs.update_confidence(datetime.utcnow(), confidence / 10.0)
+        self.save_emotional_vector_state(evs)
         
         return entry
 
@@ -145,13 +195,110 @@ class HybridDBService:
         except Exception as e:
             logger.warning(f"⚠️ Échec publication CoachingSessionStarted: {e}")
         
+        # Stocker événement pour EEV
+        self.store_event_to_supabase(
+            user_id=user_id,
+            event_type="CoachingSessionStarted",
+            payload={
+                "session_id": session_id,
+                "session_type": session_type,
+                "user_tier": user_tier
+            }
+        )
+        
         return session_id
 
     def get_event_status(self) -> Dict[str, Any]:
         """Retourne le statut du système d'événements."""
         return {
             "event_bridge_available": self.event_helper.is_available,
+            "supabase_available": self._supabase_available,
             "mock_service_active": True,
             "hybrid_mode": True,
             "timestamp": datetime.utcnow().isoformat()
         }
+    
+    # ===== EMOTIONAL VECTOR STATE - EVENT SOURCING =====
+    
+    def get_emotional_vector_state(self, user_id: str) -> EmotionalVectorState:
+        """Récupère l'EmotionalVectorState d'un utilisateur via Event Sourcing."""
+        if self._supabase_available:
+            return self._rebuild_evs_from_events(user_id)
+        else:
+            # Fallback vers session state pour développement
+            return self._get_evs_from_session(user_id)
+    
+    def _rebuild_evs_from_events(self, user_id: str) -> EmotionalVectorState:
+        """Reconstruit l'EEV depuis les événements stockés dans Supabase."""
+        try:
+            # Récupérer tous les événements pertinents pour ce user
+            result = supabase_client.table('events') \
+                .select('*') \
+                .eq('stream_id', user_id) \
+                .in_('event_type', ['MoodLogged', 'ConfidenceScoreLogged', 'CVGenerated', 'SkillSuggested', 'TrajectoryBuilt', 'GoalSet']) \
+                .order('timestamp', desc=False) \
+                .execute()
+            
+            events = result.data
+            evs = EmotionalVectorState(user_id=user_id)
+            
+            # Rejouer tous les événements pour reconstruire l'état
+            for event in events:
+                event_formatted = {
+                    'type': event['event_type'],
+                    'timestamp': event['timestamp'],
+                    'payload': event['payload']
+                }
+                evs.update_from_event(event_formatted)
+            
+            logger.info(f"✅ EEV reconstruit pour {user_id} depuis {len(events)} événements")
+            return evs
+            
+        except Exception as e:
+            logger.error(f"❌ Erreur reconstruction EEV pour {user_id}: {e}")
+            return EmotionalVectorState(user_id=user_id)  # EEV vierge
+    
+    def _get_evs_from_session(self, user_id: str) -> EmotionalVectorState:
+        """Fallback: récupère l'EEV depuis st.session_state."""
+        if "emotional_vector_states" not in st.session_state:
+            st.session_state.emotional_vector_states = {}
+        
+        if user_id not in st.session_state.emotional_vector_states:
+            st.session_state.emotional_vector_states[user_id] = EmotionalVectorState(user_id=user_id)
+        
+        return st.session_state.emotional_vector_states[user_id]
+    
+    def save_emotional_vector_state(self, evs: EmotionalVectorState) -> bool:
+        """Sauvegarde l'EEV (pour le moment, juste en session state)."""
+        if "emotional_vector_states" not in st.session_state:
+            st.session_state.emotional_vector_states = {}
+        
+        st.session_state.emotional_vector_states[evs.user_id] = evs
+        logger.info(f"✅ EEV sauvegardé pour {evs.user_id}")
+        return True
+    
+    def store_event_to_supabase(self, user_id: str, event_type: str, payload: Dict[str, Any], app_source: str = "rise") -> bool:
+        """Stocke un événement directement dans Supabase Event Store."""
+        if not self._supabase_available:
+            logger.warning(f"⚠️ Supabase indisponible, événement {event_type} non persisté")
+            return False
+        
+        try:
+            event_data = {
+                "stream_id": user_id,
+                "event_type": event_type,
+                "payload": payload,
+                "app_source": app_source,
+                "metadata": {
+                    "source": "phoenix_rise_hybrid_service",
+                    "version": "1.0.0"
+                }
+            }
+            
+            result = supabase_client.table('events').insert(event_data).execute()
+            logger.info(f"✅ Événement {event_type} stocké dans Supabase pour {user_id}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Erreur stockage événement {event_type}: {e}")
+            return False
