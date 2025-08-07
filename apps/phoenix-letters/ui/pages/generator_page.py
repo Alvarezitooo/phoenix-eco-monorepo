@@ -201,17 +201,18 @@ class GeneratorPage:
             self.session_manager.set("new_domain", new_domain)
 
         # Compétences transférables
-        # Assurez-vous que la clé existe dans st.session_state avant de l'utiliser
-        if "transferable_skills" not in st.session_state:
-            st.session_state.transferable_skills = self.session_manager.get(
+        # Utiliser une clé différente pour éviter le conflit Streamlit
+        if "transferable_skills_value" not in st.session_state:
+            st.session_state.transferable_skills_value = self.session_manager.get(
                 "transferable_skills", ""
             )
 
         transferable_skills = st.text_area(
             "🔧 Compétences transférables",
-            value=st.session_state.transferable_skills,  # Lire directement depuis st.session_state
+            value=st.session_state.transferable_skills_value,
             help="Listez les compétences de votre ancienne carrière pertinentes pour le nouveau poste",
-            key="transferable_skills",
+            key="transferable_skills_input",
+            on_change=self._on_transferable_skills_change,
         )
 
         # Afficher le bouton de suggestion de compétences uniquement si les domaines sont renseignés
@@ -226,6 +227,14 @@ class GeneratorPage:
             st.info(
                 "Renseignez l'ancien et le nouveau domaine pour suggérer des compétences."
             )
+
+    def _on_transferable_skills_change(self) -> None:
+        """Callback appelé quand les compétences transférables changent."""
+        if "transferable_skills_input" in st.session_state:
+            # Synchroniser avec le session manager
+            self.session_manager.set("transferable_skills", st.session_state.transferable_skills_input)
+            # Mettre à jour la valeur dans le state local aussi
+            st.session_state.transferable_skills_value = st.session_state.transferable_skills_input
 
     def _process_skills_suggestion(self) -> None:
         """
@@ -248,9 +257,9 @@ class GeneratorPage:
                 suggestions = self.letter_service.suggest_transferable_skills(
                     old_domain, new_domain, user_tier
                 )
-                # Mettre à jour les deux stores
+                # Mettre à jour avec la nouvelle clé
                 self.session_manager.set("transferable_skills", suggestions)
-                st.session_state.transferable_skills = suggestions
+                st.session_state.transferable_skills_value = suggestions
 
                 st.success("✅ Suggestions de compétences générées !")
                 st.rerun()
