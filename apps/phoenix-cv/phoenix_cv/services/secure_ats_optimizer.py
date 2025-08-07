@@ -36,7 +36,6 @@ class SecureATSOptimizer:
     def __init__(self, gemini_client: SecureGeminiClient):
         self.gemini = gemini_client
 
-    @st.cache_data(ttl=3600, show_spinner=False) # Cache for 1 hour, no spinner as it's internal
     @rate_limit(max_requests=3, window_seconds=300)
     def analyze_ats_compatibility_secure(
         self, user_profile: UserProfile, job_description: str = ""

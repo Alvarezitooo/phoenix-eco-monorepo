@@ -177,7 +177,6 @@ class SecureCVParser:
             )
             raise SecurityException("Erreur lors de l'extraction du DOCX")
 
-    @st.cache_data(ttl=3600, show_spinner=False) # Cache for 1 hour, no spinner as it's internal
     def parse_cv_with_ai_secure(self, cv_text: str) -> CVProfile:
         """Parsing sécurisé de CV avec IA (bénéficie d'un meilleur texte en entrée)"""
         try:
