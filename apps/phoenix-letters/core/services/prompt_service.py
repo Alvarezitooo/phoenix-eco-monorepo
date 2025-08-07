@@ -41,20 +41,32 @@ class PromptService(PromptServiceInterface):
         """
         Construit le prompt pour la génération de lettre de motivation.
         """
-        # Exemple de construction de prompt, à affiner selon les besoins
+        # Tronquer le contenu long pour éviter de dépasser les limites de l'API
+        cv_content_truncated = truncate_content(request.cv_content or "", max_chars=12000)
+        job_offer_truncated = truncate_content(request.job_offer_content or "", max_chars=8000)
+        
+        # Construction du prompt avec contenu tronqué
         prompt = f"""
         Rédige une lettre de motivation percutante pour un poste de {request.job_title} chez {request.company_name}.
         Voici le contenu de l'offre d'emploi:
-        {request.job_offer_content}
+        {job_offer_truncated}
 
         Voici le contenu du CV du candidat:
-        {request.cv_content}
+        {cv_content_truncated}
 
         Le candidat souhaite adopter un ton {request.tone.value}.
         {f"Le candidat est en reconversion et ses compétences transférables sont: {request.transferable_skills}" if request.is_career_change else ""}
 
         La lettre doit être concise, professionnelle et mettre en avant l'adéquation entre le profil du candidat et les exigences du poste.
         """
+        
+        # Log de la taille du prompt pour monitoring
+        prompt_length = len(prompt)
+        logger.info(f"Generated prompt length: {prompt_length} characters")
+        
+        if prompt_length > 90000:  # Seuil de sécurité avant la limite de 100k
+            logger.warning(f"Prompt très long ({prompt_length} chars), risque de dépassement")
+        
         return prompt.strip()
 
     def build_analysis_prompt(
