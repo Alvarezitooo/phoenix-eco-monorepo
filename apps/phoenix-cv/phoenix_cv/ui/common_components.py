@@ -92,5 +92,6 @@ def render_secure_footer():
             </span>
         </p>
     </div>
-    """
+    """,
+        unsafe_allow_html=True,
     )

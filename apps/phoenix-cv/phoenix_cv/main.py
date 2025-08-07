@@ -1837,7 +1837,7 @@ def render_trajectory_builder_page():
                     for strength in trajectory.strengths:
                         safe_markdown(f"- {strength}")
 
-                    st.markdown("</div>")
+                    st.markdown("</div>", unsafe_allow_html=True)
 
                 with col2:
                     safe_markdown(
@@ -1850,7 +1850,7 @@ def render_trajectory_builder_page():
                     for challenge in trajectory.challenges:
                         safe_markdown(f"- {challenge}")
 
-                    st.markdown("</div>")
+                    st.markdown("</div>", unsafe_allow_html=True)
 
                 # Recommandations IA
                 st.markdown("---")
