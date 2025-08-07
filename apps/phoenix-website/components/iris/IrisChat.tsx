@@ -33,7 +33,7 @@ export const IrisChat: React.FC<IrisChatProps> = ({ config, authToken, className
       'phoenix-letters': '🤖 Iris Lettres - Expert Lettres de Motivation',
       'phoenix-cv': '🤖 Iris CV - Optimisation CV & Carrière',
       'phoenix-rise': '🤖 Iris Coach - Accompagnement Reconversion',
-      'phoenix-website': '🤖 Iris Phoenix - Guide Écosystème'
+      'phoenix-website': '🤖 Iris Phoenix - Guide Écosystème',
     };
     return titles[config.appContext as keyof typeof titles] || '🤖 Iris Assistant';
   };
@@ -43,23 +43,23 @@ export const IrisChat: React.FC<IrisChatProps> = ({ config, authToken, className
       'phoenix-letters': [
         'Comment personnaliser ma lettre pour ce poste ?',
         'Quels mots-clés ATS utiliser ?',
-        'Comment structurer ma motivation ?'
+        'Comment structurer ma motivation ?',
       ],
       'phoenix-cv': [
-        'Comment améliorer mon CV pour l\'ATS ?',
+        "Comment améliorer mon CV pour l'ATS ?",
         'Quelles compétences mettre en avant ?',
-        'Comment structurer mes expériences ?'
+        'Comment structurer mes expériences ?',
       ],
       'phoenix-rise': [
         'Comment progresser dans ma reconversion ?',
         'Quels objectifs me fixer cette semaine ?',
-        'Comment gérer mes émotions ?'
+        'Comment gérer mes émotions ?',
       ],
       'phoenix-website': [
-        'Présente-moi l\'écosystème Phoenix',
+        "Présente-moi l'écosystème Phoenix",
         'Quels sont les avantages de chaque app ?',
-        'Comment Phoenix peut-il m\'aider ?'
-      ]
+        "Comment Phoenix peut-il m'aider ?",
+      ],
     };
     return suggestions[config.appContext as keyof typeof suggestions] || [];
   };
@@ -77,11 +77,15 @@ export const IrisChat: React.FC<IrisChatProps> = ({ config, authToken, className
             Iris vous aide à optimiser votre stratégie avec des conseils personnalisés.
           </p>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-medium text-blue-800 mb-2">💡 Aperçu des capacités d&apos;Iris :</h4>
+            <h4 className="font-medium text-blue-800 mb-2">
+              💡 Aperçu des capacités d&apos;Iris :
+            </h4>
             <ul className="text-blue-700 space-y-1">
-              {getSuggestions().slice(0, 3).map((suggestion, index) => (
-                <li key={index}>• {suggestion}</li>
-              ))}
+              {getSuggestions()
+                .slice(0, 3)
+                .map((suggestion, index) => (
+                  <li key={index}>• {suggestion}</li>
+                ))}
             </ul>
           </div>
         </CardContent>
@@ -99,7 +103,7 @@ export const IrisChat: React.FC<IrisChatProps> = ({ config, authToken, className
           </Badge>
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         <div className="iris-messages max-h-96 overflow-y-auto space-y-3 border rounded-lg p-4 bg-gray-50">
           {messages.length === 0 ? (
@@ -114,10 +118,14 @@ export const IrisChat: React.FC<IrisChatProps> = ({ config, authToken, className
                 key={index}
                 className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <div className={`flex gap-2 max-w-xs lg:max-w-md ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    message.role === 'user' ? 'bg-blue-500' : 'bg-purple-500'
-                  }`}>
+                <div
+                  className={`flex gap-2 max-w-xs lg:max-w-md ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                >
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      message.role === 'user' ? 'bg-blue-500' : 'bg-purple-500'
+                    }`}
+                  >
                     {message.role === 'user' ? (
                       <User className="w-4 h-4 text-white" />
                     ) : (
@@ -158,11 +166,7 @@ export const IrisChat: React.FC<IrisChatProps> = ({ config, authToken, className
               disabled={isLoading}
               className="flex-1"
             />
-            <Button
-              type="submit"
-              disabled={isLoading || !inputMessage.trim()}
-              size="sm"
-            >
+            <Button type="submit" disabled={isLoading || !inputMessage.trim()} size="sm">
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
@@ -175,17 +179,19 @@ export const IrisChat: React.FC<IrisChatProps> = ({ config, authToken, className
         <div className="iris-suggestions">
           <p className="text-sm text-gray-600 mb-2">💡 Suggestions :</p>
           <div className="flex flex-wrap gap-2">
-            {getSuggestions().slice(0, 3).map((suggestion, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                size="sm"
-                onClick={() => setInputMessage(suggestion)}
-                className="text-xs h-8"
-              >
-                {suggestion}
-              </Button>
-            ))}
+            {getSuggestions()
+              .slice(0, 3)
+              .map((suggestion, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setInputMessage(suggestion)}
+                  className="text-xs h-8"
+                >
+                  {suggestion}
+                </Button>
+              ))}
           </div>
         </div>
       </CardContent>

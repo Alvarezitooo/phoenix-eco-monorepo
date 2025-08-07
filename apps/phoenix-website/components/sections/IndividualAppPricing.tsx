@@ -65,7 +65,11 @@ const IndividualAppPricing: React.FC = () => {
                 </small>
               </li>
             </ul>
-            <a href="https://phoenix-letters.streamlit.app/" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://phoenix-letters.streamlit.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
                 Tester Letters Premium
               </Button>

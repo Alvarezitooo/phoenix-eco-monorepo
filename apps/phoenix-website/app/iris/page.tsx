@@ -12,17 +12,21 @@ export default function IrisPage() {
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <Badge variant="secondary" className="bg-purple-100 text-purple-700 px-6 py-3 text-lg mb-6">
+          <Badge
+            variant="secondary"
+            className="bg-purple-100 text-purple-700 px-6 py-3 text-lg mb-6"
+          >
             <Bot className="w-5 h-5 mr-2" />
             Iris - Intelligence Artificielle Phoenix
           </Badge>
-          
+
           <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
             Votre Guide IA Personnel
           </h1>
-          
+
           <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Iris vous accompagne 24h/24 dans votre transformation professionnelle avec des conseils personnalisés et une expertise IA de pointe
+            Iris vous accompagne 24h/24 dans votre transformation professionnelle avec des conseils
+            personnalisés et une expertise IA de pointe
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 mb-12">
@@ -48,7 +52,7 @@ export default function IrisPage() {
           <h2 className="text-3xl font-bold text-center mb-12">
             Les super-pouvoirs d&apos;Iris dans l&apos;écosystème Phoenix
           </h2>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="hover:shadow-lg transition-shadow border-purple-200">
               <CardHeader>
@@ -144,7 +148,7 @@ export default function IrisPage() {
           <h2 className="text-3xl font-bold text-center mb-12">
             Ce que disent nos utilisateurs d&apos;Iris
           </h2>
-          
+
           <div className="grid md:grid-cols-3 gap-6">
             <Card className="border-purple-200">
               <CardContent className="pt-6">
@@ -158,12 +162,10 @@ export default function IrisPage() {
                   </div>
                 </div>
                 <p className="text-gray-600 italic">
-                  &quot;Iris m&apos;a aidée à structurer ma reconversion étape par étape. 
-                  Ses conseils personnalisés ont été un vrai game-changer !&quot;
+                  &quot;Iris m&apos;a aidée à structurer ma reconversion étape par étape. Ses
+                  conseils personnalisés ont été un vrai game-changer !&quot;
                 </p>
-                <div className="flex text-yellow-400 mt-3">
-                  ⭐⭐⭐⭐⭐
-                </div>
+                <div className="flex text-yellow-400 mt-3">⭐⭐⭐⭐⭐</div>
               </CardContent>
             </Card>
 
@@ -179,12 +181,10 @@ export default function IrisPage() {
                   </div>
                 </div>
                 <p className="text-gray-600 italic">
-                  &quot;L&apos;optimisation CV avec Iris est bluffante. Mon taux de réponse 
-                  aux candidatures a été multiplié par 3 !&quot;
+                  &quot;L&apos;optimisation CV avec Iris est bluffante. Mon taux de réponse aux
+                  candidatures a été multiplié par 3 !&quot;
                 </p>
-                <div className="flex text-yellow-400 mt-3">
-                  ⭐⭐⭐⭐⭐
-                </div>
+                <div className="flex text-yellow-400 mt-3">⭐⭐⭐⭐⭐</div>
               </CardContent>
             </Card>
 
@@ -200,12 +200,10 @@ export default function IrisPage() {
                   </div>
                 </div>
                 <p className="text-gray-600 italic">
-                  &quot;Le soutien émotionnel d&apos;Iris pendant ma reconversion a été 
-                  précieux. Je recommande à 100% !&quot;
+                  &quot;Le soutien émotionnel d&apos;Iris pendant ma reconversion a été précieux. Je
+                  recommande à 100% !&quot;
                 </p>
-                <div className="flex text-yellow-400 mt-3">
-                  ⭐⭐⭐⭐⭐
-                </div>
+                <div className="flex text-yellow-400 mt-3">⭐⭐⭐⭐⭐</div>
               </CardContent>
             </Card>
           </div>
@@ -216,11 +214,10 @@ export default function IrisPage() {
       <section className="py-20 px-4 bg-gradient-to-r from-purple-600 to-blue-600">
         <div className="max-w-4xl mx-auto text-center text-white">
           <Sparkles className="w-16 h-16 mx-auto mb-6" />
-          <h2 className="text-4xl font-bold mb-6">
-            Prêt à transformer votre carrière avec Iris ?
-          </h2>
+          <h2 className="text-4xl font-bold mb-6">Prêt à transformer votre carrière avec Iris ?</h2>
           <p className="text-xl mb-8 opacity-90">
-            Rejoignez des milliers de professionnels qui ont déjà réussi leur reconversion avec Phoenix
+            Rejoignez des milliers de professionnels qui ont déjà réussi leur reconversion avec
+            Phoenix
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <button className="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">

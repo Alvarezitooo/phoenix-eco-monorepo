@@ -19,7 +19,7 @@ export const IrisWidget: React.FC<IrisWidgetProps> = ({ authToken, className }) 
   const irisConfig = {
     apiUrl: process.env.NEXT_PUBLIC_IRIS_API_URL || 'http://localhost:8003/api/v1/chat',
     appContext: 'phoenix-website' as const,
-    timeout: 60000
+    timeout: 60000,
   };
 
   const toggleWidget = () => {

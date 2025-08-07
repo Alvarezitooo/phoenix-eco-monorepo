@@ -8,7 +8,14 @@ export interface IrisMessage {
 
 export interface IrisResponse {
   reply: string;
-  status: 'success' | 'auth_error' | 'quota_exceeded' | 'rate_limited' | 'access_denied' | 'service_unavailable' | 'error';
+  status:
+    | 'success'
+    | 'auth_error'
+    | 'quota_exceeded'
+    | 'rate_limited'
+    | 'access_denied'
+    | 'service_unavailable'
+    | 'error';
   app_context?: string;
   suggestions?: string[];
   rate_limit_remaining?: number;

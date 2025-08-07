@@ -17,39 +17,39 @@ interface IrisSectionProps {
 }
 
 export const IrisSection: React.FC<IrisSectionProps> = ({
-  title = "Rencontrez Iris, votre Guide IA Phoenix",
+  title = 'Rencontrez Iris, votre Guide IA Phoenix',
   description = "L'intelligence artificielle qui vous accompagne dans votre transformation professionnelle",
   authToken,
   showFeatures = true,
-  className
+  className,
 }) => {
   const irisConfig = {
     apiUrl: process.env.NEXT_PUBLIC_IRIS_API_URL || 'http://localhost:8003/api/v1/chat',
     appContext: 'phoenix-website' as const,
-    timeout: 60000
+    timeout: 60000,
   };
 
   const features = [
     {
       icon: <MessageCircle className="w-6 h-6" />,
-      title: "Conseils Personnalisés",
-      description: "Iris adapte ses recommandations à votre profil et vos objectifs uniques"
+      title: 'Conseils Personnalisés',
+      description: 'Iris adapte ses recommandations à votre profil et vos objectifs uniques',
     },
     {
       icon: <Zap className="w-6 h-6" />,
-      title: "Réponses Instantanées", 
-      description: "Obtenez des conseils experts 24h/24, 7j/7 pour accélérer votre reconversion"
+      title: 'Réponses Instantanées',
+      description: 'Obtenez des conseils experts 24h/24, 7j/7 pour accélérer votre reconversion',
     },
     {
       icon: <Shield className="w-6 h-6" />,
-      title: "100% Sécurisé",
-      description: "Vos données sont protégées par un chiffrement de niveau entreprise"
+      title: '100% Sécurisé',
+      description: 'Vos données sont protégées par un chiffrement de niveau entreprise',
     },
     {
       icon: <Users className="w-6 h-6" />,
-      title: "Multi-Applications", 
-      description: "Iris vous accompagne sur Letters, CV, Rise et toutes les apps Phoenix"
-    }
+      title: 'Multi-Applications',
+      description: 'Iris vous accompagne sur Letters, CV, Rise et toutes les apps Phoenix',
+    },
   ];
 
   return (
@@ -63,14 +63,12 @@ export const IrisSection: React.FC<IrisSectionProps> = ({
               Intelligence Artificielle Phoenix
             </Badge>
           </div>
-          
+
           <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6">
             {title}
           </h2>
-          
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            {description}
-          </p>
+
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">{description}</p>
 
           {!authToken && (
             <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-6 max-w-2xl mx-auto">
@@ -79,7 +77,8 @@ export const IrisSection: React.FC<IrisSectionProps> = ({
                 Connectez-vous pour débloquer Iris
               </h3>
               <p className="text-purple-700 mb-4">
-                Accédez à votre assistant IA personnalisé et commencez votre transformation professionnelle
+                Accédez à votre assistant IA personnalisé et commencez votre transformation
+                professionnelle
               </p>
               <Button className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600">
                 Se connecter gratuitement

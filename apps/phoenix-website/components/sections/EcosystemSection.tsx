@@ -255,9 +255,7 @@ export default function EcosystemSection() {
 
             <div className="text-center mt-8">
               <p className="text-lg text-gray-700 mb-2">
-                <em>
-                  La différence ? Phoenix ne génère pas du contenu standard.
-                </em>
+                <em>La différence ? Phoenix ne génère pas du contenu standard.</em>
               </p>
               <p className="text-xl font-bold text-gray-900">
                 Phoenix raconte VOTRE histoire unique.

@@ -1,0 +1,63 @@
+{
+  "export_metadata": {
+    "export_date": "2025-08-07T14:00:07.025360",
+    "export_version": "1.0.0",
+    "ethics_compliance_checked": true,
+    "anonymization_method": "SHA256 + Generalization",
+    "consent_verification": "Explicit opt-in required",
+    "total_users_exported": 5,
+    "data_retention_policy": "Research purposes only, no re-identification"
+  },
+  "aggregated_insights": {
+    "demographic_insights": {
+      "age_distribution": {
+        "41-45": 1,
+        "20-25": 2,
+        "46-50": 1,
+        "36-40": 1
+      },
+      "region_distribution": {
+        "Nouvelle-Aquitaine": 1,
+        "Île-de-France": 1,
+        "PACA": 1,
+        "Auvergne-Rhône-Alpes": 1,
+        "Occitanie": 1
+      },
+      "activity_distribution": {
+        "low": 1,
+        "medium": 2,
+        "high": 2
+      }
+    },
+    "emotional_insights": {
+      "emotion_frequency": {
+        "questionnement": 5
+      },
+      "value_frequency": {
+        "autonomie": 5
+      },
+      "transition_phase_distribution": {
+        "questionnement": 5
+      }
+    },
+    "usage_insights": {
+      "average_sessions_per_user": 7.8,
+      "average_cv_per_user": 1.4,
+      "average_letters_per_user": 7.2,
+      "average_session_duration_minutes": 22.8
+    },
+    "research_insights": {
+      "total_users_analyzed": 5,
+      "consent_rate": 1.0,
+      "data_quality": "high",
+      "temporal_coverage": "2024-10 to 2025-05"
+    }
+  },
+  "ethics_compliance": {
+    "rgpd_compliant": true,
+    "consent_verified": true,
+    "anonymization_validated": true,
+    "no_personal_data": true,
+    "research_purpose_only": true
+  }
+}

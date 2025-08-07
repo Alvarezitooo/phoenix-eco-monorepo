@@ -80,29 +80,33 @@ const BundlePricing: React.FC = () => {
           <CardContent className="space-y-4">
             <ul className="space-y-3 text-gray-700">
               <li className="flex items-start">
-                <Check className="h-5 w-5 text-blue-500 mr-2 mt-0.5" /> 
+                <Check className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
                 <div>
-                  <strong>CV optimisé</strong><br/>
+                  <strong>CV optimisé</strong>
+                  <br />
                   <small>Phoenix CV crée votre profil professionnel</small>
                 </div>
               </li>
               <li className="flex items-start">
-                <Check className="h-5 w-5 text-blue-500 mr-2 mt-0.5" /> 
+                <Check className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
                 <div>
-                  <strong>Lettres personnalisées</strong><br/>
+                  <strong>Lettres personnalisées</strong>
+                  <br />
                   <small>Phoenix Letters adapte selon chaque offre</small>
                 </div>
               </li>
               <li className="flex items-start">
-                <Check className="h-5 w-5 text-blue-500 mr-2 mt-0.5" /> 
+                <Check className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
                 <div>
-                  <strong>Données interconnectées</strong><br/>
+                  <strong>Données interconnectées</strong>
+                  <br />
                   <small>Plus vous utilisez, plus c'est précis</small>
                 </div>
               </li>
             </ul>
             <div className="text-center text-sm text-gray-600 mt-4 p-3 bg-white rounded">
-              <strong>Économisez 1,99€/mois</strong><br/>
+              <strong>Économisez 1,99€/mois</strong>
+              <br />
               vs achat séparé
             </div>
           </CardContent>
