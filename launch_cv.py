@@ -23,6 +23,9 @@ print(f"DEBUG - APP_ROOT: {APP_ROOT}")
 print(f"DEBUG - sys.path premiers éléments: {sys.path[:3]}")
 print(f"DEBUG - Phoenix CV existe: {os.path.exists(APP_ROOT)}")
 print(f"DEBUG - Models existe: {os.path.exists(APP_ROOT / 'phoenix_cv' / 'models')}")
+print(f"DEBUG - user_profile.py existe: {os.path.exists(APP_ROOT / 'phoenix_cv' / 'models' / 'user_profile.py')}")
+print(f"DEBUG - Contenu du répertoire phoenix_cv: {os.listdir(APP_ROOT / 'phoenix_cv') if os.path.exists(APP_ROOT / 'phoenix_cv') else 'N/A'}")
+print(f"DEBUG - Contenu models: {os.listdir(APP_ROOT / 'phoenix_cv' / 'models') if os.path.exists(APP_ROOT / 'phoenix_cv' / 'models') else 'N/A'}")
 
 # 3. On importe et on exécute l'application.
 try:
