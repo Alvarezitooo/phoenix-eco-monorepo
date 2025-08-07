@@ -20,6 +20,7 @@ from core.entities.user import UserTier
 from core.services.job_offer_parser import JobOfferParser
 from core.services.letter_service import LetterService
 from core.services.prompt_service import PromptService
+from core.services.renaissance_integration_service import PhoenixLettersRenaissanceService
 from infrastructure.ai.gemini_client import GeminiClient
 # from phoenix_shared_auth.services.jwt_manager import JWTManager  # Module non trouvé
 from infrastructure.auth.streamlit_auth_middleware import StreamlitAuthMiddleware
@@ -252,6 +253,32 @@ def _route_app_pages(current_user, auth_middleware, settings, db_connection, ini
         render_main_app(current_user, auth_middleware, settings, db_connection, initialized_components)
 
 
+def render_research_action_banner():
+    """🔬 Bannière de sensibilisation à la recherche-action Phoenix"""
+    st.markdown(
+        """
+        <div style="
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        ">
+            <p style="margin: 0; font-size: 0.95rem; font-weight: 500;">
+                🎓 <strong>Participez à une recherche-action sur l'impact de l'IA dans la reconversion professionnelle.</strong>
+            </p>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; opacity: 0.9; line-height: 1.4;">
+                En utilisant Phoenix, vous contribuez anonymement à une étude sur l'IA éthique et la réinvention de soi. 
+                Vos données (jamais nominatives) aideront à construire des outils plus justes et plus humains.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
 def main():
     """Point d'entrée et aiguilleur principal de l'application."""
     st.set_page_config(layout="wide", page_title="Phoenix Letters")
@@ -273,6 +300,52 @@ def main():
     auth_middleware = StreamlitAuthMiddleware(auth_service, settings)
 
     current_user = auth_middleware.get_current_user()
+    
+    # 🔬 BANNIÈRE RECHERCHE-ACTION PHOENIX
+    render_research_action_banner()
+    
+    # 🔮 PROTOCOLE RENAISSANCE - Vérification si utilisateur connecté
+    if current_user and hasattr(current_user, 'id'):
+        renaissance_service = PhoenixLettersRenaissanceService(db_connection)
+        
+        if renaissance_service.should_show_renaissance_banner_letters(current_user.id):
+            st.markdown(
+                """
+                <div style="
+                    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+                    color: white;
+                    padding: 1.5rem;
+                    border-radius: 15px;
+                    margin-bottom: 2rem;
+                    text-align: center;
+                    box-shadow: 0 8px 25px rgba(236,72,153,0.3);
+                    animation: pulse 2s ease-in-out infinite alternate;
+                ">
+                    <h3 style="margin: 0; font-size: 1.3rem; font-weight: bold;">
+                        🔮 PROTOCOLE RENAISSANCE DÉTECTÉ
+                    </h3>
+                    <p style="margin: 0.5rem 0 0 0; font-size: 1rem; opacity: 0.9;">
+                        Vos patterns de candidature suggèrent qu'un accompagnement personnalisé pourrait vous aider. 
+                        Explorons ensemble de nouvelles stratégies ! ✨
+                    </p>
+                </div>
+                <style>
+                @keyframes pulse {
+                    from { box-shadow: 0 8px 25px rgba(236,72,153,0.3); }
+                    to { box-shadow: 0 12px 35px rgba(236,72,153,0.5); }
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+            
+            # Affichage des recommandations Renaissance pour les lettres
+            recommendations = renaissance_service.get_renaissance_letter_recommendations(current_user.id)
+            if recommendations:
+                st.markdown("### 🎯 Recommandations Renaissance - Lettres")
+                for rec in recommendations:
+                    st.markdown(f"• {rec}")
+                st.markdown("---")
 
     # Initialize GeminiClient here to pass it to _initialize_app_components
     use_mock = st.sidebar.checkbox(

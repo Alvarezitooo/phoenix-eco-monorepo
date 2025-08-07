@@ -32,3 +32,6 @@ class User:
     newsletter_opt_in: bool = False
     created_at: datetime = field(default_factory=datetime.utcnow)
     subscription: UserSubscription = field(default_factory=UserSubscription)
+    
+    # 🔬 RECHERCHE-ACTION PHOENIX - Consentement Éthique
+    research_consent: bool = False  # Opt-in explicite pour contribution anonymisée à la recherche

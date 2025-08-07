@@ -73,6 +73,9 @@ class PhoenixUser:
     is_active: bool = True
     email_verified: bool = False
     
+    # 🔬 RECHERCHE-ACTION PHOENIX - Consentement Éthique
+    research_consent: bool = False  # Opt-in explicite pour contribution anonymisée à la recherche
+    
     def has_permission(self, app: PhoenixApp, permission: AppPermission) -> bool:
         """Vérifie si l'utilisateur a une permission spécifique"""
         return permission in self.app_permissions.get(app, set())

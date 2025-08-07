@@ -20,6 +20,32 @@ import uvicorn
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# 🔬 RECHERCHE-ACTION PHOENIX - Anonymiseur de logs
+def anonymize_for_research_logs(text: str, user_id: str = None) -> dict:
+    """Anonymise les logs de conversation pour la recherche-action Phoenix"""
+    import hashlib
+    import re
+    
+    # Hash de l'utilisateur (si fourni)
+    user_hash = None
+    if user_id:
+        user_hash = hashlib.sha256(f"{user_id}_research".encode()).hexdigest()[:16]
+    
+    # Anonymisation basique du texte
+    anonymized_text = text
+    # Suppression des emails
+    anonymized_text = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '[EMAIL]', anonymized_text)
+    # Suppression des téléphones
+    anonymized_text = re.sub(r'(?:\+33|0)[1-9](?:[0-9]{8})', '[PHONE]', anonymized_text)
+    
+    return {
+        "user_hash": user_hash,
+        "anonymized_query": anonymized_text[:100],  # Première partie seulement
+        "query_length": len(text),
+        "timestamp": datetime.now().isoformat(),
+        "source": "iris_api"
+    }
+
 # Initialisation FastAPI
 app = FastAPI(
     title="Phoenix Iris API",
@@ -139,8 +165,8 @@ def get_iris_response(message: str, user_context: Optional[str] = None) -> ChatR
     for topic, data in IRIS_KNOWLEDGE_BASE.items():
         for keyword in data["keywords"]:
             if keyword in message_lower:
-                import random
-                response_text = random.choice(data["responses"])
+                import secrets
+                response_text = secrets.choice(data["responses"])
                 suggestions = data["suggestions"][:3]  # Max 3 suggestions
                 
                 logger.info(f"Iris response generated - Topic: {topic}, User: {user_context}")
@@ -152,8 +178,8 @@ def get_iris_response(message: str, user_context: Optional[str] = None) -> ChatR
                 )
     
     # Réponse par défaut si aucune correspondance
-    import random
-    default_response = random.choice(DEFAULT_RESPONSES)
+    import secrets
+    default_response = secrets.choice(DEFAULT_RESPONSES)
     
     return ChatResponse(
         response=default_response,
@@ -199,6 +225,10 @@ async def chat_endpoint(request: ChatRequest):
     Endpoint principal de chat avec Iris
     """
     try:
+        # 🔬 RECHERCHE-ACTION PHOENIX - Log anonymisé pour recherche
+        research_log = anonymize_for_research_logs(request.message, request.user_id)
+        logger.info(f"Research log: {research_log}")
+        
         # Validation et logging
         logger.info(f"Chat request received - User: {request.user_id}, Message length: {len(request.message)}")
         

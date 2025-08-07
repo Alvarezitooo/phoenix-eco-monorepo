@@ -2014,6 +2014,32 @@ def render_footer():
     )
 
 
+def render_research_action_banner():
+    """🔬 Bannière de sensibilisation à la recherche-action Phoenix"""
+    st.markdown(
+        """
+        <div style="
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        ">
+            <p style="margin: 0; font-size: 0.95rem; font-weight: 500;">
+                🎓 <strong>Participez à une recherche-action sur l'impact de l'IA dans la reconversion professionnelle.</strong>
+            </p>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; opacity: 0.9; line-height: 1.4;">
+                En utilisant Phoenix, vous contribuez anonymement à une étude sur l'IA éthique et la réinvention de soi. 
+                Vos données (jamais nominatives) aideront à construire des outils plus justes et plus humains.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
 def main():
     """Application principale Enhanced avec authentification"""
     # Chargement .env
@@ -2031,6 +2057,58 @@ def main():
 
     # Header (affiché seulement après authentification)
     render_header()
+    
+    # 🔬 BANNIÈRE RECHERCHE-ACTION PHOENIX
+    render_research_action_banner()
+    
+    # 🔮 PROTOCOLE RENAISSANCE - Vérification et bannière
+    try:
+        from services.renaissance_cv_service import PhoenixCVRenaissanceService
+        
+        # Récupération de l'utilisateur actuel (session ou autre méthode)
+        current_user_id = st.session_state.get('user_id') or 'anonymous_user'
+        
+        renaissance_service = PhoenixCVRenaissanceService()
+        
+        if renaissance_service.should_show_renaissance_banner_cv(current_user_id):
+            st.markdown(
+                """
+                <div style="
+                    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                    color: white;
+                    padding: 1.5rem;
+                    border-radius: 15px;
+                    margin-bottom: 2rem;
+                    text-align: center;
+                    box-shadow: 0 8px 25px rgba(245,158,11,0.4);
+                    border: 2px solid rgba(255,255,255,0.2);
+                ">
+                    <h3 style="margin: 0; font-size: 1.3rem; font-weight: bold;">
+                        🔮 PROTOCOLE RENAISSANCE CV ACTIVÉ
+                    </h3>
+                    <p style="margin: 0.5rem 0 0 0; font-size: 1rem; opacity: 0.9;">
+                        Vos patterns de création CV suggèrent qu'une nouvelle approche pourrait booster votre candidature. 
+                        Transformons votre CV ensemble ! 🚀
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            
+            # Affichage des recommandations Renaissance spécifiques CV
+            recommendations = renaissance_service.get_renaissance_cv_recommendations(current_user_id)
+            if recommendations and len(recommendations) > 4:  # Afficher seulement les recommandations spécifiques CV
+                cv_specific_recs = [rec for rec in recommendations if any(word in rec.lower() for word in ['cv', 'ats', 'template', 'présentation'])]
+                if cv_specific_recs:
+                    with st.expander("🎯 Recommandations Renaissance CV", expanded=False):
+                        for rec in cv_specific_recs:
+                            st.markdown(f"• {rec}")
+    except ImportError:
+        # Mode dégradé si le service n'est pas disponible
+        pass
+    except Exception as e:
+        # Mode silencieux en cas d'erreur
+        pass
 
     # Navigation
     current_page = render_sidebar()
