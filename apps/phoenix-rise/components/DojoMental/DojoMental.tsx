@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ZazenTimer from '../../../../apps/phoenix-website/components/ZazenTimer/ZazenTimer';
 import KaizenGrid from '../../../../apps/phoenix-website/components/KaizenGrid/KaizenGrid';
 
@@ -11,6 +11,7 @@ interface DojoMentalProps {
 export default function DojoMental({ userId }: DojoMentalProps) {
   const [currentDialogue, setCurrentDialogue] = useState("");
   const [kaizenInput, setKaizenInput] = useState("");
+  const kaizenGridRef = useRef<{ refreshKaizenHistory: () => void }>(null); // Ref to access child method
 
   useEffect(() => {
     // Initial Iris dialogue based on Annexe 2
@@ -40,7 +41,9 @@ export default function DojoMental({ userId }: DojoMentalProps) {
         console.log("Kaizen created:", data);
         setKaizenInput("");
         setCurrentDialogue("Un excellent choix. Ce Kaizen est enregistré. Que souhaites-tu faire ensuite ?");
-        // In a real app, you'd trigger a refresh of KaizenGrid data here
+        if (kaizenGridRef.current) {
+          kaizenGridRef.current.refreshKaizenHistory(); // Refresh the grid
+        }
       } catch (error) {
         console.error("Error creating Kaizen:", error);
         setCurrentDialogue("Désolé, une erreur est survenue lors de l'enregistrement de votre Kaizen.");
@@ -118,7 +121,7 @@ export default function DojoMental({ userId }: DojoMentalProps) {
         </div>
         <div className="kaizen-grid-section bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Kaizen Grid</h2>
-          <KaizenGrid userId={userId} />
+          <KaizenGrid userId={userId} ref={kaizenGridRef} />
         </div>
       </div>
     </div>

@@ -59,6 +59,7 @@ export function useBreathingCycle() {
 
   const animationFrameRef = useRef<number>();
   const lastTimeRef = useRef<DOMHighResTimeStamp>(0);
+  const accumulatedTimeRef = useRef<number>(0); // New ref for accumulated time
 
   useEffect(() => {
     const animate = (time: DOMHighResTimeStamp) => {
@@ -67,13 +68,15 @@ export function useBreathingCycle() {
       }
 
       const deltaTime = time - lastTimeRef.current;
+      accumulatedTimeRef.current += deltaTime; // Accumulate delta time
 
-      if (deltaTime >= 1000) {
-        // Tick every second
+      if (accumulatedTimeRef.current >= 1000) { // Tick every second
+        const ticks = Math.floor(accumulatedTimeRef.current / 1000);
         dispatch({ type: 'TICK' });
-        lastTimeRef.current = time;
+        accumulatedTimeRef.current -= ticks * 1000; // Subtract full seconds
       }
 
+      lastTimeRef.current = time; // Update lastTimeRef for next frame
       animationFrameRef.current = requestAnimationFrame(animate);
     };
 

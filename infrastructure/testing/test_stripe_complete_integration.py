@@ -490,7 +490,7 @@ class PhoenixStripeIntegrationTester:
     
     def _check_url_format(self, url: str) -> bool:
         """Vérifie le format d'une URL."""
-        return url.startswith("https://") and "stripe.com" in url
+        return url.startswith("https://") and (url.startswith("https://checkout.stripe.com/") or url.startswith("https://api.stripe.com/") or url.startswith("https://connect.stripe.com/"))
     
     def _validate_stripe_url(self, url: str) -> Dict[str, Any]:
         """Valide une URL Stripe."""

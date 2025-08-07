@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef, useImperativeHandle, useCallback } from 'react';
 import { FixedSizeGrid } from 'react-window';
 import { useKaizenHistory } from './useKaizenHistory';
 import KaizenCell from './KaizenCell';
@@ -14,9 +14,17 @@ interface KaizenGridProps {
   userId: string;
 }
 
-export default function KaizenGrid({ userId }: KaizenGridProps) {
-  const { data, loading, error, toggleKaizenStatus } = useKaizenHistory(userId);
+interface KaizenGridRef {
+  refreshKaizenHistory: () => void;
+}
+
+const KaizenGrid = forwardRef<KaizenGridRef, KaizenGridProps>(({ userId }, ref) => {
+  const { data, loading, error, toggleKaizenStatus, refreshKaizenHistory } = useKaizenHistory(userId);
   const { tooltipState, showTooltip, hideTooltip } = useTooltip();
+
+  useImperativeHandle(ref, () => ({
+    refreshKaizenHistory,
+  }));
 
   if (loading) {
     return <div className="kaizen-grid-status">Chargement de l'historique Kaizen...</div>;
@@ -27,7 +35,7 @@ export default function KaizenGrid({ userId }: KaizenGridProps) {
   }
 
   // CellRenderer for react-window
-  const Cell = ({ columnIndex, rowIndex, style }) => {
+  const Cell = useCallback(({ columnIndex, rowIndex, style }) => {
     const index = rowIndex * COLUMN_COUNT + columnIndex;
     const item = data[index];
 
@@ -54,7 +62,7 @@ export default function KaizenGrid({ userId }: KaizenGridProps) {
         />
       </div>
     );
-  };
+  }, [data, showTooltip, hideTooltip, toggleKaizenStatus]); // Dependencies for useCallback
 
   const rowCount = Math.ceil(data.length / COLUMN_COUNT);
 
@@ -79,4 +87,6 @@ export default function KaizenGrid({ userId }: KaizenGridProps) {
       />
     </>
   );
-}
+});
+
+export default KaizenGrid;

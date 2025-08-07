@@ -49,6 +49,15 @@ except ImportError as e:
     SecureValidator = MockSecureValidator()
 
 
+# Pré-compilation des expressions régulières pour la performance et la sécurité (ReDoS)
+# Ces regex sont utilisées pour le filtrage des injections de prompt et le nettoyage des placeholders.
+# Bien que relativement simples, la pré-compilation est une bonne pratique.
+# Vigilance ReDoS: Les motifs comme `.*?` peuvent être vulnérables sur de très longues entrées.
+# La validation de la taille de l'entrée (`SecureValidator.validate_text_input`) est cruciale.
+PROMPT_INJECTION_FILTER_REGEX = re.compile(r"(ignore|forget|disregard).*?(previous|above|instruction)", re.IGNORECASE)
+UNFILLED_PLACEHOLDER_REGEX = re.compile(r"\{[^}]*?\}")
+
+
 class EnhancedGeminiClient:
     """
     Client Gemini optimisé pour génération CV reconversions.
@@ -187,10 +196,10 @@ DONNÉES PROFIL:
 RÈGLES D'OR ABSOLUES:
 1. VALORISE les compétences transférables en priorité
 2. TRANSFORME l'expérience passée en atout pour le nouveau secteur
-3. UTILISE un storytelling convaincant de reconversion réussie
-4. OPTIMISE pour les ATS avec mots-clés secteur cible
-5. STRUCTURE chronologique inversée avec focus compétences
-6. ÉVITE les termes négatifs ou de transition
+3. OPTIMISE pour les ATS avec mots-clés secteur cible
+4. STRUCTURE chronologique inversée avec focus compétences
+5. ÉVITE les termes négatifs ou de transition
+6. QUANTIFIE tous les résultats obtenus
 7. QUANTIFIE tous les résultats obtenus
 
 FORMAT EXIGÉ:
@@ -251,8 +260,7 @@ QUALITÉ: Niveau Fortune 500, prêt pour comité de direction
             if isinstance(value, str):
                 clean_value = SecureValidator.validate_text_input(value, 1000, key)
                 # Filtrage injection prompts
-                clean_value = re.sub(
-                    r"(ignore|forget|disregard).*?(previous|above|instruction)",
+                clean_value = PROMPT_INJECTION_FILTER_REGEX.sub(
                     "[FILTERED]",
                     clean_value,
                     flags=re.IGNORECASE,
@@ -297,7 +305,7 @@ QUALITÉ: Niveau Fortune 500, prêt pour comité de direction
                     master_prompt = master_prompt.replace(placeholder, str(value))
 
             # Nettoyage des placeholders non remplacés
-            master_prompt = re.sub(r"\{[^}]*?\}", "[NON_SPÉCIFIÉ]", master_prompt)
+            master_prompt = UNFILLED_PLACEHOLDER_REGEX.sub("[NON_SPÉCIFIÉ]", master_prompt)
 
             return master_prompt
 
