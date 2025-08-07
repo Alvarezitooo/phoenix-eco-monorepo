@@ -30,6 +30,7 @@ from infrastructure.storage.session_manager import SecureSessionManager
 from ui.components.file_uploader import SecureFileUploader
 from ui.components.letter_editor import LetterEditor
 from ui.components.progress_bar import ProgressIndicator
+from ui.components.iris_widget import render_iris_floating_widget
 from ui.pages.about_page import AboutPage
 from ui.pages.generator_page import GeneratorPage
 from ui.pages.premium_page import PremiumPage
@@ -289,3 +290,6 @@ def main():
     initialized_components = _initialize_app_components(settings, db_connection, gemini_client)
 
     _route_app_pages(current_user, auth_middleware, settings, db_connection, initialized_components)
+    
+    # 🤖 Widget Iris flottant (toujours affiché)
+    render_iris_floating_widget()
