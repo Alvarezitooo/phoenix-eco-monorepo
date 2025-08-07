@@ -182,6 +182,9 @@ def _initialize_app_components(settings, db_connection, gemini_client):
         )
     except Exception as e:
         logger.warning(f"Services de paiement non disponibles: {e}")
+        # Mode dégradé - définir les services manquants
+        stripe_service = None
+        subscription_service = None
         premium_page = PremiumPage()  # Mode dégradé
     settings_page = SettingsPage()
 

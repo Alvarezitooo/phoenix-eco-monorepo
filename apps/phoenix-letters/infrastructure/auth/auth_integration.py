@@ -223,7 +223,7 @@ class AuthIntegration:
         conversion_map = {
             LegacyUserTier.FREE: UserTier.FREE,
             LegacyUserTier.PREMIUM: UserTier.PREMIUM,
-            LegacyUserTier.PREMIUM_PLUS: UserTier.PREMIUM_PLUS,
+            LegacyUserTier.PREMIUM_PLUS: UserTier.PREMIUM,  # Map PREMIUM_PLUS to PREMIUM
         }
         return conversion_map.get(legacy_tier, UserTier.FREE)
 
@@ -232,7 +232,6 @@ class AuthIntegration:
         tier_hierarchy = {
             UserTier.FREE: 0,
             UserTier.PREMIUM: 1,
-            UserTier.PREMIUM_PLUS: 2,
         }
 
         return tier_hierarchy.get(user_tier, 0) >= tier_hierarchy.get(required_tier, 0)
@@ -258,7 +257,7 @@ class AuthIntegration:
                     st.progress(min(progress, 1.0))
 
             # Mode bêta-testeur actuel
-            is_beta = st.session_state.get("user_tier") == LegacyUserTier.PREMIUM_PLUS
+            is_beta = st.session_state.get("user_tier") == LegacyUserTier.PREMIUM
             if is_beta:
                 st.success("🧪 Mode Bêta-Testeur actif")
 

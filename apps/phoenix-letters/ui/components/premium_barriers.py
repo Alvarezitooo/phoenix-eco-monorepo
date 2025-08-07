@@ -228,7 +228,7 @@ class PremiumBarrier:
                 "Smart Coach personnalisé",
                 "Templates exclusifs"
             ]
-        else:  # PREMIUM_PLUS
+        else:  # PREMIUM
             icon = "💎"
             tier_name = "Premium Plus"
             benefits = [
@@ -271,7 +271,7 @@ class PremiumBarrier:
         tier_hierarchy = {
             UserTier.FREE: 0,
             UserTier.PREMIUM: 1,
-            UserTier.PREMIUM_PLUS: 2
+            UserTier.PREMIUM: 2
         }
         return tier_hierarchy.get(current_tier, 0) >= tier_hierarchy.get(required_tier, 0)
 

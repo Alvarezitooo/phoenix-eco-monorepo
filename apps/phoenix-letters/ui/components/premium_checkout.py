@@ -344,7 +344,7 @@ class PremiumCheckout:
                 )
                 
             # Barre de progression pour les limites
-            if subscription and subscription.current_tier != UserTier.PREMIUM_PLUS:
+            if subscription and subscription.current_tier != UserTier.PREMIUM:
                 self._render_usage_progress(stats, subscription.current_tier)
                 
         except Exception as e:

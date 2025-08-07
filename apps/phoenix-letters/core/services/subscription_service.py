@@ -80,13 +80,6 @@ class SubscriptionService:
                     "smart_coach", "premium_templates", "pdf_export"
                 ]
             },
-            UserTier.PREMIUM_PLUS: {
-                "letters_per_month": -1,  # Illimité
-                "features": [
-                    "unlimited_generation", "trajectory_builder", "sector_analysis",
-                    "exclusive_templates", "api_access", "vip_support"
-                ]
-            }
         }
         
         logger.info("Service d'abonnement initialisé")
@@ -384,8 +377,7 @@ class SubscriptionService:
         
         # Mapping plan_id vers UserTier
         tier_mapping = {
-            "premium": UserTier.PREMIUM,
-            "premium_plus": UserTier.PREMIUM_PLUS
+            "premium": UserTier.PREMIUM
         }
         
         new_tier = tier_mapping.get(plan_id, UserTier.FREE)
