@@ -53,8 +53,8 @@ class ExportFormat(Enum):
 @dataclass
 class AnonymizedUserProfile:
     """Profil utilisateur anonymisé pour la recherche"""
-    # IDs anonymisés (hash)
-    user_hash: str  # SHA256 de l'ID original
+    # IDs anonymisés avec renforcement sécurité
+    user_hash: str  # SHA256 salté + timestamp de l'ID original (64 chars complets)
     
     # Données démographiques généralisées
     age_range: str  # "25-30", "31-40", etc.
@@ -200,7 +200,7 @@ class EthicalDataExporter:
                 "export_date": datetime.now().isoformat(),
                 "export_version": "1.0.0",
                 "ethics_compliance_checked": True,
-                "anonymization_method": "SHA256 + Generalization",
+                "anonymization_method": "SHA256 Salté + Timestamp + Généralisation",
                 "consent_verification": "Explicit opt-in required",
                 "total_users_exported": len(anonymized_profiles),
                 "data_retention_policy": "Research purposes only, no re-identification"
@@ -315,8 +315,12 @@ class EthicalDataExporter:
         anonymized_profiles = []
         
         for user in users:
-            # Anonymisation de l'ID utilisateur (SHA256)
-            user_hash = hashlib.sha256(str(user.get("user_id", "")).encode()).hexdigest()[:16]
+            # 🛡️ CORRECTION SÉCURITÉ: Anonymisation renforcée de l'ID utilisateur
+            # Utilisation d'un salt cryptographique + hash complet pour éviter ré-identification
+            user_id_raw = str(user.get("user_id", ""))
+            export_salt = f"phoenix_research_export_{self.export_timestamp}_security_salt"
+            salted_id = f"{user_id_raw}:{export_salt}:{datetime.now().isoformat()}"
+            user_hash = hashlib.sha256(salted_id.encode('utf-8')).hexdigest()  # Hash complet 64 chars
             
             # Généralisation des données démographiques
             age_range = user.get("age_range", "non-spécifié")
@@ -348,9 +352,9 @@ class EthicalDataExporter:
                     anonymization_result = self.anonymizer.anonymize_text(notes_text)
                     if anonymization_result.success:
                         anonymized_notes = anonymization_result.anonymized_text
-                        print(f"✅ Notes anonymisées pour utilisateur {user_hash[:8]}")
+                        print(f"✅ Notes anonymisées pour utilisateur {user_hash[:12]}...")
                     else:
-                        print(f"⚠️ Échec anonymisation pour {user_hash[:8]}, skip analyse NLP")
+                        print(f"⚠️ Échec anonymisation pour {user_hash[:12]}..., skip analyse NLP")
                         anonymized_notes = None
                 else:
                     print(f"⚠️ DataAnonymizer indisponible, skip analyse NLP pour sécurité")
