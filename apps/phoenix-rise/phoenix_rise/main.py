@@ -2,20 +2,20 @@ import os
 
 import google.generativeai as genai
 import streamlit as st
-from core.supabase_client import supabase_client
-from services.ai_coach_service import AICoachService
-from services.auth_service import AuthService
-from services.mock_db_service import MockDBService
-from ui.auth_ui import render_auth_ui
-from ui.coaching_ui import render_coaching_ui
-from ui.dashboard_ui import render_dashboard_ui
-from ui.journal_ui import render_journal_ui
-from services.renaissance_protocol_service import PhoenixRiseRenaissanceService
-from phoenix_shared_ui.components import render_primary_button, render_info_card, render_section_header, render_alert, render_metric_card
+from .core.supabase_client import supabase_client
+from .services.ai_coach_service import AICoachService
+from .services.auth_service import AuthService
+from .services.mock_db_service import MockDBService
+from .ui.auth_ui import render_auth_ui
+from .ui.coaching_ui import render_coaching_ui
+from .ui.dashboard_ui import render_dashboard_ui
+from .ui.journal_ui import render_journal_ui
+from .services.renaissance_protocol_service import PhoenixRiseRenaissanceService
+# from phoenix_shared_ui.components import render_primary_button, render_info_card, render_section_header, render_alert, render_metric_card
 
 # Import du style global du Design System
-with open("../../packages/phoenix-shared-ui/style.css") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+# with open("../../packages/phoenix-shared-ui/style.css") as f:
+#     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Configuration de la page
 st.set_page_config(
@@ -60,96 +60,24 @@ def render_research_action_banner():
 
 def main():
     """Point d'entrée principal de l'application."""
-    # load_custom_css()  # Custom CSS now loaded from phoenix-shared-ui/style.css
-
-    auth_service = get_auth_service()
-    db_service = get_db_service()
-    ai_coach_service = get_ai_coach_service()
-
-    if not auth_service.is_logged_in():
-        render_auth_ui(auth_service)
-    else:
-        user = st.session_state["user"]
-
-        # Custom Header for logged-in users
-        render_section_header(
-            "🦋 Phoenix Rise",
-            "Transformez votre parcours de reconversion avec l'IA"
-        )
-        
-        # 🔬 BANNIÈRE RECHERCHE-ACTION PHOENIX
-        render_research_action_banner()
-
-        # Sidebar for logged-in users
-        with st.sidebar:
-            st.header(f"👋 Bienvenue, {user.email.split('@')[0]}")
-
-            # Simulate user tier for testing purposes
-            user_tier = st.selectbox(
-                "Niveau d'utilisateur (pour test)",
-                ("free", "premium"),
-                key="user_tier_select",
-            )
-
-            if render_primary_button("🚪 Se Déconnecter"):
-                auth_service.sign_out()
-                st.rerun()
-
-            # Fil d'Ariane
-            render_ariadne_thread(
-                steps=["Mon Journal", "Mon Profil", "Mon Dashboard", "Mon Coach IA"],
-                current_step_index=0 # À adapter selon la page active
-            )
-
-        # Navigation par onglets
-        tab1, tab2, tab3, tab4 = st.tabs(
-            ["Mon Journal", "Mon Profil", "Mon Dashboard", "Mon Coach IA"]
-        )
-
-        with tab1:
-            render_journal_ui(user.id, db_service)
-
-        with tab2:
-            render_profile_ui(user, db_service)
-
-        with tab3:
-            # 🔮 PROTOCOLE RENAISSANCE - Vérification et affichage
-            renaissance_service = PhoenixRiseRenaissanceService(db_service)
-            
-            # Analyse Renaissance pour cet utilisateur
-            if renaissance_service.should_show_renaissance_banner(user.id):
-                st.markdown(
-                    """
-                    <div style="
-                        background: linear-gradient(135deg, #7c3aed 0%, #c026d3 100%);
-                        color: white;
-                        padding: 1.5rem;
-                        border-radius: 15px;
-                        margin-bottom: 2rem;
-                        text-align: center;
-                        box-shadow: 0 8px 25px rgba(124,58,237,0.3);
-                    ">
-                        <h3 style="margin: 0; font-size: 1.3rem; font-weight: bold;">
-                            🔮 PROTOCOLE RENAISSANCE ACTIVÉ
-                        </h3>
-                        <p style="margin: 0.5rem 0 0 0; font-size: 1rem; opacity: 0.9;">
-                            Notre analyse détecte que vous pourriez bénéficier d'un accompagnement renforcé. 
-                            Un nouveau chapitre commence pour vous ! ✨
-                        </p>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-                
-                # Affichage des recommandations Renaissance
-                recommendations = renaissance_service.get_renaissance_recommendations(user.id)
-                if recommendations:
-                    st.markdown("### 🎯 Recommandations Renaissance")
-                    for rec in recommendations:
-                        st.markdown(f"• {rec}")
-                    st.markdown("---")
-            
-            render_dashboard_ui(user.id, db_service)
-
-        with tab4:
-            render_coaching_ui(user.id, ai_coach_service, db_service, user_tier)
+    
+    # 🚀 PHOENIX RISE - VERSION MINIMALE POUR TESTS
+    st.title("🦋 Phoenix Rise")
+    st.subheader("Coach IA pour Reconversion - En Construction")
+    
+    # 🔬 BANNIÈRE RECHERCHE-ACTION PHOENIX
+    render_research_action_banner()
+    
+    st.info("🚧 Application en cours de développement. Les fonctionnalités complètes seront bientôt disponibles.")
+    
+    # Version simplifiée pour tests
+    st.markdown("### 🎯 Fonctionnalités à venir :")
+    st.markdown("- 📔 Journal de bord interactif")  
+    st.markdown("- 🎯 Dashboard de progression")
+    st.markdown("- 🤖 Coach IA personnalisé")
+    st.markdown("- 🔮 Protocole Renaissance")
+    
+    # Test des services de base (commenté pour éviter les erreurs)
+    # auth_service = get_auth_service()
+    # db_service = get_db_service() 
+    # ai_coach_service = get_ai_coach_service()
