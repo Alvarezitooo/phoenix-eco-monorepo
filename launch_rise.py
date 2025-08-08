@@ -4,11 +4,11 @@ from pathlib import Path
 # 1. On détermine la racine du monorepo.
 ROOT_DIR = Path(__file__).resolve().parent
 
-# 2. On ajoute le dossier 'apps' au chemin de Python.
+# 2. On ajoute le dossier phoenix-rise au chemin de Python.
 #    Ceci permet à Python de trouver le paquet 'phoenix_rise'.
-APPS_DIR = ROOT_DIR / "apps"
-if str(APPS_DIR) not in sys.path:
-    sys.path.insert(0, str(APPS_DIR))
+PHOENIX_RISE_DIR = ROOT_DIR / "apps" / "phoenix-rise"
+if str(PHOENIX_RISE_DIR) not in sys.path:
+    sys.path.insert(0, str(PHOENIX_RISE_DIR))
 
 # 3. On importe et on exécute l'application.
 try:
