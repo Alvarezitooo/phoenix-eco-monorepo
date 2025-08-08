@@ -1,21 +1,6 @@
 import os
-
 import google.generativeai as genai
 import streamlit as st
-from .core.supabase_client import supabase_client
-from .services.ai_coach_service import AICoachService
-from .services.auth_service import AuthService
-from .services.mock_db_service import MockDBService
-from .ui.auth_ui import render_auth_ui
-from .ui.coaching_ui import render_coaching_ui
-from .ui.dashboard_ui import render_dashboard_ui
-from .ui.journal_ui import render_journal_ui
-from .services.renaissance_protocol_service import PhoenixRiseRenaissanceService
-# from phoenix_shared_ui.components import render_primary_button, render_info_card, render_section_header, render_alert, render_metric_card
-
-# Import du style global du Design System
-# with open("../../packages/phoenix-shared-ui/style.css") as f:
-#     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Configuration de la page
 st.set_page_config(
@@ -61,23 +46,61 @@ def render_research_action_banner():
 def main():
     """Point d'entrée principal de l'application."""
     
-    # 🚀 PHOENIX RISE - VERSION MINIMALE POUR TESTS
+    # 🚀 PHOENIX RISE - VERSION MINIMALE POUR TESTS DÉPLOIEMENT
     st.title("🦋 Phoenix Rise")
-    st.subheader("Coach IA pour Reconversion - En Construction")
+    st.subheader("Coach IA pour Reconversion Professionnelle")
     
     # 🔬 BANNIÈRE RECHERCHE-ACTION PHOENIX
     render_research_action_banner()
     
-    st.info("🚧 Application en cours de développement. Les fonctionnalités complètes seront bientôt disponibles.")
+    # Message de statut
+    st.success("✅ **Phoenix Rise démarré avec succès !**")
+    st.info("🚧 **Version de test déploiement** - Fonctionnalités complètes en cours de développement")
     
-    # Version simplifiée pour tests
-    st.markdown("### 🎯 Fonctionnalités à venir :")
-    st.markdown("- 📔 Journal de bord interactif")  
-    st.markdown("- 🎯 Dashboard de progression")
-    st.markdown("- 🤖 Coach IA personnalisé")
-    st.markdown("- 🔮 Protocole Renaissance")
+    # Fonctionnalités prévues
+    col1, col2 = st.columns(2)
     
-    # Test des services de base (commenté pour éviter les erreurs)
-    # auth_service = get_auth_service()
-    # db_service = get_db_service() 
-    # ai_coach_service = get_ai_coach_service()
+    with col1:
+        st.markdown("### 🎯 **Fonctionnalités à venir**")
+        st.markdown("- 📔 **Journal de bord interactif**")  
+        st.markdown("- 🎯 **Dashboard de progression**")
+        st.markdown("- 🤖 **Coach IA personnalisé**")
+        st.markdown("- 🔮 **Protocole Renaissance**")
+    
+    with col2:
+        st.markdown("### 🛠️ **Technologies**")
+        st.markdown("- ⚡ **Streamlit** - Interface utilisateur")
+        st.markdown("- 🤖 **Gemini AI** - Intelligence artificielle") 
+        st.markdown("- 🗄️ **Supabase** - Base de données")
+        st.markdown("- 📊 **Plotly** - Visualisation données")
+    
+    # Test basique de l'API Gemini
+    st.markdown("---")
+    st.markdown("### 🧪 **Test API Gemini**")
+    
+    if st.button("🚀 Tester la connexion IA"):
+        try:
+            with st.spinner("Test connexion Gemini..."):
+                model = genai.GenerativeModel('gemini-1.5-flash')
+                response = model.generate_content("Dis bonjour de la part de Phoenix Rise!")
+                st.success("✅ **Connexion Gemini opérationnelle !**")
+                st.write(f"**Réponse IA :** {response.text}")
+        except Exception as e:
+            st.error(f"❌ Erreur connexion Gemini: {e}")
+    
+    # Info développement
+    st.markdown("---")
+    st.markdown(
+        """
+        <div style="text-align: center; padding: 1rem; background: #f0f2f6; border-radius: 10px;">
+            <p style="margin: 0; color: #666; font-size: 0.9rem;">
+                💻 **Développé par Claude Phoenix DevSecOps Guardian** | 🔒 **Sécurité & RGPD by design**
+            </p>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
+
+if __name__ == "__main__":
+    main()

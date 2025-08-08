@@ -46,3 +46,7 @@ stripe>=8.0.0
 
 # 🗄️ Base de données Supabase (Phoenix Rise)
 supabase>=2.0.0
+
+# 📊 Dashboards et visualisation données (Phoenix Rise)
+pandas>=2.0.0
+plotly>=5.15.0
