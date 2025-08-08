@@ -21,6 +21,8 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import wraps
 import logging
 from supabase import create_client, Client
+# 🔒 CORRECTION CRITIQUE: Validation sécurisée des entrées
+from phoenix_security.services.input_validator import validate_kaizen_input, validate_zazen_duration, ValidationSeverity
 
 # Initialisation de Supabase
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
@@ -119,8 +121,8 @@ async def get_current_user_id(user_id: str = "test_user_123"):
 
 # --- Modèles Pydantic ---
 class KaizenCreate(BaseModel):
-    user_id: str # Sera validé par l'authentification
-    action: str = Field(..., min_length=1, max_length=255) # Validation de longueur
+    user_id: str # Sera validé par l'authentification  
+    action: str = Field(..., min_length=1, max_length=500) # 🔒 Limite augmentée pour validation
     date: date
     completed: bool = False
 
@@ -160,8 +162,27 @@ async def create_kaizen(
         )
     
     try:
-        # Nettoyage sécurisé de l'action
-        cleaned_action = kaizen.action.strip()[:255]  # Limite + nettoyage
+        # 🔒 VALIDATION SÉCURISÉE CRITIQUE - Protection XSS/Injection
+        validation_result = validate_kaizen_input(kaizen.action, current_user_id)
+        
+        if not validation_result.is_valid:
+            # Log tentative malveillante
+            if validation_result.severity == ValidationSeverity.CRITICAL:
+                logger.critical(f"🚨 SECURITY ALERT: Kaizen attack attempt from {current_user_id}: {validation_result.violations}")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Action contient du contenu non autorisé. Tentative bloquée pour sécurité."
+                )
+            elif validation_result.severity == ValidationSeverity.HIGH:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Action contient du contenu inapproprié"
+                )
+            else:
+                logger.warning(f"⚠️ Kaizen validation warnings for {current_user_id}: {validation_result.violations}")
+        
+        # Utiliser la version sanitarisée
+        cleaned_action = validation_result.sanitized_value
         
         # ✅ Insertion asynchrone non-bloquante
         kaizen_data = {
@@ -283,6 +304,19 @@ async def create_zazen_session(
         )
     
     try:
+        # 🔒 VALIDATION SÉCURISÉE - Durée Zazen
+        duration_validation = validate_zazen_duration(session.duration, current_user_id)
+        
+        if not duration_validation.is_valid:
+            logger.warning(f"⚠️ Zazen duration validation failed for {current_user_id}: {duration_validation.violations}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Durée invalide: {duration_validation.violations[0]['message'] if duration_validation.violations else 'Durée non autorisée'}"
+            )
+        
+        # Utiliser durée sanitarisée
+        session.duration = int(duration_validation.sanitized_value)
+        
         # ✅ Insertion asynchrone
         result = await _sync_supabase_insert(
             "zazen_sessions", 
