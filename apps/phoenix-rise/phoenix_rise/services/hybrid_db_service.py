@@ -11,12 +11,24 @@ import json
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 
-import streamlit as st
 from models.journal_entry import JournalEntry
 from .mock_db_service import MockDBService
 from .phoenix_rise_event_helper import phoenix_rise_event_helper
 from core.supabase_client import supabase_client
 from iris_core.event_processing.emotional_vector_state import EmotionalVectorState
+from phoenix_shared_db.services.supabase_batch_service import get_batch_service
+
+# ✅ CORRECTION ARCHITECTURE: Import adaptateur session découplé
+try:
+    from phoenix_shared_ui.adapters import session_manager
+except ImportError:
+    # Fallback pour développement local
+    class DummySessionManager:
+        def __init__(self): self._data = {}
+        def get(self, key, default=None): return self._data.get(key, default)
+        def set(self, key, value): self._data[key] = value
+        def contains(self, key): return key in self._data
+    session_manager = DummySessionManager()
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +44,8 @@ class HybridDBService:
         self.mock_service = MockDBService()
         self.event_helper = phoenix_rise_event_helper
         self._supabase_available = self._check_supabase_connection()
-        logger.info(f"✅ HybridDBService initialisé (Mock + Event Sourcing) - Supabase: {'✅' if self._supabase_available else '⚠️'}")
+        self._batch_service = get_batch_service()
+        logger.info(f"✅ HybridDBService initialisé (Mock + Event Sourcing + Batch) - Supabase: {'✅' if self._supabase_available else '⚠️'}")
     
     def _check_supabase_connection(self) -> bool:
         """Vérifie si Supabase est disponible."""
@@ -259,21 +272,26 @@ class HybridDBService:
             return EmotionalVectorState(user_id=user_id)  # EEV vierge
     
     def _get_evs_from_session(self, user_id: str) -> EmotionalVectorState:
-        """Fallback: récupère l'EEV depuis st.session_state."""
-        if "emotional_vector_states" not in st.session_state:
-            st.session_state.emotional_vector_states = {}
+        """✅ DÉCOUPLÉ: Récupère l'EEV depuis session adaptée."""
+        if not session_manager.contains("emotional_vector_states"):
+            session_manager.set("emotional_vector_states", {})
         
-        if user_id not in st.session_state.emotional_vector_states:
-            st.session_state.emotional_vector_states[user_id] = EmotionalVectorState(user_id=user_id)
+        evs_data = session_manager.get("emotional_vector_states", {})
+        if user_id not in evs_data:
+            evs_data[user_id] = EmotionalVectorState(user_id=user_id)
+            session_manager.set("emotional_vector_states", evs_data)
         
-        return st.session_state.emotional_vector_states[user_id]
+        return evs_data[user_id]
     
     def save_emotional_vector_state(self, evs: EmotionalVectorState) -> bool:
-        """Sauvegarde l'EEV (pour le moment, juste en session state)."""
-        if "emotional_vector_states" not in st.session_state:
-            st.session_state.emotional_vector_states = {}
+        """✅ DÉCOUPLÉ: Sauvegarde l'EEV via session adaptée."""
+        if not session_manager.contains("emotional_vector_states"):
+            session_manager.set("emotional_vector_states", {})
         
-        st.session_state.emotional_vector_states[evs.user_id] = evs
+        evs_data = session_manager.get("emotional_vector_states", {})
+        evs_data[evs.user_id] = evs
+        session_manager.set("emotional_vector_states", evs_data)
+        
         logger.info(f"✅ EEV sauvegardé pour {evs.user_id}")
         return True
     

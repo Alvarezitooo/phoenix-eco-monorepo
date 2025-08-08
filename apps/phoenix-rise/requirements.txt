@@ -162,10 +162,10 @@ pdfminer.six==20250506
 pdfplumber==0.11.7
 peewee==3.18.2
 pexpect==4.9.0
-# Editable install with no version control (phoenix-shared-auth==1.0.0)
--e /Users/mattvaness/Desktop/IA/phoenix/phoenix-eco/phoenix_shared_auth
-# Editable install with no version control (phoenix_shared_models==0.1.0)
--e /Users/mattvaness/Desktop/IA/phoenix/phoenix-eco/phoenix_shared_models
+# ✅ CORRECTION ARCHITECTURE: Packages partagés avec chemins relatifs
+# Ces packages seront gérés via pyproject.toml du monorepo
+# phoenix-shared-auth via ../../packages/phoenix-shared-auth
+# phoenix_shared_models via ../../packages/phoenix-shared-models
 phonenumbers==8.13.55
 pika==1.3.2
 pillow==11.3.0

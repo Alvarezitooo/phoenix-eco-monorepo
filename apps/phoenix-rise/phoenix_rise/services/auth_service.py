@@ -5,8 +5,8 @@ Ce module gère les opérations d'authentification des utilisateurs
 avec Supabase, y compris l'inscription, la connexion et la déconnexion.
 """
 
-import streamlit as st
 from supabase import Client
+from phoenix_shared_ui.adapters import session_manager
 
 
 
@@ -21,11 +21,13 @@ class AuthService:
         try:
             auth_response = self.client.auth.sign_up({"email": email, "password": password})
             if auth_response.user:
-                st.session_state["user"] = auth_response.user
+                session_manager.set("user", auth_response.user)
                 return True, None
             return False, "Erreur lors de la création de l'utilisateur."
         except Exception as e:
-            st.error(f"Erreur d'inscription: {e}")
+            # Log error instead of using st.error
+            import logging
+            logging.error(f"Erreur d'inscription: {e}")
             return False, "Une erreur inattendue est survenue lors de l'inscription."
 
     def sign_in(self, email, password):
@@ -35,19 +37,21 @@ class AuthService:
                 {"email": email, "password": password}
             )
             if auth_response.user:
-                st.session_state["user"] = auth_response.user
+                session_manager.set("user", auth_response.user)
                 return True, None
             return False, "Email ou mot de passe incorrect."
         except Exception as e:
-            st.error(f"Erreur de connexion: {e}")
+            # Log error instead of using st.error
+            import logging
+            logging.error(f"Erreur de connexion: {e}")
             return False, "Une erreur inattendue est survenue lors de la connexion."
 
     def sign_out(self):
         """Déconnecte l'utilisateur."""
-        if "user" in st.session_state:
-            del st.session_state["user"]
+        if session_manager.contains("user"):
+            session_manager.delete("user")
         return self.client.auth.sign_out()
 
     def is_logged_in(self):
         """Vérifie si un utilisateur est connecté."""
-        return "user" in st.session_state
+        return session_manager.contains("user")

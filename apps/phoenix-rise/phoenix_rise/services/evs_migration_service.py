@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 import pytz
 
-import streamlit as st
+from phoenix_shared_ui.adapters import session_manager
 from iris_core.event_processing.emotional_vector_state import EmotionalVectorState
 from core.supabase_client import supabase_client
 from models.journal_entry import JournalEntry
@@ -59,8 +59,9 @@ class EVSMigrationService:
 
         try:
             # 1. Migrer les entrées de journal
-            if "mock_db" in st.session_state:
-                journal_entries = st.session_state.mock_db.get("journal_entries", {}).get(user_id, [])
+            if session_manager.contains("mock_db"):
+                mock_db = session_manager.get("mock_db", {})
+                journal_entries = mock_db.get("journal_entries", {}).get(user_id, [])
                 
                 for entry in journal_entries:
                     # Créer événement MoodLogged
@@ -104,7 +105,7 @@ class EVSMigrationService:
                     migration_stats["journal_entries_processed"] += 1
 
                 # 2. Migrer les objectifs
-                objectives = st.session_state.mock_db.get("objectives", {}).get(user_id, [])
+                objectives = mock_db.get("objectives", {}).get(user_id, [])
                 for objective in objectives:
                     goal_event = {
                         "stream_id": user_id,
@@ -216,9 +217,10 @@ class EVSMigrationService:
         }
 
         # Vérifier données Mock
-        if "mock_db" in st.session_state:
-            mock_journal = st.session_state.mock_db.get("journal_entries", {}).get(user_id, [])
-            mock_objectives = st.session_state.mock_db.get("objectives", {}).get(user_id, [])
+        if session_manager.contains("mock_db"):
+            mock_db = session_manager.get("mock_db", {})
+            mock_journal = mock_db.get("journal_entries", {}).get(user_id, [])
+            mock_objectives = mock_db.get("objectives", {}).get(user_id, [])
             
             status["has_mock_data"] = len(mock_journal) > 0 or len(mock_objectives) > 0
             status["mock_entries_count"] = len(mock_journal) + len(mock_objectives)

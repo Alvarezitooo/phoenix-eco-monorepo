@@ -1,19 +1,14 @@
-import HonestHeroSection from '@/components/sections/HonestHeroSection';
-import WhyNowSection from '@/components/sections/WhyNowSection';
-import EcosystemSection from '@/components/sections/EcosystemSection';
-import HonestMetricsSection from '@/components/sections/HonestMetricsSection';
-import AuthenticTestimonialsSection from '@/components/sections/AuthenticTestimonialsSection';
-import ResearchActionSection from '@/components/sections/ResearchActionSection';
+// apps/phoenix-website/app/page.tsx
+'use client';
 
-export default function Home() {
+import DojoMental from '../components/DojoMental/DojoMental';
+
+export default function HomePage() {
+  // Remplacez 'some_user_id' par un ID utilisateur réel ou simulé
+  const userId = "user_12345"; 
   return (
-    <div className="flex flex-col">
-      <HonestHeroSection />
-      <WhyNowSection />
-      <EcosystemSection />
-      <HonestMetricsSection />
-      <ResearchActionSection />
-      <AuthenticTestimonialsSection />
-    </div>
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <DojoMental userId={userId} />
+    </main>
   );
 }

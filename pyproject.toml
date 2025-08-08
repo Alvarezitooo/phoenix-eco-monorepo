@@ -12,13 +12,26 @@ package-mode = false
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
 
-# C'est la SEULE manière de déclarer vos paquets locaux.
-# C'est direct, explicite et sans ambiguïté pour tous les outils.
+# ✅ PACKAGES PRINCIPAUX
 phoenix_letters = { path = "apps/phoenix-letters", develop = true }
 phoenix_cv = { path = "apps/phoenix-cv", develop = true }
 phoenix_rise = { path = "apps/phoenix-rise", develop = true }
+
+# ✅ PACKAGES PARTAGÉS - ARCHITECTURE CLEAN
 phoenix_event_bridge = { path = "packages/phoenix_event_bridge", develop = true }
 phoenix_shared_ui = { path = "packages/phoenix-shared-ui", develop = true }
+phoenix_shared_auth = { path = "packages/phoenix-shared-auth", develop = true }
+phoenix_shared_models = { path = "packages/phoenix-shared-models", develop = true }
+phoenix_security = { path = "packages/phoenix-security", develop = true }
+phoenix_shared_ai = { path = "packages/phoenix-shared-ai", develop = true }
+phoenix_shared_db = { path = "packages/phoenix-shared-db", develop = true }
+
+# ✅ PACKAGES IRIS
+iris_agent = { path = "packages/iris-agent", develop = true }
+iris_client = { path = "packages/iris-client", develop = true }
+
+# ✅ PACKAGES SÉCURITÉ
+pdf_security_patch = { path = "packages/pdf-security-patch", develop = true }
 
 [build-system]
 requires = ["poetry-core"]

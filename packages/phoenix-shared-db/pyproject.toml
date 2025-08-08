@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "phoenix-shared-db"
+version = "1.0.0"
+description = "Services de base de données optimisés pour l'écosystème Phoenix"
+authors = ["Claude Phoenix DevSecOps Guardian <phoenix@anthropic.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.9, <4.0"
+supabase = "*"
+asyncio-extras = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
