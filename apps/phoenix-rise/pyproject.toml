@@ -23,11 +23,12 @@ requests = "*"
 bcrypt = "*"
 supabase = "*"
 # Dépendances spécifiques Phoenix Rise
-plotly = ">=5.0.0"
-pandas = ">=1.5.0"
-cryptography = ">=3.4.8"
-# Analytics et visualisations
-matplotlib = "*"
+# 📊 Visualisations spécifiques Phoenix Rise
+plotly = ">=5.0.0"  # Utilisé pour dashboard et graphiques émotionnels
+pandas = ">=1.5.0"   # Utilisé pour traitement données analytics
+cryptography = ">=3.4.8"  # Utilisé pour chiffrement sessions Premium
+# ❌ SUPPRIMÉ: matplotlib non utilisé dans phoenix-rise
+# matplotlib = "*"
 # Dépendance locale gérée par l'orchestrateur racine
 phoenix_event_bridge = "*"
 phoenix_shared_ui = { path = "../../packages/phoenix-shared-ui", develop = true }

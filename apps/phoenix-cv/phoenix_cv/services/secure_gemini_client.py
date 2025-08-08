@@ -14,15 +14,35 @@ from phoenix_cv.utils.rate_limiter import rate_limit
 from phoenix_cv.utils.secure_logging import secure_logger
 from phoenix_cv.utils.secure_validator import SecureValidator
 
+# ✅ Import optimiseur cache Gemini depuis packages partagés
+try:
+    from phoenix_shared_ai.services import get_cache_optimizer, CachePriority
+except ImportError:
+    # Stub pour développement sans packages partagés
+    class DummyCacheOptimizer:
+        def get(self, *args, **kwargs): return None
+        def set(self, *args, **kwargs): return True
+        def get_stats(self): return {"cache_disabled": True}
+    
+    def get_cache_optimizer(): return DummyCacheOptimizer()
+    
+    class CachePriority:
+        LOW, MEDIUM, HIGH, CRITICAL = 1, 2, 3, 4
+
 
 class SecureGeminiClient:
-    """Client Gemini sécurisé avec protection injection"""
+    """🛡️ Client Gemini sécurisé avec protection injection et cache intelligent optimisé."""
 
     def __init__(self):
         self._setup_secure_client()
         self.executor = ThreadPoolExecutor(max_workers=2)
         self._request_history = []
         self._lock = threading.Lock()
+        
+        # ✅ Initialiser cache optimisé Gemini
+        self._cache_optimizer = get_cache_optimizer(max_size_mb=30)  # 30MB pour CV processing
+        secure_logger.log_security_event("GEMINI_CACHE_INITIALIZED", 
+            {"cache_size_mb": 30, "cache_available": True})
 
     def _setup_secure_client(self):
         """Configuration sécurisée du client Gemini"""
@@ -51,24 +71,45 @@ class SecureGeminiClient:
     def generate_content_secure(
         self, prompt_template: str, user_data: Dict[str, str], max_retries: int = 2
     ) -> str:
-        """Génération sécurisée avec template et validation"""
+        """🚀 Génération sécurisée avec template, validation et cache intelligent."""
         try:
             clean_data = self._sanitize_user_data(user_data)
-
             secure_prompt = self._build_secure_prompt(prompt_template, clean_data)
 
             if not self._validate_prompt(secure_prompt):
                 raise SecurityException("Prompt non autorisé")
-
+            
+            # ✅ Vérifier cache avant appel API
+            model_config = self._get_model_config()
+            cached_response = self._cache_optimizer.get(secure_prompt, clean_data, model_config)
+            
+            if cached_response:
+                secure_logger.log_security_event("GEMINI_CACHE_HIT", 
+                    {"template": prompt_template, "response_length": len(cached_response)})
+                return cached_response
+            
+            # ✅ Cache miss - appel API avec retry
             for attempt in range(max_retries):
                 try:
                     future = self.executor.submit(self._call_gemini_api, secure_prompt)
                     response = future.result(timeout=30)
 
                     clean_response = self._sanitize_ai_response(response)
+                    
+                    # ✅ Mettre en cache la réponse selon priorité template
+                    cache_priority = self._determine_cache_priority(prompt_template)
+                    cache_ttl = self._calculate_cache_ttl(prompt_template, clean_data)
+                    
+                    self._cache_optimizer.set(
+                        secure_prompt, clean_data, clean_response, 
+                        model_config, ttl=cache_ttl, priority=cache_priority
+                    )
+                    
+                    secure_logger.log_security_event("GEMINI_CACHE_SET", 
+                        {"template": prompt_template, "cache_ttl": cache_ttl, 
+                         "priority": cache_priority.name if hasattr(cache_priority, 'name') else cache_priority})
 
                     self._log_api_usage(len(secure_prompt), len(clean_response))
-
                     return clean_response
 
                 except TimeoutError:
@@ -289,5 +330,55 @@ RÉPONSE ATTENDUE: JSON avec score, recommandations et mots-clés manquants uniq
                 "last_24h_requests": len([
                     event for event in self._request_history 
                     if datetime.fromisoformat(event["timestamp"]) > datetime.utcnow() - timedelta(days=1)
-                ])
+                ]),
+                "cache_stats": self._cache_optimizer.get_stats()
             }
+    
+    def _get_model_config(self) -> Dict[str, Any]:
+        """Retourne la configuration actuelle du modèle pour le cache."""
+        return {
+            "model_name": "gemini-1.5-flash",
+            "max_output_tokens": 2048,
+            "temperature": 0.7,
+            "top_p": 0.8,
+            "top_k": 40
+        }
+    
+    def _determine_cache_priority(self, template: str) -> Any:
+        """Détermine la priorité de cache selon le template."""
+        # Templates fréquents = priorité élevée
+        high_priority_templates = ["cv_parsing", "cv_enhancement"]
+        medium_priority_templates = ["ats_analysis"]
+        
+        if template in high_priority_templates:
+            return CachePriority.HIGH
+        elif template in medium_priority_templates:
+            return CachePriority.MEDIUM
+        else:
+            return CachePriority.LOW
+    
+    def _calculate_cache_ttl(self, template: str, user_data: Dict[str, str]) -> int:
+        """Calcule le TTL de cache selon le contexte."""
+        base_ttl = 3600  # 1h par défaut
+        
+        # Templates analytiques = TTL plus long (moins volatil)
+        if template in ["cv_parsing", "ats_analysis"]:
+            base_ttl = 7200  # 2h
+        
+        # Templates génératifs = TTL plus court (plus créatif)
+        if template == "cv_enhancement":
+            base_ttl = 1800  # 30min
+        
+        # Données très personnalisées = TTL réduit
+        personal_indicators = ['nom', 'email', 'telephone']
+        if any(indicator in key.lower() for key in user_data.keys() for indicator in personal_indicators):
+            base_ttl //= 2
+        
+        return base_ttl
+    
+    def clear_cache(self) -> int:
+        """Vide le cache Gemini et retourne le nombre d'entrées supprimées."""
+        cleared_count = self._cache_optimizer.clear()
+        secure_logger.log_security_event("GEMINI_CACHE_CLEARED", 
+            {"cleared_entries": cleared_count})
+        return cleared_count

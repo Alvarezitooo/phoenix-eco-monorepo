@@ -2,15 +2,23 @@
 Services partagés Phoenix UI
 """
 
-# Import du service d'anonymisation
+# ✅ CORRECTION CRITIQUE: Import DataAnonymizer depuis phoenix-security (Clean Architecture)
 try:
-    from .data_anonymizer import DataAnonymizer
+    from phoenix_security.services import DataAnonymizer
 except ImportError:
-    # Mode dégradé - utilisation du DataAnonymizer de Phoenix Rise
-    try:
-        from apps.phoenix_rise.phoenix_rise.utils.security import DataAnonymizer
-    except ImportError:
-        pass
+    # Stub minimal pour éviter le couplage apps ← packages
+    class DataAnonymizer:
+        """Stub DataAnonymizer pour éviter couplage architectural."""
+        def __init__(self): 
+            self._available = False
+        
+        def anonymize_text(self, text: str):
+            """Stub method - utiliser phoenix_security.services.DataAnonymizer pour fonctionnalité complète."""
+            return type('Result', (), {'success': False, 'error': 'DataAnonymizer non disponible'})()
+        
+        @property
+        def is_available(self) -> bool:
+            return self._available
 
 # ✅ Import du gestionnaire de session Dojo
 from .dojo_session_manager import (

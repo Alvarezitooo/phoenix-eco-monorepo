@@ -3,7 +3,9 @@ import os
 import re
 import json
 import sys
-from typing import Dict
+import asyncio
+import concurrent.futures
+from typing import Dict, List, Optional, Tuple, Any
 
 import docx
 import fitz  # PyMuPDF
@@ -38,12 +40,30 @@ except ImportError:
 
 class SecureCVParser:
     """
-    Parser de CV sécurisé et optimisé avec PyMuPDF et Tesseract OCR.
+    🚀 Parser de CV sécurisé et optimisé avec traitement asynchrone.
+    PyMuPDF + Tesseract OCR avec parallélisation intelligente.
     Performance et précision maximales.
     """
 
-    def __init__(self, gemini_client: SecureGeminiClient):
+    def __init__(self, gemini_client: SecureGeminiClient, max_workers: int = 4):
         self.gemini = gemini_client
+        self.max_workers = max_workers
+        
+        # ✅ Pool de threads pour OCR parallèle
+        self.ocr_executor = concurrent.futures.ThreadPoolExecutor(
+            max_workers=max_workers, 
+            thread_name_prefix="OCR-Worker"
+        )
+        
+        # ✅ Pool séparé pour traitement PDF/DOCX
+        self.io_executor = concurrent.futures.ThreadPoolExecutor(
+            max_workers=2,
+            thread_name_prefix="IO-Worker"
+        )
+        
+        secure_logger.log_security_event("CV_PARSER_ASYNC_INITIALIZED", 
+            {"ocr_workers": max_workers, "io_workers": 2})
+        
         # Optionnel : Spécifier le chemin de l'exécutable Tesseract si nécessaire
         # pytesseract.pytesseract.tesseract_cmd = r'/usr/local/bin/tesseract'
 
@@ -51,14 +71,56 @@ class SecureCVParser:
         """Effectue l'OCR sur une image avec gestion des erreurs."""
         try:
             image = Image.open(io.BytesIO(image_bytes))
-            # Prétraitement simple pour améliorer la qualité de l'OCR
+            # ✅ Prétraitement optimisé pour améliorer la qualité de l'OCR
             image = image.convert("L")  # Niveaux de gris
-            return pytesseract.image_to_string(image, lang='fra') # Spécifier le français
+            
+            # ✅ Configuration OCR optimisée pour CV
+            custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789àâäéèêëïîôöùûüÿçÀÂÄÉÈÊËÏÎÔÖÙÛÜŸÇ .,;:!?()[]{}"\'-+@#$%&*=/'
+            
+            return pytesseract.image_to_string(
+                image, 
+                lang='fra+eng',  # Multi-langue pour CV internationaux
+                config=custom_config
+            )
         except Exception as e:
             secure_logger.log_security_event(
                 "OCR_PERFORMANCE_ERROR", {"error": str(e)[:100]}, "WARNING"
             )
             return ""
+    
+    async def _perform_ocr_batch_async(self, image_list: List[Tuple[int, bytes]]) -> List[Tuple[int, str]]:
+        """🚀 Traitement OCR parallèle sur plusieurs images."""
+        if not image_list:
+            return []
+        
+        loop = asyncio.get_event_loop()
+        
+        # ✅ Créer tâches asynchrones pour chaque image
+        ocr_tasks = []
+        for idx, image_bytes in image_list:
+            task = loop.run_in_executor(
+                self.ocr_executor, 
+                self._perform_ocr_on_image, 
+                image_bytes
+            )
+            ocr_tasks.append((idx, task))
+        
+        # ✅ Attendre completion de toutes les tâches avec timeout
+        results = []
+        try:
+            for idx, task in ocr_tasks:
+                ocr_text = await asyncio.wait_for(task, timeout=30.0)  # 30s par image
+                results.append((idx, ocr_text))
+        except asyncio.TimeoutError:
+            secure_logger.log_security_event(
+                "OCR_BATCH_TIMEOUT", {"processed": len(results), "total": len(ocr_tasks)}, "WARNING"
+            )
+        
+        secure_logger.log_security_event(
+            "OCR_BATCH_COMPLETED", {"images_processed": len(results), "total_images": len(image_list)}
+        )
+        
+        return results
 
     @rate_limit(max_requests=5, window_seconds=300)
     def extract_text_from_pdf_secure(self, file_content: bytes) -> str:
@@ -119,19 +181,40 @@ class SecureCVParser:
                     break
                 text += page_text + "\n"
 
-                # 2. Extraction du texte des images (OCR)
+                # 2. ✅ Collecte des images pour traitement OCR parallèle
                 images = page.get_images(full=True)
-                for img_index, img in enumerate(images):
-                    image_count += 1
-                    xref = img[0]
-                    base_image = doc.extract_image(xref)
-                    image_bytes = base_image["image"]
-                    
-                    ocr_text = self._perform_ocr_on_image(image_bytes)
-                    
-                    if len(text + ocr_text) > 80000:
-                        break
-                    text += "\n--- OCR IMAGE ---\n" + ocr_text + "\n"
+                page_images = []
+                
+                for img_index, img in enumerate(images[:5]):  # Max 5 images par page
+                    try:
+                        xref = img[0]
+                        base_image = doc.extract_image(xref)
+                        image_bytes = base_image["image"]
+                        page_images.append((f"{page_num}_{img_index}", image_bytes))
+                        image_count += 1
+                    except Exception as e:
+                        secure_logger.log_security_event(
+                            "IMAGE_EXTRACTION_ERROR", {"page": page_num, "img": img_index, "error": str(e)[:100]}, "WARNING"
+                        )
+                
+                # ✅ Traitement OCR asynchrone de toutes les images de la page
+                if page_images:
+                    try:
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        ocr_results = loop.run_until_complete(self._perform_ocr_batch_async(page_images))
+                        
+                        for img_id, ocr_text in ocr_results:
+                            if len(text + ocr_text) > 80000:
+                                break
+                            if ocr_text.strip():  # Ignorer OCR vides
+                                text += f"\n--- OCR IMAGE {img_id} ---\n" + ocr_text + "\n"
+                        
+                        loop.close()
+                    except Exception as e:
+                        secure_logger.log_security_event(
+                            "OCR_ASYNC_ERROR", {"page": page_num, "error": str(e)[:100]}, "WARNING"
+                        )
 
                 page_count += 1
 
@@ -154,6 +237,24 @@ class SecureCVParser:
                 "PDF_EXTRACTION_ERROR_OPTIMIZED", {"error": str(e)[:100]}, "CRITICAL"
             )
             raise SecurityException("Erreur critique lors de l'extraction optimisée du PDF")
+    
+    async def extract_text_from_pdf_async(self, file_content: bytes) -> str:
+        """🚀 Version asynchrone complète de l'extraction PDF avec OCR parallèle."""
+        loop = asyncio.get_event_loop()
+        
+        # ✅ Déléguer l'extraction PDF au pool IO
+        try:
+            result = await loop.run_in_executor(
+                self.io_executor,
+                self.extract_text_from_pdf_secure,
+                file_content
+            )
+            return result
+        except Exception as e:
+            secure_logger.log_security_event(
+                "PDF_ASYNC_EXTRACTION_ERROR", {"error": str(e)[:100]}, "CRITICAL"
+            )
+            raise
 
     def extract_text_from_docx_secure(self, file_content: bytes) -> str:
         """Extraction sécurisée de texte DOCX (inchangée mais bénéficie du logging)"""
@@ -176,6 +277,23 @@ class SecureCVParser:
                 "DOCX_EXTRACTION_ERROR", {"error": str(e)[:100]}, "ERROR"
             )
             raise SecurityException("Erreur lors de l'extraction du DOCX")
+    
+    async def extract_text_from_docx_async(self, file_content: bytes) -> str:
+        """🚀 Version asynchrone de l'extraction DOCX."""
+        loop = asyncio.get_event_loop()
+        
+        try:
+            result = await loop.run_in_executor(
+                self.io_executor,
+                self.extract_text_from_docx_secure,
+                file_content
+            )
+            return result
+        except Exception as e:
+            secure_logger.log_security_event(
+                "DOCX_ASYNC_EXTRACTION_ERROR", {"error": str(e)[:100]}, "ERROR"
+            )
+            raise
 
     def parse_cv_with_ai_secure(self, cv_text: str) -> CVProfile:
         """Parsing sécurisé de CV avec IA (bénéficie d'un meilleur texte en entrée)"""
@@ -209,6 +327,133 @@ class SecureCVParser:
                 "CV_PARSING_FAILED", {"error": str(e)[:100]}, "ERROR"
             )
             raise SecurityException("Erreur lors de l'analyse du CV")
+    
+    async def parse_cv_with_ai_async(self, cv_text: str) -> CVProfile:
+        """🚀 Version asynchrone du parsing CV avec IA."""
+        loop = asyncio.get_event_loop()
+        
+        try:
+            # ✅ Traitement asynchrone de l'anonymisation et parsing
+            clean_cv_text = SecureValidator.validate_text_input(
+                cv_text, 80000, "texte CV"
+            )
+            
+            # ✅ Anonymisation asynchrone
+            anonymized_text = await loop.run_in_executor(
+                None,  # Utiliser le pool par défaut
+                self._anonymize_text_for_ai,
+                clean_cv_text
+            )
+            
+            prompt_data = {"cv_content": anonymized_text}
+            
+            # ✅ Appel Gemini asynchrone (bénéficie du cache optimisé)
+            response = await loop.run_in_executor(
+                None,
+                lambda: self.gemini.generate_content_secure("cv_parsing", prompt_data)
+            )
+            
+            # ✅ Parsing JSON asynchrone
+            parsed_data = await loop.run_in_executor(
+                None,
+                self._parse_json_response_secure,
+                response
+            )
+            
+            # ✅ Construction profil asynchrone
+            profile = await loop.run_in_executor(
+                None,
+                self._build_cv_profile_secure,
+                parsed_data
+            )
+            
+            secure_logger.log_security_event(
+                "CV_PARSED_ASYNC_SUCCESS",
+                {
+                    "experiences_count": len(profile.experiences),
+                    "skills_count": len(profile.skills),
+                    "processing_mode": "async"
+                },
+            )
+            
+            return profile
+            
+        except Exception as e:
+            secure_logger.log_security_event(
+                "CV_PARSING_ASYNC_FAILED", {"error": str(e)[:100]}, "ERROR"
+            )
+            raise SecurityException("Erreur lors de l'analyse asynchrone du CV")
+    
+    async def parse_multiple_cvs_async(self, cv_contents: List[Tuple[str, bytes]]) -> List[Tuple[str, Optional[CVProfile]]]:
+        """🚀 Traitement parallèle de plusieurs CVs."""
+        if not cv_contents:
+            return []
+        
+        secure_logger.log_security_event(
+            "BATCH_CV_PROCESSING_START", {"cv_count": len(cv_contents)}
+        )
+        
+        # ✅ Créer tâches asynchrones pour chaque CV
+        tasks = []
+        for filename, content in cv_contents:
+            if filename.lower().endswith('.pdf'):
+                extract_task = self.extract_text_from_pdf_async(content)
+            elif filename.lower().endswith('.docx'):
+                extract_task = self.extract_text_from_docx_async(content)
+            else:
+                continue  # Format non supporté
+            
+            # ✅ Chaîner extraction + parsing
+            async def process_single_cv(fname, extract_task):
+                try:
+                    cv_text = await extract_task
+                    profile = await self.parse_cv_with_ai_async(cv_text)
+                    return (fname, profile)
+                except Exception as e:
+                    secure_logger.log_security_event(
+                        "SINGLE_CV_PROCESSING_FAILED", {"filename": fname, "error": str(e)[:100]}, "WARNING"
+                    )
+                    return (fname, None)
+            
+            tasks.append(process_single_cv(filename, extract_task))
+        
+        # ✅ Traitement parallèle avec limite de concurrence
+        semaphore = asyncio.Semaphore(self.max_workers)
+        
+        async def limited_task(task):
+            async with semaphore:
+                return await task
+        
+        # ✅ Exécuter toutes les tâches avec timeout global
+        try:
+            results = await asyncio.wait_for(
+                asyncio.gather(*[limited_task(task) for task in tasks]),
+                timeout=300.0  # 5 minutes timeout global
+            )
+        except asyncio.TimeoutError:
+            secure_logger.log_security_event(
+                "BATCH_CV_PROCESSING_TIMEOUT", {"cv_count": len(cv_contents)}, "WARNING"
+            )
+            results = [(f"timeout_{i}", None) for i in range(len(cv_contents))]
+        
+        success_count = sum(1 for _, profile in results if profile is not None)
+        
+        secure_logger.log_security_event(
+            "BATCH_CV_PROCESSING_COMPLETED", 
+            {"total_cvs": len(cv_contents), "successful": success_count, "failed": len(cv_contents) - success_count}
+        )
+        
+        return results
+    
+    def __del__(self):
+        """🔄 Nettoyage des pools de threads."""
+        try:
+            if hasattr(self, 'ocr_executor'):
+                self.ocr_executor.shutdown(wait=False)
+            if hasattr(self, 'io_executor'):
+                self.io_executor.shutdown(wait=False)
+        except Exception:
+            pass  # Ignorer erreurs de nettoyage
 
     def _anonymize_text_for_ai(self, text: str) -> str:
         """Anonymisation avancée pour traitement IA"""

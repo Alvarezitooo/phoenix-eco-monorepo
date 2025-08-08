@@ -8,8 +8,11 @@ Assure la compatibilité et la transition progressive vers l'Event Sourcing.
 import uuid
 import logging
 import json
+import asyncio
+import time
 from typing import Any, Dict, List, Optional
 from datetime import datetime
+from functools import wraps
 
 from models.journal_entry import JournalEntry
 from .mock_db_service import MockDBService
@@ -35,9 +38,9 @@ logger = logging.getLogger(__name__)
 
 class HybridDBService:
     """
-    Service de base de données hybride.
+    🚀 Service de base de données hybride optimisé avec batching intelligent.
     Utilise MockDBService pour le stockage local ET publie les événements vers la data pipeline.
-    Supporte la persistance EmotionalVectorState via Event Sourcing.
+    Supporte la persistance EmotionalVectorState via Event Sourcing avec retry/backoff.
     """
 
     def __init__(self):
@@ -45,7 +48,29 @@ class HybridDBService:
         self.event_helper = phoenix_rise_event_helper
         self._supabase_available = self._check_supabase_connection()
         self._batch_service = get_batch_service()
-        logger.info(f"✅ HybridDBService initialisé (Mock + Event Sourcing + Batch) - Supabase: {'✅' if self._supabase_available else '⚠️'}")
+        
+        # ✅ Configuration batching optimisé
+        self._pending_events = []
+        self._batch_size = 10
+        self._batch_timeout = 2.0  # 2 secondes
+        self._last_batch_time = time.time()
+        self._retry_config = {
+            'max_attempts': 3,
+            'base_delay': 1.0,
+            'max_delay': 10.0,
+            'exponential_base': 2
+        }
+        
+        logger.info(f"✅ HybridDBService initialisé (Mock + Event Sourcing + Batching Optimisé) - Supabase: {'✅' if self._supabase_available else '⚠️'}")
+    
+    def __del__(self):
+        """🔄 Destructeur - assure le traitement des événements en attente."""
+        if hasattr(self, '_pending_events') and self._pending_events:
+            logger.info(f"🔄 Traitement final de {len(self._pending_events)} événements en attente...")
+            try:
+                self.force_flush_pending_events()
+            except Exception as e:
+                logger.error(f"❌ Erreur lors du flush final: {e}")
     
     def _check_supabase_connection(self) -> bool:
         """Vérifie si Supabase est disponible."""
@@ -296,7 +321,7 @@ class HybridDBService:
         return True
     
     def store_event_to_supabase(self, user_id: str, event_type: str, payload: Dict[str, Any], app_source: str = "rise") -> bool:
-        """Stocke un événement directement dans Supabase Event Store."""
+        """🚀 Stocke un événement via batch service optimisé avec retry/backoff."""
         if not self._supabase_available:
             logger.warning(f"⚠️ Supabase indisponible, événement {event_type} non persisté")
             return False
@@ -309,14 +334,106 @@ class HybridDBService:
                 "app_source": app_source,
                 "metadata": {
                     "source": "phoenix_rise_hybrid_service",
-                    "version": "1.0.0"
+                    "version": "1.1.0",
+                    "batch_enabled": True
                 }
             }
             
-            result = supabase_client.table('events').insert(event_data).execute()
-            logger.info(f"✅ Événement {event_type} stocké dans Supabase pour {user_id}")
+            # ✅ Ajouter à la file de batch au lieu d'écrire immédiatement
+            self._add_to_batch(event_data)
+            
+            # ✅ Traitement batch si conditions remplies
+            if self._should_flush_batch():
+                return self._flush_batch()
+            
             return True
             
         except Exception as e:
-            logger.error(f"❌ Erreur stockage événement {event_type}: {e}")
+            logger.error(f"❌ Erreur préparation batch événement {event_type}: {e}")
             return False
+    
+    def _add_to_batch(self, event_data: Dict[str, Any]) -> None:
+        """Ajoute un événement à la file de batch."""
+        self._pending_events.append(event_data)
+        logger.debug(f"📦 Événement ajouté au batch ({len(self._pending_events)}/{self._batch_size})")
+    
+    def _should_flush_batch(self) -> bool:
+        """Détermine si le batch doit être traité maintenant."""
+        # Batch par taille
+        if len(self._pending_events) >= self._batch_size:
+            return True
+        
+        # Batch par timeout
+        if (time.time() - self._last_batch_time) >= self._batch_timeout and self._pending_events:
+            return True
+        
+        return False
+    
+    def _flush_batch(self) -> bool:
+        """🚀 Traite le batch d'événements avec retry/backoff exponential."""
+        if not self._pending_events:
+            return True
+        
+        batch_to_process = self._pending_events.copy()
+        self._pending_events.clear()
+        self._last_batch_time = time.time()
+        
+        return self._execute_batch_with_retry(batch_to_process)
+    
+    def _execute_batch_with_retry(self, events: List[Dict[str, Any]]) -> bool:
+        """Exécute le batch avec retry/backoff intelligent."""
+        last_error = None
+        
+        for attempt in range(1, self._retry_config['max_attempts'] + 1):
+            try:
+                # ✅ Utiliser le batch service pour insertion optimisée
+                if hasattr(self._batch_service, 'batch_insert'):
+                    success = self._batch_service.batch_insert('events', events)
+                else:
+                    # Fallback vers insertion multiple classique
+                    result = supabase_client.table('events').insert(events).execute()
+                    success = len(result.data) == len(events)
+                
+                if success:
+                    logger.info(f"✅ Batch de {len(events)} événements traité avec succès (tentative {attempt})")
+                    return True
+                else:
+                    raise Exception("Batch insertion failed - partial success")
+                    
+            except Exception as e:
+                last_error = e
+                logger.warning(f"⚠️ Échec batch tentative {attempt}/{self._retry_config['max_attempts']}: {e}")
+                
+                if attempt < self._retry_config['max_attempts']:
+                    delay = min(
+                        self._retry_config['base_delay'] * (self._retry_config['exponential_base'] ** (attempt - 1)),
+                        self._retry_config['max_delay']
+                    )
+                    logger.info(f"⏳ Retry dans {delay}s...")
+                    time.sleep(delay)
+        
+        # ✅ Échec définitif - remettre en file pour retry ultérieur
+        logger.error(f"❌ Échec définitif batch {len(events)} événements après {self._retry_config['max_attempts']} tentatives: {last_error}")
+        self._pending_events.extend(events)  # Remettre en file
+        return False
+    
+    def force_flush_pending_events(self) -> bool:
+        """🔄 Force le traitement immédiat de tous les événements en attente."""
+        if not self._pending_events:
+            logger.info("📦 Aucun événement en attente à traiter")
+            return True
+        
+        logger.info(f"🔄 Forçage traitement {len(self._pending_events)} événements en attente...")
+        return self._flush_batch()
+    
+    def get_batch_stats(self) -> Dict[str, Any]:
+        """📊 Retourne les statistiques du système de batching."""
+        return {
+            "pending_events": len(self._pending_events),
+            "batch_size": self._batch_size,
+            "batch_timeout_seconds": self._batch_timeout,
+            "last_batch_time": datetime.fromtimestamp(self._last_batch_time).isoformat(),
+            "time_since_last_batch": time.time() - self._last_batch_time,
+            "retry_config": self._retry_config,
+            "supabase_available": self._supabase_available
+        }
