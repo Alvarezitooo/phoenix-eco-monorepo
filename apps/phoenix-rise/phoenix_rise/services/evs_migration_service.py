@@ -8,13 +8,11 @@ pour la persistance des EmotionalVectorState via Event Sourcing.
 import logging
 import uuid
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
-import pytz
+from typing import Dict, Any, Optional
 
 from phoenix_shared_ui.adapters import session_manager
 from iris_core.event_processing.emotional_vector_state import EmotionalVectorState
-from core.supabase_client import supabase_client
-from models.journal_entry import JournalEntry
+from ..core.supabase_client import supabase_client
 
 logger = logging.getLogger(__name__)
 

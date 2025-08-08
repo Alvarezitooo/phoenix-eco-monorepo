@@ -7,17 +7,14 @@ Assure la compatibilité et la transition progressive vers l'Event Sourcing.
 
 import uuid
 import logging
-import json
-import asyncio
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from datetime import datetime
-from functools import wraps
 
-from models.journal_entry import JournalEntry
+from ..models.journal_entry import JournalEntry
 from .mock_db_service import MockDBService
 from .phoenix_rise_event_helper import phoenix_rise_event_helper
-from core.supabase_client import supabase_client
+from ..core.supabase_client import supabase_client
 from iris_core.event_processing.emotional_vector_state import EmotionalVectorState
 from phoenix_shared_db.services.supabase_batch_service import get_batch_service
 
