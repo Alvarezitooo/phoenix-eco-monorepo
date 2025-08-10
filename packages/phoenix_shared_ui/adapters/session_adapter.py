@@ -74,8 +74,13 @@ class StreamlitSessionAdapter(BaseSessionAdapter):
             raise ImportError("Streamlit requis pour StreamlitSessionAdapter")
     
     def get(self, key: str, default: Any = None) -> Any:
-        """Récupère une valeur depuis st.session_state."""
-        return self._st.session_state.get(key, default)
+        """Récupère une valeur depuis st.session_state.
+        Utilise contains/__getitem__ pour meilleure compatibilité tests (MagicMock).
+        """
+        try:
+            return self._st.session_state[key] if key in self._st.session_state else default
+        except Exception:
+            return default
     
     def set(self, key: str, value: Any) -> None:
         """Définit une valeur dans st.session_state."""
