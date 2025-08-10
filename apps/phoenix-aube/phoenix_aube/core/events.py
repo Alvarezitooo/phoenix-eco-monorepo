@@ -4,7 +4,7 @@ Architecture Event Sourcing pour intégration écosystème Phoenix
 """
 
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Literal
 from pydantic import BaseModel, Field
 import uuid
 
@@ -45,56 +45,56 @@ class ÉvénementPhoenixAube(BaseModel):
 # Types d'événements spécifiques
 class ExplorationCommencée(ÉvénementPhoenixAube):
     """Utilisateur commence son exploration métier"""
-    event_type: str = Field(default="exploration_commencée", const=True)
+    event_type: Literal["exploration_commencée"] = Field(default="exploration_commencée")
 
 class ValeursExplorées(ÉvénementPhoenixAube):
     """Valeurs profondes explorées et identifiées"""
-    event_type: str = Field(default="valeurs_explorées", const=True)
+    event_type: Literal["valeurs_explorées"] = Field(default="valeurs_explorées")
 
 class CompétencesRévélées(ÉvénementPhoenixAube):
     """Compétences transférables révélées"""
-    event_type: str = Field(default="compétences_révélées", const=True)
+    event_type: Literal["compétences_révélées"] = Field(default="compétences_révélées")
 
 class TestsPsychométriquesComplétés(ÉvénementPhoenixAube):
     """Tests Big Five et RIASEC complétés"""
-    event_type: str = Field(default="tests_psychométriques_complétés", const=True)
+    event_type: Literal["tests_psychométriques_complétés"] = Field(default="tests_psychométriques_complétés")
 
 class RecommandationsGénérées(ÉvénementPhoenixAube):
     """Recommandations métiers générées"""
-    event_type: str = Field(default="recommandations_générées", const=True)
+    event_type: Literal["recommandations_générées"] = Field(default="recommandations_générées")
 
 class ValidationIAEffectuée(ÉvénementPhoenixAube):
     """Validation IA effectuée pour un métier"""
-    event_type: str = Field(default="validation_ia_effectuée", const=True)
+    event_type: Literal["validation_ia_effectuée"] = Field(default="validation_ia_effectuée")
 
 class MétierChoisi(ÉvénementPhoenixAube):
     """Utilisateur choisit un métier"""
-    event_type: str = Field(default="métier_choisi", const=True)
+    event_type: Literal["métier_choisi"] = Field(default="métier_choisi")
 
 class PlanTransitionCréé(ÉvénementPhoenixAube):
     """Plan de transition créé"""
-    event_type: str = Field(default="plan_transition_créé", const=True)
+    event_type: Literal["plan_transition_créé"] = Field(default="plan_transition_créé")
 
 class TransitionÉcosystème(ÉvénementPhoenixAube):
     """Transition vers autre app Phoenix"""
-    event_type: str = Field(default="transition_écosystème", const=True)
+    event_type: Literal["transition_écosystème"] = Field(default="transition_écosystème")
 
 class ConsentementRecherche3IA(ÉvénementPhoenixAube):
     """Consentement recherche 3IA accordé"""
-    event_type: str = Field(default="consentement_recherche_3ia", const=True)
+    event_type: Literal["consentement_recherche_3ia"] = Field(default="consentement_recherche_3ia")
 
 # Événements d'analytics et monitoring
 class MétriqueUtilisation(ÉvénementPhoenixAube):
     """Métrique d'utilisation de la plateforme"""
-    event_type: str = Field(default="métrique_utilisation", const=True)
+    event_type: Literal["métrique_utilisation"] = Field(default="métrique_utilisation")
 
 class ErreurSystème(ÉvénementPhoenixAube):
     """Erreur système pour monitoring"""
-    event_type: str = Field(default="erreur_système", const=True)
+    event_type: Literal["erreur_système"] = Field(default="erreur_système")
 
 class FeedbackUtilisateur(ÉvénementPhoenixAube):
     """Feedback utilisateur sur l'expérience"""
-    event_type: str = Field(default="feedback_utilisateur", const=True)
+    event_type: Literal["feedback_utilisateur"] = Field(default="feedback_utilisateur")
 
 
 # =============================================

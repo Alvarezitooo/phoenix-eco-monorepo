@@ -148,3 +148,7 @@ filterwarnings = [
     "ignore::UserWarning",
     "ignore:function ham\\(\\) is deprecated:DeprecationWarning",
 ]
+pythonpath = ["."]
+
+[tool.pytest.ini_options.ini]
+pythonpath = ["."]

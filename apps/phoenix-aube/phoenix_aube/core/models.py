@@ -6,7 +6,7 @@ Architecture Trust by Design + Event Store Ready
 from datetime import datetime
 from typing import List, Dict, Optional, Any, Union
 from enum import Enum
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 import uuid
 
 # =============================================
@@ -65,13 +65,13 @@ class ProfilExploration(BaseModel):
     
     # Exploration valeurs profondes
     valeurs_principales: List[ValeurProfondeProfil] = Field(
-        ..., min_items=2, max_items=3, 
+        ..., min_length=2, max_length=3,
         description="2-3 valeurs profondes principales"
     )
     
     # Préférences environnement
     environnement_préféré: List[EnvironnementTravail] = Field(
-        ..., min_items=1, max_items=3,
+        ..., min_length=1, max_length=3,
         description="Environnements de travail préférés"
     )
     
@@ -106,8 +106,8 @@ class ProfilExploration(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
     
-    @validator('big_five_scores')
-    def validate_big_five(cls, v):
+    @field_validator('big_five_scores')
+    def validate_big_five(cls, v: Dict[str, float]):
         required_traits = ['openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism']
         for trait in required_traits:
             if trait not in v:
@@ -116,8 +116,8 @@ class ProfilExploration(BaseModel):
                 raise ValueError(f"Big Five score {trait} must be between 0 and 1")
         return v
     
-    @validator('riasec_scores')
-    def validate_riasec(cls, v):
+    @field_validator('riasec_scores')
+    def validate_riasec(cls, v: Dict[str, float]):
         required_types = ['realistic', 'investigative', 'artistic', 'social', 'enterprising', 'conventional']
         for rtype in required_types:
             if rtype not in v:
@@ -255,7 +255,7 @@ class ParcoursExploration(BaseModel):
     
     # Recommandations métiers
     recommandations_métiers: List[RecommandationCarrière] = Field(
-        ..., min_items=3, max_items=5,
+        ..., min_length=3, max_length=5,
         description="3-5 recommandations métiers classées"
     )
     

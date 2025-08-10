@@ -20,6 +20,7 @@ from .schemas import (
     ExplorationStartRequest, CareerRecommendationResponse
 )
 from .dependencies import get_ia_validator, get_current_user
+from ..services.data_providers import DataAggregationService
 
 # Configuration logging
 logging.basicConfig(level=logging.INFO)
@@ -113,6 +114,31 @@ async def analyze_job_resilience(
             status_code=500, 
             detail=f"Analyse failed: {str(e)}"
         )
+
+# =============================================
+# ENDPOINTS DATA PROVIDERS/AGGREGATION
+# =============================================
+
+@app.get("/api/v1/data/enriched-job/{job_title}")
+async def get_enriched_job(job_title: str) -> Dict[str, Any]:
+    """Données métier enrichies (France Travail, ESCO, Research)."""
+    try:
+        async with DataAggregationService() as svc:
+            return await svc.get_enriched_job_data(job_title)
+    except Exception as e:
+        logger.error(f"Erreur enriched-job: {e}")
+        raise HTTPException(status_code=500, detail="Enriched job retrieval failed")
+
+
+@app.get("/api/v1/data/market-analysis/{sector}")
+async def get_market_analysis(sector: str) -> Dict[str, Any]:
+    """Analyse secteur (métiers, tendances compétences, études IA, opportunités)."""
+    try:
+        async with DataAggregationService() as svc:
+            return await svc.get_comprehensive_market_analysis(sector)
+    except Exception as e:
+        logger.error(f"Erreur market-analysis: {e}")
+        raise HTTPException(status_code=500, detail="Market analysis failed")
 
 @app.post("/api/v1/analyze/anxiety-score")
 async def calculate_anxiety_score(
