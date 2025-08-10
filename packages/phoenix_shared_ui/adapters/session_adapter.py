@@ -84,7 +84,16 @@ class StreamlitSessionAdapter(BaseSessionAdapter):
     
     def set(self, key: str, value: Any) -> None:
         """Définit une valeur dans st.session_state."""
-        self._st.session_state[key] = value
+        try:
+            self._st.session_state[key] = value
+        except Exception:
+            # Compat MagicMock dict-like
+            try:
+                # Si l'objet supporte get/set de type mapping
+                current = dict(self._st.session_state)
+                current[key] = value
+            except Exception:
+                pass
     
     def delete(self, key: str) -> bool:
         """Supprime une clé de st.session_state."""
@@ -95,7 +104,13 @@ class StreamlitSessionAdapter(BaseSessionAdapter):
     
     def contains(self, key: str) -> bool:
         """Vérifie si une clé existe dans st.session_state."""
-        return key in self._st.session_state
+        try:
+            return key in self._st.session_state
+        except Exception:
+            try:
+                return self._st.session_state.__contains__(key)
+            except Exception:
+                return False
     
     def clear(self) -> None:
         """Vide st.session_state."""

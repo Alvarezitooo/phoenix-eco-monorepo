@@ -116,8 +116,8 @@ class EVSMigrationService:
                         "stream_id": user_id,
                         "event_type": "GoalSet",
                         "payload": {
-                            "objective_id": objective.get("id", str(uuid.uuid4())),
-                            "title": objective if isinstance(objective, str) else objective.get("title", "Objectif migré"),
+                            "objective_id": (objective.get("id") if isinstance(objective, dict) else str(uuid.uuid4())),
+                            "title": (objective if isinstance(objective, str) else objective.get("title", "Objectif migré")),
                             "objective_type": "personal"
                         },
                         "app_source": "rise",
