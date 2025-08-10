@@ -35,7 +35,10 @@ pre-commit install
 - CI doit être verte (lint, type, tests)
 
 ## Sécurité & RGPD
-- Ne pas committer de secrets
-- Utiliser `python-dotenv` localement uniquement
-- Pseudonymiser/Mocker les données dans les tests
+- Secrets: ne jamais committer de clés. Utiliser un gestionnaire (1Password/GCP Secret Manager/Doppler). Fournir un `.env.example` par app.
+- Logs: aucune PII en logs. Masquer emails, tokens; DEBUG interdit en prod.
+- Données: activer RLS Supabase et policies par `user_id`. Purges RGPD régulières.
+- CSP (web): politique stricte, éviter `'unsafe-inline'`. Utiliser nonce/hashes si nécessaire.
+- Rate limiting: endpoints Dojo/Gemini limités par IP/user.
+- SAST: Bandit/Semgrep/CodeQL activés en CI. Dependabot pour mises à jour.
 

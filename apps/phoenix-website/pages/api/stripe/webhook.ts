@@ -2,8 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 import { buffer } from 'micro';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY! as string, {
+  apiVersion: '2025-07-30.basil',
 });
 
 // Anti-replay protection
@@ -44,12 +44,12 @@ function checkRateLimit(clientKey: string): boolean {
 
 function cleanupOldEvents(): void {
   const now = Date.now();
-  for (const eventId of processedEvents) {
-    const [id, timestamp] = eventId.split(':');
+  processedEvents.forEach((val) => {
+    const [, timestamp] = val.split(':');
     if (now - parseInt(timestamp) > EVENT_EXPIRY_TIME) {
-      processedEvents.delete(eventId);
+      processedEvents.delete(val);
     }
-  }
+  });
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

@@ -81,7 +81,7 @@ export const IrisWidget: React.FC<IrisWidgetProps> = ({ authToken, className }) 
             <div className="h-[540px] overflow-hidden">
               <IrisChat
                 config={irisConfig}
-                authToken={authToken}
+                authToken={authToken ?? null}
                 className="h-full border-0 shadow-none"
               />
             </div>
