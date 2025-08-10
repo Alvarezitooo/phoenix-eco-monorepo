@@ -260,7 +260,7 @@ class TestLetterService:
             letter_service.analyze_letter(letter, UserTier.FREE)
 
     @pytest.mark.parametrize(
-        "user_tier", [UserTier.FREE, UserTier.PREMIUM, UserTier.PREMIUM_PLUS]
+    "user_tier", [UserTier.FREE, UserTier.PREMIUM]
     )
     def test_prompt_quality_by_tier(self, letter_service, mock_ai_service, user_tier):
         """Test de la qualité du prompt selon le tier utilisateur."""

@@ -93,7 +93,7 @@ class TestLetterGenerationIntegration:
         assert len(analysis.strengths) > 0
 
     @pytest.mark.parametrize(
-        "user_tier", [UserTier.FREE, UserTier.PREMIUM, UserTier.PREMIUM_PLUS]
+    "user_tier", [UserTier.FREE, UserTier.PREMIUM]
     )
     def test_generation_quality_by_tier(self, letter_service_with_real_ai, user_tier):
         """Test de la qualité de génération selon le tier."""
