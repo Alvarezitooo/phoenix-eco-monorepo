@@ -1,6 +1,6 @@
 """Composant métriques admin pour suivi conversions."""
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, List
 
 import streamlit as st
@@ -98,7 +98,6 @@ class AdminMetrics:
 
     def _export_metrics_data(self, metrics: Dict[str, Any]) -> None:
         """Exporte données métriques."""
-        import json
 
         export_data = {
             "timestamp": datetime.now().isoformat(),

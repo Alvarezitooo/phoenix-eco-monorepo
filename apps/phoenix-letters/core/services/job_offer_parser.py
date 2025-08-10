@@ -3,7 +3,7 @@
 import logging
 import re
 from dataclasses import dataclass
-from typing import Optional, Pattern, Tuple
+from typing import Optional, Pattern
 
 logger = logging.getLogger(__name__)
 

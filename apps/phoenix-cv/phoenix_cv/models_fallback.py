@@ -20,19 +20,11 @@ try:
         "AppPermission"
     ]
     
-except ImportError as e:
+except ImportError:
     # Fallback vers imports directs si nécessaire
-    import sys
-    import os
-    
-    # Ajout du chemin models si nécessaire
-    models_path = os.path.join(os.path.dirname(__file__), 'models')
-    if models_path not in sys.path:
-        sys.path.append(models_path)
-    
     try:
-        from user_profile import UserProfile, Skill, Experience, CV, Letter
-        from phoenix_user import PhoenixUser, UserTier, PhoenixApp, AppPermission
+        from phoenix_cv.models.user_profile import UserProfile, Skill, Experience, CV, Letter
+        from phoenix_cv.models.phoenix_user import PhoenixUser, UserTier, PhoenixApp, AppPermission
         
         __all__ = [
             "UserProfile", 
@@ -46,7 +38,7 @@ except ImportError as e:
             "AppPermission"
         ]
         
-    except ImportError as inner_e:
+    except ImportError:
         # Dernière ligne de défense - modèles locaux
         from dataclasses import dataclass, field
         from typing import List, Dict, Optional

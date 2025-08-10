@@ -6,7 +6,7 @@ Fonctions d'affichage des résultats CV, analyses ATS et profils démo
 import html
 
 import streamlit as st
-from phoenix_cv.models.user_profile import UserProfile, Skill, Experience, CV, Letter
+from phoenix_cv.models.user_profile import UserProfile, Skill, Experience
 from phoenix_cv.models.phoenix_user import UserTier
 from phoenix_cv.services.secure_ats_optimizer import ATSAnalysis
 from phoenix_cv.utils.exceptions import SecurityException
@@ -82,7 +82,7 @@ def display_generated_cv_secure(profile: UserProfile, template_engine, ats_optim
                             "ATS_ANALYSIS_ERROR", {"error": str(e)[:100]}, "ERROR"
                         )
 
-    except SecurityException as e:
+    except SecurityException:
         st.error("🚫 Erreur de sécurité lors du rendu")
         secure_logger.log_security_event(
             "CV_RENDER_SECURITY_ERROR", {"template": template_id}, "CRITICAL"

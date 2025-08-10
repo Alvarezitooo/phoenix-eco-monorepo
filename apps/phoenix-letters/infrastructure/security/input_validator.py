@@ -2,7 +2,7 @@
 
 import logging
 
-from core.entities.letter import GenerationRequest, ToneType
+from core.entities.letter import GenerationRequest
 from shared.exceptions.specific_exceptions import ValidationError
 
 logger = logging.getLogger(__name__)

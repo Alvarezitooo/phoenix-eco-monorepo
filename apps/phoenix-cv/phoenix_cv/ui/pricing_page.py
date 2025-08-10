@@ -4,7 +4,6 @@ Plans tarifaires avec garanties securite enterprise
 """
 
 import streamlit as st
-from phoenix_cv.services.stripe_service import stripe_service
 
 
 def safe_markdown(content):

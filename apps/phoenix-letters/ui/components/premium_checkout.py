@@ -8,8 +8,7 @@ Version: 1.0.0 - Production Ready
 
 import streamlit as st
 import logging
-from typing import Optional, Dict, Any
-from datetime import datetime
+from typing import Dict, Any
 
 from core.services.subscription_service import SubscriptionService
 from infrastructure.payment.stripe_service import StripeService
@@ -163,7 +162,7 @@ class PremiumCheckout:
         
         # Phoenix Letters Premium
         with col2:
-            st.markdown(f"""
+            st.markdown("""
             <div class="pricing-card pricing-card-letters">
                 <h3>📝 Phoenix Letters</h3>
                 <div class="pricing-price">9,99€<small>/mois</small></div>
@@ -180,12 +179,12 @@ class PremiumCheckout:
             """, unsafe_allow_html=True)
             
             if st.button("🚀 S'abonner Letters", key="letters_premium", type="primary"):
-                st.markdown(f'<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00">', unsafe_allow_html=True)
+                st.markdown('<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00">', unsafe_allow_html=True)
                 st.markdown('[Redirection vers Stripe...](https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00)')
         
         # Phoenix CV Premium
         with col3:
-            st.markdown(f"""
+            st.markdown("""
             <div class="pricing-card pricing-card-cv">
                 <h3>📄 Phoenix CV</h3>
                 <div class="pricing-price">7,99€<small>/mois</small></div>
@@ -202,12 +201,12 @@ class PremiumCheckout:
             """, unsafe_allow_html=True)
             
             if st.button("📄 S'abonner CV", key="cv_premium", type="primary"):
-                st.markdown(f'<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/00w28r9Br9260gTcss6EU02">', unsafe_allow_html=True)
+                st.markdown('<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/00w28r9Br9260gTcss6EU02">', unsafe_allow_html=True)
                 st.markdown('[Redirection vers Stripe...](https://buy.stripe.com/00w28r9Br9260gTcss6EU02)')
         
         # Phoenix Bundle
         with col4:
-            st.markdown(f"""
+            st.markdown("""
             <div class="pricing-card pricing-card-bundle">
                 <div class="bundle-badge">🔥 BEST</div>
                 <h3>🚀 Bundle Complet</h3>
@@ -226,7 +225,7 @@ class PremiumCheckout:
             """, unsafe_allow_html=True)
             
             if st.button("🔥 Bundle Deal", key="bundle_premium", type="primary"):
-                st.markdown(f'<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/cNi14n9Brcei3t5akk6EU01">', unsafe_allow_html=True)
+                st.markdown('<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/cNi14n9Brcei3t5akk6EU01">', unsafe_allow_html=True)
                 st.markdown('[Redirection vers Stripe...](https://buy.stripe.com/cNi14n9Brcei3t5akk6EU01)')
         
         # Message de comparaison

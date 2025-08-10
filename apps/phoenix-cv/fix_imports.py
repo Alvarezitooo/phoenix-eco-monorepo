@@ -3,7 +3,6 @@
 Script pour corriger automatiquement les imports dans Phoenix CV
 """
 
-import os
 import re
 from pathlib import Path
 
@@ -90,7 +89,7 @@ def main():
         if fix_imports_in_file(py_file):
             files_fixed += 1
     
-    print(f"\n📊 Résumé:")
+    print("\n📊 Résumé:")
     print(f"   Fichiers traités: {files_processed}")
     print(f"   Fichiers modifiés: {files_fixed}")
     print(f"   Succès: {files_fixed}/{files_processed}")

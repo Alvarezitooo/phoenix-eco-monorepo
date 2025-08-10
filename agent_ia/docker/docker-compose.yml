@@ -1,0 +1,236 @@
+# 🚀 PHOENIX LETTERS - Docker Compose IA Agents
+# Architecture microservices évolutive vers Kubernetes
+
+version: '3.8'
+
+services:
+  # 🛡️ Security Guardian Agent
+  security-guardian:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.security-guardian
+    container_name: phoenix-security-guardian
+    hostname: security-guardian
+    restart: unless-stopped
+    
+    # Ressources optimisées MacBook 8GB
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: '1.0'
+        reservations:
+          memory: 2G
+          cpus: '0.5'
+    
+    ports:
+      - "11434:11434"  # Ollama API
+      - "8001:8001"    # Security API
+    
+    volumes:
+      - security_models:/home/phoenix/.ollama
+      - ../logs:/app/logs
+    
+    environment:
+      - OLLAMA_MODELS_PATH=/home/phoenix/.ollama
+      - LOG_LEVEL=INFO
+      - MAX_CONCURRENT_REQUESTS=3
+      - MODEL_TIMEOUT=30
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    networks:
+      - phoenix-ai-network
+    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.security.rule=PathPrefix(/api/security)"
+      - "traefik.http.services.security.loadbalancer.server.port=8001"
+
+  # 🧠 Data Flywheel Agent  
+  data-flywheel:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.data-flywheel
+    container_name: phoenix-data-flywheel
+    hostname: data-flywheel
+    restart: unless-stopped
+    
+    # Ressources
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: '1.0'
+        reservations:
+          memory: 2G
+          cpus: '0.5'
+    
+    ports:
+      - "11435:11434"  # Ollama API (port différent)
+      - "8002:8002"    # Flywheel API
+    
+    volumes:
+      - flywheel_models:/home/phoenix/.ollama
+      - flywheel_data:/app/data
+      - ../logs:/app/logs
+    
+    environment:
+      - OLLAMA_MODELS_PATH=/home/phoenix/.ollama
+      - DATABASE_PATH=/app/data/flywheel.db
+      - LOG_LEVEL=INFO
+      - ANALYTICS_BATCH_SIZE=100
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    
+    networks:
+      - phoenix-ai-network
+    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.flywheel.rule=PathPrefix(/api/flywheel)"
+
+  # 🧠 System Consciousness Service  
+  system-consciousness:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.consciousness
+    container_name: phoenix-consciousness
+    hostname: system-consciousness
+    restart: unless-stopped
+    
+    ports:
+      - "8003:8003"    # Consciousness API
+    
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090
+      - SMART_ROUTER_URL=http://smart-router:8000
+      - LOG_LEVEL=INFO
+      - MONITORING_INTERVAL=30
+    
+    volumes:
+      - ../logs:/app/logs
+    
+    networks:
+      - phoenix-ai-network
+    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.consciousness.rule=PathPrefix(/api/consciousness)"
+      - "traefik.http.services.consciousness.loadbalancer.server.port=8003"
+
+  # 🎯 Smart Router API Gateway
+  smart-router:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.smart-router
+    container_name: phoenix-smart-router
+    hostname: smart-router
+    restart: unless-stopped
+    
+    ports:
+      - "8000:8000"    # API Gateway principal
+    
+    depends_on:
+      security-guardian:
+        condition: service_healthy
+      data-flywheel:
+        condition: service_healthy
+      system-consciousness:
+        condition: service_started
+    
+    environment:
+      - SECURITY_GUARDIAN_URL=http://security-guardian:8001
+      - DATA_FLYWHEEL_URL=http://data-flywheel:8002
+      - CONSCIOUSNESS_URL=http://system-consciousness:8003
+      - FALLBACK_GEMINI_API_KEY=${GEMINI_API_KEY}
+      - MAX_RESPONSE_TIME=10
+      - ENABLE_CLOUD_FALLBACK=true
+    
+    volumes:
+      - ../logs:/app/logs
+    
+    networks:
+      - phoenix-ai-network
+    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.router.rule=PathPrefix(/api/)"
+      - "traefik.http.services.router.loadbalancer.server.port=8000"
+
+  # 📊 Monitoring & Observabilité (optionnel)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: phoenix-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - phoenix-ai-network
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: phoenix-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/dashboards:/etc/grafana/provisioning/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=phoenix2025
+    networks:
+      - phoenix-ai-network
+    profiles:
+      - monitoring
+
+# Volumes persistants
+volumes:
+  security_models:
+    driver: local
+    name: phoenix_security_models
+  
+  flywheel_models:
+    driver: local
+    name: phoenix_flywheel_models
+  
+  flywheel_data:
+    driver: local
+    name: phoenix_flywheel_data
+  
+  prometheus_data:
+    driver: local
+    name: phoenix_prometheus_data
+  
+  grafana_data:
+    driver: local
+    name: phoenix_grafana_data
+
+# Réseau interne
+networks:
+  phoenix-ai-network:
+    driver: bridge
+    name: phoenix-ai-network
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

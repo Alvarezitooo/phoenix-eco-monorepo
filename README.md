@@ -42,24 +42,17 @@ phoenix-ecosystem/
 
 ## 🚀 **Démarrage rapide**
 
-### **Phoenix Letters**
+### **Monorepo (recommandé)**
 ```bash
-cd apps/phoenix-letters
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-### **Phoenix CV**  
-```bash
-cd apps/phoenix-cv
-pip install -r requirements.txt
-streamlit run app.py
+poetry install --with dev
+pre-commit install
+make lint && make typecheck && make test
 ```
 
 ### **Phoenix Website**
 ```bash
 cd apps/phoenix-website
-npm install
+npm ci
 npm run dev
 ```
 

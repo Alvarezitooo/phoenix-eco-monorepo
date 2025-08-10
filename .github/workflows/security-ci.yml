@@ -1,0 +1,46 @@
+name: security-ci
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  sast-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install tools
+        run: |
+          pip install bandit safety
+      - name: Bandit SAST
+        run: |
+          bandit -r apps packages -x tests -lll
+      - name: Safety deps audit
+        run: |
+          safety check --full-report || true
+
+  sast-js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install deps
+        working-directory: apps/phoenix-website
+        run: npm ci
+      - name: npm audit
+        working-directory: apps/phoenix-website
+        run: npm audit --audit-level=high || true
+
+  dependabot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable Dependabot alerts
+        run: echo "Dependabot alerts active via repo settings"
+

@@ -3,7 +3,15 @@
 import logging
 from datetime import datetime
 from typing import Optional
-import streamlit as st
+try:
+    import streamlit as st
+except Exception:  # pragma: no cover - allow tests without streamlit installed
+    class _Stub:
+        def cache_data(self, *args, **kwargs):
+            def decorator(func):
+                return func
+            return decorator
+    st = _Stub()  # type: ignore
 
 from core.entities.letter import GenerationRequest, Letter, UserTier
 from core.services.job_offer_parser import JobOfferParser
@@ -179,7 +187,7 @@ class LetterService:
             return None, None
 
     @track_api_call("suggest_transferable_skills")
-    @st.cache_data(ttl=3600) # Cache for 1 hour
+    @st.cache_data(ttl=3600)  # Cache for 1 hour
     def suggest_transferable_skills(
         _self, old_domain: str, new_domain: str, user_tier: UserTier
     ) -> str:

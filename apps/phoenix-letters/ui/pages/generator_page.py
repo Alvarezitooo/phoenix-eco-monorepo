@@ -3,7 +3,6 @@
 import asyncio
 import logging
 import time
-from typing import Optional
 
 import streamlit as st
 from core.entities.letter import GenerationRequest, ToneType, UserTier
@@ -15,7 +14,7 @@ from shared.exceptions.specific_exceptions import LetterGenerationError, Validat
 from ui.components.conversion_popup import ConversionPopup
 from ui.components.file_uploader import SecureFileUploader
 from ui.components.letter_editor import LetterEditor
-from ui.components.premium_barriers import PremiumBarrier, SmartUpgradePrompts
+from ui.components.premium_barriers import PremiumBarrier
 from ui.components.premium_results_renderer import (
     MetricCard,
     PremiumResultsRenderer,

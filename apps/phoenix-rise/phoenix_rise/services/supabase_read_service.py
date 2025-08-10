@@ -5,8 +5,8 @@ Service de lecture des données depuis les vues matérialisées Supabase
 
 import logging
 import os
-from datetime import datetime, date
-from typing import List, Dict, Any, Optional
+from datetime import datetime
+from typing import List, Dict, Any
 from supabase import create_client, Client
 from models.journal_entry import JournalEntry
 

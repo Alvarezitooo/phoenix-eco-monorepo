@@ -1,0 +1,47 @@
+# 🧠 DOCKERFILE - System Consciousness Service
+FROM python:3.11-slim
+
+# Métadonnées
+LABEL maintainer="Phoenix Letters Team"
+LABEL description="System Consciousness Service - Auto-régulation IA"
+LABEL version="2.0.0"
+
+# Configuration environnement
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Création utilisateur non-root
+RUN groupadd -r phoenix && useradd -r -g phoenix phoenix
+
+# Installation dépendances système
+RUN apt-get update && apt-get install -y \
+    procps \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Répertoire de travail
+WORKDIR /app
+
+# Copie requirements
+COPY requirements.txt .
+
+# Installation dépendances Python
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copie code source
+COPY system_consciousness.py .
+COPY consciousness_service.py .
+
+# Configuration utilisateur
+RUN chown -R phoenix:phoenix /app
+USER phoenix
+
+# Santé du container
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8003/health || exit 1
+
+# Exposition port
+EXPOSE 8003
+
+# Commande par défaut
+CMD ["python", "consciousness_service.py"]

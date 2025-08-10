@@ -7,10 +7,8 @@ Version: 1.0.0 - XSS Protection System
 """
 
 import html
-from typing import Dict, List, Optional
 
 import bleach
-from phoenix_cv.utils.exceptions import SecurityException
 from phoenix_cv.utils.secure_logging import secure_logger
 
 

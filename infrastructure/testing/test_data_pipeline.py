@@ -5,14 +5,9 @@ Test de bout en bout de la collecte d'événements et du Data Flywheel
 
 import asyncio
 import os
-import sys
 import time
 from datetime import datetime
 
-# Ajouter le chemin vers les modules du data pipeline
-sys.path.append(os.path.join(os.path.dirname(__file__), "../data-pipeline"))
-
-from data_flywheel_mvp import DataFlywheelMVP, PhoenixDataFlywheelIntegration
 from packages.phoenix_event_bridge.phoenix_event_bridge import PhoenixEventFactory
 
 
@@ -154,14 +149,12 @@ def test_services_integration():
     try:
         # Test service Letters enrichi
         print("📬 Test Phoenix Letters enrichi...")
-        sys.path.append("../apps/phoenix-letters")
         
         # Les services peuvent échouer si les dépendances ne sont pas installées
         # C'est normal en environnement de test
         
         # Test service CV enrichi
         print("📄 Test Phoenix CV enrichi...")
-        sys.path.append("../apps/phoenix-cv")
         
         from apps.phoenix_cv.services.event_enhanced_cv_service import cv_event_service
         

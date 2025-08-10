@@ -1,4 +1,4 @@
-from typing import Any, Dict, Protocol
+from typing import Protocol
 
 from core.entities.letter import UserTier
 

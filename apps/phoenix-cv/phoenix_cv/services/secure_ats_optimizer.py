@@ -5,7 +5,6 @@ from enum import Enum
 
 from phoenix_cv.models.user_profile import UserProfile
 from phoenix_cv.services.secure_gemini_client import SecureGeminiClient
-from phoenix_cv.utils.exceptions import SecurityException
 from phoenix_cv.utils.rate_limiter import rate_limit
 from phoenix_cv.utils.secure_logging import secure_logger
 from phoenix_cv.utils.secure_validator import SecureValidator

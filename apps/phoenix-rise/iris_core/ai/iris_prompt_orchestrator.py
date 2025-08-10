@@ -1,4 +1,3 @@
-from typing import Dict, Any
 from iris_core.event_processing.emotional_vector_state import EmotionalVectorState
 from iris_core.interaction.renaissance_protocol import RenaissanceState
 

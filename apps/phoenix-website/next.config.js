@@ -32,10 +32,16 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            // SECURITY FIX: Removed 'unsafe-eval' from script-src to mitigate XSS risks.
-            // 'unsafe-inline' is temporarily kept for styles for compatibility.
-            value:
-              "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co;",
+            // SECURITY: lock down CSP. Consider using nonces/hashes if inline styles/scripts are needed.
+            value: [
+              "default-src 'self'",
+              "script-src 'self'",
+              "style-src 'self' 'unsafe-inline'", // keep temporarily; replace with nonce/hashes later
+              "img-src 'self' data: https:",
+              "font-src 'self' data:",
+              "connect-src 'self' https://*.supabase.co http://localhost:8000 https://api.stripe.com",
+              "frame-ancestors 'none'",
+            ].join('; '),
           },
           {
             key: 'Permissions-Policy',

@@ -1,0 +1,14 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "phoenix-shared-ai"
+version = "1.0.0"
+description = "Services d'IA partagés pour l'écosystème Phoenix"
+authors = [{ name = "Phoenix Ecosystem" }]
+requires-python = ">=3.9"
+
+[tool.hatch.build.targets.wheel]
+packages = ["phoenix_shared_ai"]
+

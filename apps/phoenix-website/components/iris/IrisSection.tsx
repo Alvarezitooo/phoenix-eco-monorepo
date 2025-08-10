@@ -11,7 +11,7 @@ import { Bot, Sparkles, MessageCircle, Zap, Shield, Users } from 'lucide-react';
 interface IrisSectionProps {
   title?: string;
   description?: string;
-  authToken?: string | null;
+  authToken?: string | null | undefined;
   showFeatures?: boolean;
   className?: string;
 }
@@ -117,7 +117,7 @@ export const IrisSection: React.FC<IrisSectionProps> = ({
               <CardContent className="p-0">
                 <IrisChat
                   config={irisConfig}
-                  authToken={authToken}
+                  authToken={authToken ?? null}
                   className="border-0 shadow-none"
                 />
               </CardContent>

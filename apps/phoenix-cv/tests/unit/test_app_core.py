@@ -1,11 +1,8 @@
 import pytest
-from unittest.mock import MagicMock
 
 # Import the models from phoenix-cv
-from phoenix_cv.models.user_profile import UserProfile, Skill, Experience, CV, Letter
 
 # Import the module to be tested
-from phoenix_cv.core.app_core import SecurePhoenixCVApp # Correcting to actual class name
 
 # Mock Streamlit functions using pytest-mock's mocker fixture
 @pytest.fixture(autouse=True)

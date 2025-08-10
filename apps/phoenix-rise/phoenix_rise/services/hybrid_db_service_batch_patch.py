@@ -5,13 +5,19 @@ Ce fichier sera mergé avec hybrid_db_service.py.
 Author: Claude Phoenix DevSecOps Guardian  
 """
 
+from typing import Any, Dict
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def add_batch_methods_to_hybrid_db_service():
     """Méthodes batch à ajouter à HybridDBService."""
     
     def _store_event_batch(self, user_id: str, event_type: str, payload: Dict[str, Any], app_source: str = "rise") -> bool:
         """✅ Stocke un événement via le service batch optimisé."""
         if not self._supabase_available or not self._batch_service:
-            logger.warning(f"⚠️ Batch service indisponible, fallback vers store_event_to_supabase")
+            logger.warning("⚠️ Batch service indisponible, fallback vers store_event_to_supabase")
             return self.store_event_to_supabase(user_id, event_type, payload, app_source)
         
         try:
@@ -67,7 +73,7 @@ def add_batch_methods_to_hybrid_db_service():
         return self._batch_service.get_stats()
 
     # Remplacement des appels store_event_to_supabase par _store_event_batch
-    REPLACEMENTS = [
+    REPLACEMENTS: list[Dict[str, str]] = [
         # Dans create_objective
         {
             "old": '''        # 3. Stocker événement pour EEV

@@ -3,27 +3,23 @@
 Module responsable de l'authentification et autorisation pour l'agent Iris.
 """
 
-import os
-import sys
 import logging
 from typing import Optional, Dict, Any
 from datetime import datetime
 from fastapi import HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-# Import du système Phoenix Letters (adapter le path selon l'architecture)
-# En production, ceci devrait être via un package partagé ou API
-sys.path.append('/Users/mattvaness/Desktop/IA/phoenix/phoenix-eco-monorepo/apps/phoenix-letters')
-
 try:
-    from infrastructure.auth.jwt_manager import JWTManager
-    from infrastructure.auth.user_auth_service import UserAuthService
-    from infrastructure.database.db_connection import DatabaseConnection
-    from config.settings import Settings
-    from core.entities.user import User, UserTier
+    from phoenix_shared_auth import (
+        PhoenixAuthService as UserAuthService,
+        JWTManager,
+        get_phoenix_db_connection as DatabaseConnection,
+        get_phoenix_settings as Settings,
+        PhoenixUser as User,
+        UserTier,
+    )
 except ImportError as e:
-    logging.error(f"Impossible d'importer les modules Phoenix Letters: {e}")
-    # Fallback mode pour développement
+    logging.error(f"Impossible d'importer phoenix_shared_auth: {e}")
     User = None
     UserTier = None
 

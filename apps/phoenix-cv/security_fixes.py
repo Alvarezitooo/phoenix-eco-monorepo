@@ -7,11 +7,8 @@ Author: Claude Phoenix DevSecOps Guardian
 Version: 1.0.0 - Security Patches
 """
 
-import os
 import re
-import sys
 from pathlib import Path
-from typing import List, Tuple
 
 
 class SecurityPatcher:
@@ -325,7 +322,7 @@ def apply_security_headers():
             for error in self.errors:
                 print(f"  • {error}")
 
-        print(f"\n🎯 STATUT FINAL:")
+        print("\n🎯 STATUT FINAL:")
         if len(self.fixes_applied) > 0 and len(self.errors) == 0:
             print("  🟢 TOUTES CORRECTIONS APPLIQUÉES AVEC SUCCÈS")
         elif len(self.fixes_applied) > 0:
@@ -333,7 +330,7 @@ def apply_security_headers():
         else:
             print("  🔴 AUCUNE CORRECTION APPLIQUÉE")
 
-        print(f"\n📋 ACTIONS MANUELLES REQUISES:")
+        print("\n📋 ACTIONS MANUELLES REQUISES:")
         print("  1. Configurer headers sécurité au niveau reverse proxy")
         print("  2. Définir PRODUCTION=true en environnement de production")
         print("  3. Tester l'application après corrections")

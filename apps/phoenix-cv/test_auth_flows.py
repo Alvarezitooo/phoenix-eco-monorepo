@@ -6,12 +6,8 @@ Author: Claude Phoenix DevSecOps Guardian
 Version: 1.0.0 - Production Ready
 """
 
-import sys
 import os
 from datetime import datetime
-
-# Ajout du path pour les imports
-sys.path.append(os.path.join(os.path.dirname(__file__), 'phoenix_cv'))
 
 def test_phoenix_unified_auth():
     """Test complet du service d'authentification unifié"""
@@ -27,7 +23,7 @@ def test_phoenix_unified_auth():
         print("1️⃣ **Test d'initialisation du service**")
         auth_service = PhoenixCVAuthService()
         
-        print(f"   ✅ Service initialisé")
+        print("   ✅ Service initialisé")
         print(f"   📡 Shared Auth disponible: {auth_service.is_shared_auth_available()}")
         print()
         
@@ -35,7 +31,7 @@ def test_phoenix_unified_auth():
         print("2️⃣ **Test création session invité**")
         guest_data = auth_service.create_guest_session()
         
-        print(f"   ✅ Session invité créée")
+        print("   ✅ Session invité créée")
         print(f"   🆔 Guest ID: {guest_data['id']}")
         print(f"   🎯 Tier: {guest_data['tier']}")
         print(f"   ⏰ Expire: {guest_data['session_expires']}")
@@ -46,7 +42,7 @@ def test_phoenix_unified_auth():
         success, user_data, message = auth_service.authenticate_user("demo@phoenix.com", "demo123")
         
         if success:
-            print(f"   ✅ Authentification réussie")
+            print("   ✅ Authentification réussie")
             print(f"   👤 Utilisateur: {user_data['first_name']} {user_data['last_name']}")
             print(f"   📧 Email: {user_data['email']}")
             print(f"   🎯 Tier: {user_data['tier']}")
@@ -62,7 +58,7 @@ def test_phoenix_unified_auth():
         if not success:
             print(f"   ✅ Rejet attendu: {message}")
         else:
-            print(f"   ❌ Authentification inattendue")
+            print("   ❌ Authentification inattendue")
         print()
         
         # Test inscription
@@ -77,7 +73,7 @@ def test_phoenix_unified_auth():
         )
         
         if success:
-            print(f"   ✅ Inscription réussie")
+            print("   ✅ Inscription réussie")
             print(f"   👤 Nouveau utilisateur: {user_data['first_name']} {user_data['last_name']}")
             print(f"   📧 Email: {user_data['email']}")
             print(f"   🎯 Tier initial: {user_data['tier']}")
@@ -98,7 +94,7 @@ def test_phoenix_unified_auth():
         if not success:
             print(f"   ✅ Rejet attendu: {message}")
         else:
-            print(f"   ❌ Inscription inattendue pour email existant")
+            print("   ❌ Inscription inattendue pour email existant")
         print()
         
         # Test mise à jour tier
@@ -107,9 +103,9 @@ def test_phoenix_unified_auth():
             success = auth_service.update_user_tier(user_data['id'], "premium")
             
             if success:
-                print(f"   ✅ Tier mis à jour vers Premium")
+                print("   ✅ Tier mis à jour vers Premium")
             else:
-                print(f"   ❌ Échec mise à jour tier")
+                print("   ❌ Échec mise à jour tier")
             print()
         
         # Test récupération utilisateur
@@ -118,25 +114,25 @@ def test_phoenix_unified_auth():
             retrieved_user = auth_service.get_user_by_id(user_data['id'])
             
             if retrieved_user:
-                print(f"   ✅ Utilisateur récupéré")
+                print("   ✅ Utilisateur récupéré")
                 print(f"   👤 Nom: {retrieved_user['first_name']} {retrieved_user['last_name']}")
                 print(f"   📧 Email: {retrieved_user['email']}")
             else:
-                print(f"   ❌ Utilisateur non trouvé")
+                print("   ❌ Utilisateur non trouvé")
         else:
-            print(f"   ⏭️ Pas de données utilisateur pour le test")
+            print("   ⏭️ Pas de données utilisateur pour le test")
         print()
         
         # Test déconnexion
         print("9️⃣ **Test déconnexion**")
         auth_service.logout_user()
-        print(f"   ✅ Déconnexion effectuée")
+        print("   ✅ Déconnexion effectuée")
         print()
         
         # Test infos session
         print("🔟 **Test informations de session**")
         session_info = auth_service.get_session_info()
-        print(f"   📊 Session info récupérée:")
+        print("   📊 Session info récupérée:")
         for key, value in session_info.items():
             print(f"      - {key}: {value}")
         print()

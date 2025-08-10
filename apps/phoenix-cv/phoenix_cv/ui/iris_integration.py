@@ -4,15 +4,21 @@ Module d'intégration de l'agent Iris dans Phoenix CV.
 Spécialisé pour l'optimisation CV et conseils carrière.
 """
 
-import sys
 import os
 
-# Ajouter le path vers le client Iris
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../packages/iris-client'))
-
 try:
-    from iris_client import IrisStreamlitClient, IrisAppContext, render_iris_chat, render_iris_status
-    from security_patches import SecureIrisClient, SecureContextBuilder, SecureLogger, create_secure_iris_client
+    from iris_client import (
+        IrisStreamlitClient,
+        IrisAppContext,
+        render_iris_chat,
+        render_iris_status,
+    )
+    from security_patches import (
+        SecureIrisClient,
+        SecureContextBuilder,
+        SecureLogger,
+        create_secure_iris_client,
+    )
     IRIS_SECURITY_ENABLED = True
 except ImportError:
     # Fallback si le package n'est pas disponible

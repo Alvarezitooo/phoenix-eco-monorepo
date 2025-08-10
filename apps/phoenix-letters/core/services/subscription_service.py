@@ -8,7 +8,7 @@ Version: 1.0.0 - Production Ready
 
 import logging
 from datetime import datetime, timezone, timedelta
-from typing import Dict, Optional, List, Any
+from typing import Dict, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
 

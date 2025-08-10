@@ -5,7 +5,6 @@ Composant d'assistant IA intégré en bas à droite de l'interface
 
 import streamlit as st
 import requests
-import json
 import logging
 from typing import Optional, Dict, Any
 

@@ -1,0 +1,59 @@
+# 🛡️ SECURITY GUARDIAN AGENT - Docker optimisé
+FROM python:3.11-slim
+
+# Métadonnées
+LABEL maintainer="Phoenix Letters Team"
+LABEL version="1.0.0"
+LABEL description="Security Guardian Agent avec Phi-3.5 Mini optimisé"
+
+# Variables d'environnement
+ENV PYTHONUNBUFFERED=1
+ENV OLLAMA_HOST=0.0.0.0
+ENV OLLAMA_PORT=11434
+ENV MODEL_NAME=phi3.5:latest
+ENV MAX_MEMORY=2GB
+
+# Installation des dépendances système
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+# Installation Ollama
+RUN curl -fsSL https://ollama.ai/install.sh | sh
+
+# Création utilisateur non-root
+RUN useradd -m -u 1000 phoenix && \
+    mkdir -p /app /home/phoenix/.ollama && \
+    chown -R phoenix:phoenix /app /home/phoenix
+
+# Copie du code source
+COPY --chown=phoenix:phoenix requirements.txt /app/
+COPY --chown=phoenix:phoenix security_guardian_agent.py /app/
+COPY --chown=phoenix:phoenix security_api.py /app/
+
+# Installation dépendances Python
+WORKDIR /app
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Switch vers utilisateur phoenix
+USER phoenix
+
+# Note: Modèles téléchargés au premier démarrage pour optimiser le build
+
+# Configuration santé
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:11434/api/version || exit 1
+
+# Exposition port
+EXPOSE 11434 8001
+
+# Script de démarrage
+COPY --chown=phoenix:phoenix docker/entrypoint-security.sh /app/
+RUN chmod +x /app/entrypoint-security.sh
+
+# Point d'entrée
+ENTRYPOINT ["/app/entrypoint-security.sh"]
+CMD ["python", "security_api.py"]

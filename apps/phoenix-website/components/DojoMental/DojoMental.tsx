@@ -2,20 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import ZazenTimer from '../ZazenTimer/ZazenTimer';
 import KaizenGrid from '../KaizenGrid/KaizenGrid';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_DOJO_API_URL || "http://127.0.0.1:8000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_DOJO_API_URL || 'http://127.0.0.1:8000';
 
 interface DojoMentalProps {
   userId: string;
 }
 
 export default function DojoMental({ userId }: DojoMentalProps) {
-  const [currentDialogue, setCurrentDialogue] = useState("");
-  const [kaizenInput, setKaizenInput] = useState("");
+  const [currentDialogue, setCurrentDialogue] = useState('');
+  const [kaizenInput, setKaizenInput] = useState('');
   const kaizenGridRef = useRef<{ refreshKaizenHistory: () => void }>(null); // Ref to access child method
 
   useEffect(() => {
     // Initial Iris dialogue based on Annexe 2
-    setCurrentDialogue("Bienvenue dans le Dojo. Tu n’es pas ici pour tout résoudre, juste pour faire un pas. Lequel ?");
+    setCurrentDialogue(
+      'Bienvenue dans le Dojo. Tu n’es pas ici pour tout résoudre, juste pour faire un pas. Lequel ?',
+    );
   }, []);
 
   const handleKaizenSubmit = async () => {
@@ -38,15 +40,19 @@ export default function DojoMental({ userId }: DojoMentalProps) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log("Kaizen created:", data);
-        setKaizenInput("");
-        setCurrentDialogue("Un excellent choix. Ce Kaizen est enregistré. Que souhaites-tu faire ensuite ?");
+        console.log('Kaizen created:', data);
+        setKaizenInput('');
+        setCurrentDialogue(
+          'Un excellent choix. Ce Kaizen est enregistré. Que souhaites-tu faire ensuite ?',
+        );
         if (kaizenGridRef.current) {
           kaizenGridRef.current.refreshKaizenHistory(); // Refresh the grid
         }
       } catch (error) {
-        console.error("Error creating Kaizen:", error);
-        setCurrentDialogue("Désolé, une erreur est survenue lors de l'enregistrement de votre Kaizen.");
+        console.error('Error creating Kaizen:', error);
+        setCurrentDialogue(
+          "Désolé, une erreur est survenue lors de l'enregistrement de votre Kaizen.",
+        );
       }
     }
   };
@@ -56,7 +62,7 @@ export default function DojoMental({ userId }: DojoMentalProps) {
       user_id: userId,
       timestamp: new Date().toISOString(),
       duration: 120, // 2 minutes
-      triggered_by: "user_request",
+      triggered_by: 'user_request',
     };
     try {
       const response = await fetch(`${API_BASE_URL}/zazen-session`, {
@@ -70,12 +76,14 @@ export default function DojoMental({ userId }: DojoMentalProps) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log("Zazen session created:", data);
-      setCurrentDialogue("Très bien. Commençons ce Zazen de 2 minutes. Concentre-toi sur ta respiration.");
+      console.log('Zazen session created:', data);
+      setCurrentDialogue(
+        'Très bien. Commençons ce Zazen de 2 minutes. Concentre-toi sur ta respiration.',
+      );
       // Trigger ZazenTimer start here
     } catch (error) {
-      console.error("Error creating Zazen session:", error);
-      setCurrentDialogue("Désolé, une erreur est survenue lors du démarrage de votre Zazen.");
+      console.error('Error creating Zazen session:', error);
+      setCurrentDialogue('Désolé, une erreur est survenue lors du démarrage de votre Zazen.');
     }
   };
 

@@ -1,0 +1,30 @@
+name: Website CI
+
+on:
+  push:
+    paths:
+      - 'apps/phoenix-website/**'
+  pull_request:
+    paths:
+      - 'apps/phoenix-website/**'
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'apps/phoenix-website/package-lock.json'
+      - name: Install
+        working-directory: apps/phoenix-website
+        run: npm ci
+      - name: Lint
+        working-directory: apps/phoenix-website
+        run: npm run lint
+      - name: Build
+        working-directory: apps/phoenix-website
+        run: npm run build
+

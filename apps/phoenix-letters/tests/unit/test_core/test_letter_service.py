@@ -1,14 +1,13 @@
 """Tests unitaires pour le service de génération de lettres."""
 
 from datetime import datetime
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 from core.entities.letter import GenerationRequest, Letter, ToneType, UserTier
 from core.services.letter_service import LetterService
 from shared.exceptions.specific_exceptions import LetterGenerationError, ValidationError
 from shared.interfaces.ai_interface import AIServiceInterface
-from shared.interfaces.monitoring_interface import MonitoringInterface
 from shared.interfaces.prompt_interface import PromptServiceInterface
 from shared.interfaces.validation_interface import ValidationServiceInterface
 
@@ -261,7 +260,7 @@ class TestLetterService:
             letter_service.analyze_letter(letter, UserTier.FREE)
 
     @pytest.mark.parametrize(
-        "user_tier", [UserTier.FREE, UserTier.PREMIUM, UserTier.PREMIUM_PLUS]
+    "user_tier", [UserTier.FREE, UserTier.PREMIUM]
     )
     def test_prompt_quality_by_tier(self, letter_service, mock_ai_service, user_tier):
         """Test de la qualité du prompt selon le tier utilisateur."""

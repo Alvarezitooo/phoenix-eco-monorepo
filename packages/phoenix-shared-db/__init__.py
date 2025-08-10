@@ -1,5 +1,5 @@
 """
-Package phoenix-shared-db
+Package phoenix_shared_db
 Services de base de données partagés pour l'écosystème Phoenix
 """
 

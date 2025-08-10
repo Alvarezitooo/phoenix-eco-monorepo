@@ -8,7 +8,7 @@ Version: 1.0.0 - Clean Architecture Pattern
 
 import os
 import logging
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any
 from datetime import datetime, date
 from dataclasses import dataclass
 

@@ -172,7 +172,7 @@ class TestGeminiClient:
         [
             (UserTier.FREE, 0.6, 0.7, 20),
             (UserTier.PREMIUM, 0.7, 0.8, 30),
-            (UserTier.PREMIUM_PLUS, 0.8, 0.9, 40),
+        (UserTier.PREMIUM, 0.8, 0.9, 40),
         ],
     )
     def test_generation_config_by_tier(

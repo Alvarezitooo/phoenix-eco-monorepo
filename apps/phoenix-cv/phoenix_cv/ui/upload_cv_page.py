@@ -110,7 +110,7 @@ def render_upload_cv_page_secure(cv_parser, display_parsed_cv_secure_func):
                         # Affichage des resultats securises
                         display_parsed_cv_secure_func(parsed_profile)
 
-                    except SecurityException as e:
+                    except SecurityException:
                         st.error("🚫 Violation de securite lors de l'analyse")
                         secure_logger.log_security_event(
                             "CV_ANALYSIS_SECURITY_VIOLATION",

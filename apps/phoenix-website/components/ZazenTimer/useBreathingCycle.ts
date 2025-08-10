@@ -70,7 +70,8 @@ export function useBreathingCycle() {
       const deltaTime = time - lastTimeRef.current;
       accumulatedTimeRef.current += deltaTime; // Accumulate delta time
 
-      if (accumulatedTimeRef.current >= 1000) { // Tick every second
+      if (accumulatedTimeRef.current >= 1000) {
+        // Tick every second
         const ticks = Math.floor(accumulatedTimeRef.current / 1000);
         dispatch({ type: 'TICK' });
         accumulatedTimeRef.current -= ticks * 1000; // Subtract full seconds

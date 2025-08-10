@@ -308,12 +308,16 @@ class PhoenixGreenMetrics:
             1 for m in metrics if m.carbon_impact_level == CarbonImpactLevel.EXCELLENT
         ) / len(metrics)
 
-        # Score composite (0-100)
+        # Score composite (0-100), normalisé correctement
+        # Chaque facteur est déjà exprimé en [0,1]; coefficients en pourcentage
         score = (
-            cache_ratio * 40  # 40% pour le cache
-            + (1 - min(avg_co2 / 2.0, 1)) * 30  # 30% pour CO2 moyen
-            + excellent_ratio * 30  # 30% pour excellence
-        ) * 100
+            cache_ratio * 0.40  # 40% pour le cache
+            + (1 - min(avg_co2 / 2.0, 1)) * 0.30  # 30% pour CO2 moyen
+            + excellent_ratio * 0.30  # 30% pour excellence
+        ) * 100.0
+
+        # Bornage strict
+        score = max(0.0, min(score, 100.0))
 
         return round(score, 1)
 

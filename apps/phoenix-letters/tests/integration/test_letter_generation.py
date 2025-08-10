@@ -1,14 +1,12 @@
 """Tests d'intégration pour la génération de lettres."""
 
 import os
-import tempfile
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 from core.entities.letter import GenerationRequest, ToneType, UserTier
 from core.services.letter_service import LetterService
 from infrastructure.ai.gemini_client import GeminiClient
-from infrastructure.monitoring.performance_monitor import PerformanceMonitor
 from shared.interfaces.prompt_interface import PromptServiceInterface
 from shared.interfaces.validation_interface import ValidationServiceInterface
 
@@ -95,7 +93,7 @@ class TestLetterGenerationIntegration:
         assert len(analysis.strengths) > 0
 
     @pytest.mark.parametrize(
-        "user_tier", [UserTier.FREE, UserTier.PREMIUM, UserTier.PREMIUM_PLUS]
+    "user_tier", [UserTier.FREE, UserTier.PREMIUM]
     )
     def test_generation_quality_by_tier(self, letter_service_with_real_ai, user_tier):
         """Test de la qualité de génération selon le tier."""

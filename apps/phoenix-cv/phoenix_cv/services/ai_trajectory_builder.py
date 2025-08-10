@@ -6,12 +6,8 @@ Author: Claude Phoenix DevSecOps Guardian
 Version: 1.0.0 - Revolutionary Career Planning
 """
 
-import json
-import os
-import re
-import time
-from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta
+from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 

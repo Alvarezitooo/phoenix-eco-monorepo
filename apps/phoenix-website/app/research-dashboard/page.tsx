@@ -4,8 +4,41 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
+type ResearchData = {
+  export_metadata: {
+    export_date: string;
+    total_users_exported: number;
+    ethics_compliance_checked: boolean;
+    anonymization_method: string;
+  };
+  aggregated_insights: {
+    demographic_insights: {
+      age_distribution: Record<string, number>;
+      region_distribution: Record<string, number>;
+      activity_distribution: Record<string, number>;
+    };
+    emotional_insights: {
+      emotion_frequency: Record<string, number>;
+      value_frequency: Record<string, number>;
+      transition_phase_distribution: Record<string, number>;
+    };
+    usage_insights: {
+      average_sessions_per_user: number;
+      average_cv_per_user: number;
+      average_letters_per_user: number;
+      average_session_duration_minutes: number;
+    };
+  };
+  ethics_compliance: {
+    rgpd_compliant: boolean;
+    consent_verified: boolean;
+    anonymization_validated: boolean;
+    no_personal_data: boolean;
+  };
+};
+
 export default function ResearchDashboardPage() {
-  const [researchData, setResearchData] = useState(null);
+  const [researchData, setResearchData] = useState<ResearchData | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Données simulées pour la démo (en production, récupérer depuis l'API)
@@ -101,7 +134,7 @@ export default function ResearchDashboardPage() {
     );
   }
 
-  const { aggregated_insights, export_metadata, ethics_compliance } = researchData;
+  const { aggregated_insights, export_metadata, ethics_compliance } = researchData as ResearchData;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -294,13 +327,13 @@ export default function ResearchDashboardPage() {
               {Object.entries(
                 aggregated_insights.emotional_insights.transition_phase_distribution,
               ).map(([phase, count]) => {
-                const phaseInfo = {
+                const phaseInfo: Record<string, { icon: string; color: string; bg: string }> = {
                   questionnement: { icon: '🤔', color: 'text-yellow-600', bg: 'bg-yellow-50' },
                   exploration: { icon: '🔍', color: 'text-blue-600', bg: 'bg-blue-50' },
                   action: { icon: '🚀', color: 'text-green-600', bg: 'bg-green-50' },
                   intégration: { icon: '✨', color: 'text-purple-600', bg: 'bg-purple-50' },
                 };
-                const info = phaseInfo[phase] || {
+                const info = phaseInfo[phase as string] || {
                   icon: '📊',
                   color: 'text-gray-600',
                   bg: 'bg-gray-50',

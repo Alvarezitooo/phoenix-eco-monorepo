@@ -1,0 +1,123 @@
+# 🎯 SMART ROUTER - Kubernetes Deployment  
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smart-router
+  namespace: phoenix-letters
+  labels:
+    app: phoenix-letters
+    component: smart-router
+    version: v1.0.0
+spec:
+  replicas: 1  # Minikube optimisé
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: phoenix-letters
+      component: smart-router
+  template:
+    metadata:
+      labels:
+        app: phoenix-letters
+        component: smart-router
+        version: v1.0.0
+    spec:
+      containers:
+      - name: smart-router
+        image: phoenix-letters/smart-router:latest
+        imagePullPolicy: Never  # Image locale Minikube
+        
+        ports:
+        - containerPort: 8000
+          name: http-api
+        
+        # Ressources Minikube
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        
+        # Variables d'environnement
+        env:
+        - name: SECURITY_GUARDIAN_URL
+          value: "http://security-guardian-service:8001"
+        - name: DATA_FLYWHEEL_URL  
+          value: "http://data-flywheel-service:8002"
+        - name: MAX_RESPONSE_TIME
+          value: "15"
+        - name: ENABLE_CLOUD_FALLBACK
+          value: "true"
+        
+        # Sondes de santé
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 2
+      
+      # Sécurité
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+---
+# 🌐 Service Smart Router
+apiVersion: v1
+kind: Service
+metadata:
+  name: smart-router-service
+  namespace: phoenix-letters
+  labels:
+    app: phoenix-letters
+    component: smart-router
+spec:
+  type: NodePort  # Minikube optimisé
+  ports:
+  - name: http-api
+    port: 8000
+    targetPort: 8000
+    nodePort: 30000  # Port fixe pour accès facile
+    protocol: TCP
+  selector:
+    app: phoenix-letters
+    component: smart-router
+
+---
+# 📊 Service Monitor (optionnel Prometheus)
+apiVersion: v1  
+kind: Service
+metadata:
+  name: smart-router-metrics
+  namespace: phoenix-letters
+  labels:
+    app: phoenix-letters
+    component: smart-router
+    monitoring: prometheus
+spec:
+  ports:
+  - name: metrics
+    port: 8000
+    targetPort: 8000
+  selector:
+    app: phoenix-letters
+    component: smart-router

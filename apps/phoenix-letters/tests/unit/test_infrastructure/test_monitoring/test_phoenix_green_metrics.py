@@ -10,9 +10,8 @@ Version: 1.0.0 - Phoenix Green AI Initiative
 
 import json
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 from infrastructure.monitoring.phoenix_green_metrics import (

@@ -1,9 +1,11 @@
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, status, Header
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from datetime import date, datetime
 from typing import Optional
 import os
 from supabase import create_client, Client
+from packages.phoenix_shared_auth.services.jwt_manager import JWTManager
 
 # Initialisation de Supabase
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
@@ -20,20 +22,40 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# --- Dépendance d'authentification simulée ---
-# Dans un système réel, ceci vérifierait un token JWT, une clé API, etc.
-# Pour cette mission, nous simulons simplement la récupération d'un user_id.
-async def get_current_user_id(user_id: str = "test_user_123"): # Simule un user_id par défaut
-    # Ici, vous intégreriez la logique de vérification du token JWT
-    # Par exemple, en extrayant l'ID utilisateur d'un en-tête Authorization
-    # if not user_id: # Si l'ID n'est pas fourni ou invalide
-    #    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+# CORS strict (ajuste selon tes domaines)
+ALLOWED_ORIGINS = os.getenv("DOJO_ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
+)
+
+# --- Authentification JWT ---
+JWT_SECRET = os.getenv("JWT_SECRET_KEY", "dev_secret_change_me")
+jwt_manager = JWTManager(JWT_SECRET)
+
+async def get_current_user_id(authorization: Optional[str] = Header(None)) -> str:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing bearer token")
+    token = authorization.split(" ", 1)[1]
+    payload = jwt_manager.verify_token(token)
+    if not payload:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+    user_id = payload.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid subject")
+    # Optionnel: vérifier scope minimal
+    scopes = payload.get("scopes", [])
+    if scopes and "user:dojo" not in scopes:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient scope")
     return user_id
 
 # --- Modèles Pydantic ---
 class KaizenCreate(BaseModel):
-    user_id: str # Sera validé par l'authentification
-    action: str = Field(..., min_length=1, max_length=255) # Validation de longueur
+    user_id: str  # Sera validé par l'authentification
+    action: str = Field(..., min_length=1, max_length=280)
     date: date
     completed: bool = False
 
@@ -65,8 +87,11 @@ async def create_kaizen(kaizen: KaizenCreate, current_user_id: str = Depends(get
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to create Kaizen for this user")
     try:
         # Nettoyage de l'action (exemple simple, un nettoyage plus robuste serait nécessaire)
-        cleaned_action = kaizen.action.strip() # Supprime les espaces blancs
-        # Vous pourriez ajouter ici un filtre pour les caractères spéciaux ou les injections
+        cleaned_action = kaizen.action.strip()
+        # Filtrage rudimentaire côté serveur
+        forbidden = ["<script", "javascript:", "vbscript:"]
+        if any(f in cleaned_action.lower() for f in forbidden):
+            raise HTTPException(status_code=400, detail="Contenu non autorisé détecté")
 
         response = supabase.table("kaizen").insert({"user_id": kaizen.user_id, "action": cleaned_action, "date": kaizen.date.isoformat(), "completed": kaizen.completed}).execute()
         if response.data:

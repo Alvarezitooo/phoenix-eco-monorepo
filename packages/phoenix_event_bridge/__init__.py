@@ -8,18 +8,16 @@ Expose les classes principales pour import dans les applications
 from .phoenix_event_bridge import (
     PhoenixEventType,
     PhoenixEventFactory,
-    EventBridge,
-    DataFlywheel,
     PhoenixEventData,
-    SupabaseEventStore
 )
+
+# Compatibilité descendante: exposer un alias EventBridge -> PhoenixEventBridge
+from .phoenix_event_bridge import PhoenixEventBridge as EventBridge
 
 __version__ = "1.0.0"
 __all__ = [
     "PhoenixEventType",
     "PhoenixEventFactory", 
     "EventBridge",
-    "DataFlywheel",
     "PhoenixEventData",
-    "SupabaseEventStore"
 ]
