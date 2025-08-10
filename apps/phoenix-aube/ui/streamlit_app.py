@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 
 import httpx
 import streamlit as st
+from os import getenv
 
 
 def get_setting(key: str, default: Optional[str] = None) -> Optional[str]:
@@ -116,7 +117,21 @@ def main() -> None:
     )
 
 
-if __name__ == "__main__":
+def _entrypoint() -> None:
+    """Selects which UI to render. Default: Trust by Design (same as local)."""
+    mode = str(getenv("AUBE_UI_MODE", "trust")).lower()
+    if mode in ("trust", "trust_by_design", "tdb"):
+        # Launch the full Trust by Design UI used locally
+        from phoenix_aube.ui.main import main as trust_main
+
+        trust_main()
+        return
+
+    # Fallback to the lightweight API-consumer UI (previous behavior)
     main()
+
+
+# Streamlit executes the script top-to-bottom on each run
+_entrypoint()
 
 
