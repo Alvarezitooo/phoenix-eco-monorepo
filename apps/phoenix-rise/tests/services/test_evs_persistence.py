@@ -14,7 +14,7 @@ from unittest.mock import patch, MagicMock
 from iris_core.event_processing.emotional_vector_state import EmotionalVectorState
 from phoenix_rise.services.hybrid_db_service import HybridDBService
 from phoenix_rise.services.evs_migration_service import EVSMigrationService
-from models.journal_entry import JournalEntry
+from phoenix_rise.models.journal_entry import JournalEntry
 
 
 class TestEVSPersistence:

@@ -3,6 +3,7 @@ name = "phoenix-shared-db"
 version = "1.0.0"
 description = "Services de base de données optimisés pour l'écosystème Phoenix"
 authors = ["Claude Phoenix DevSecOps Guardian <phoenix@anthropic.com>"]
+packages = [{ include = "phoenix_shared_db" }]
 
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"

@@ -60,6 +60,37 @@ typing_extensions = {version = ">=4.5", markers = "python_version < \"3.13\""}
 trio = ["trio (>=0.26.1)"]
 
 [[package]]
+name = "async-generator"
+version = "1.10"
+description = "Async generators and context managers for Python 3.5+"
+optional = false
+python-versions = ">=3.5"
+groups = ["dev"]
+files = [
+    {file = "async_generator-1.10-py3-none-any.whl", hash = "sha256:01c7bf666359b4967d2cda0000cc2e4af16a0ae098cbffcb8472fb9e8ad6585b"},
+    {file = "async_generator-1.10.tar.gz", hash = "sha256:6ebb3d106c12920aaae42ccb6f787ef5eefdcdd166ea3d628fa8476abe712144"},
+]
+
+[[package]]
+name = "asyncio-extras"
+version = "1.3.2"
+description = "Asynchronous generators, context managers and more for asyncio"
+optional = false
+python-versions = "*"
+groups = ["dev"]
+files = [
+    {file = "asyncio_extras-1.3.2-py3-none-any.whl", hash = "sha256:839568ba07c3470c9aa2c441aa2417c108f7d3755862bc2bd39d69b524303993"},
+    {file = "asyncio_extras-1.3.2.tar.gz", hash = "sha256:084b62bebc19c6ba106d438a274bbb5566941c469128cd4af1a85f00a2c81f8d"},
+]
+
+[package.dependencies]
+async-generator = ">=1.3"
+
+[package.extras]
+doc = ["sphinx-autodoc-typehints"]
+test = ["pytest", "pytest-asyncio", "pytest-cov"]
+
+[[package]]
 name = "attrs"
 version = "25.3.0"
 description = "Classes Without Boilerplate"
@@ -1272,6 +1303,24 @@ files = [
     {file = "pathspec-0.12.1-py3-none-any.whl", hash = "sha256:a0d503e138a4c123b27490a4f7beda6a01c6f288df0e4a8b79c7eb0dc7b4cc08"},
     {file = "pathspec-0.12.1.tar.gz", hash = "sha256:a482d51503a1ab33b1c67a6c3813a26953dbdc71c31dacaef9a838c4e29f5712"},
 ]
+
+[[package]]
+name = "phoenix-shared-db"
+version = "1.0.0"
+description = "Services de base de données optimisés pour l'écosystème Phoenix"
+optional = false
+python-versions = ">=3.9, <4.0"
+groups = ["dev"]
+files = []
+develop = true
+
+[package.dependencies]
+asyncio-extras = "*"
+supabase = "*"
+
+[package.source]
+type = "directory"
+url = "packages/phoenix-shared-db"
 
 [[package]]
 name = "pillow"
@@ -2689,4 +2738,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9, <4.0"
-content-hash = "361f3f10f557872dd3712a534f6e8fba42e4ce196590517c982f45b6b1592f5d"
+content-hash = "d2eb7d833d644e90e7e37a80271153d30e825b681404b00a2581ef2e239a631a"

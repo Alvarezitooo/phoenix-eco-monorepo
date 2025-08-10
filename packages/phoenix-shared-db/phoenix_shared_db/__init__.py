@@ -9,14 +9,16 @@ from .services.supabase_batch_service import (
     BatchResult,
     init_batch_service,
     get_batch_service,
-    supabase_batch_service
+    supabase_batch_service,
 )
 
 __all__ = [
     "SupabaseBatchService",
-    "BatchOperation", 
+    "BatchOperation",
     "BatchResult",
     "init_batch_service",
     "get_batch_service",
-    "supabase_batch_service"
+    "supabase_batch_service",
 ]
+
+
