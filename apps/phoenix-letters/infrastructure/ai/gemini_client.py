@@ -6,8 +6,9 @@ from typing import Any, Dict, Optional, List, Tuple
 from dataclasses import dataclass
 from concurrent.futures import ThreadPoolExecutor
 
+import os
 import google.generativeai as genai
-from config.settings import Settings
+from config.settings import Settings, ConfigurationError
 from core.entities.letter import UserTier
 from core.services.solidarity_ecological_fund import phoenix_solidarity_fund
 from infrastructure.monitoring.phoenix_green_metrics import phoenix_green_metrics
@@ -39,9 +40,10 @@ class CacheEntry:
 class GeminiClient(AIServiceInterface):
     """✅ Client optimisé pour Google Gemini AI avec batch processing."""
 
-    def __init__(self, settings: Settings):
+    def __init__(self, settings: Optional[Settings] = None):
         """Initialise le client Gemini avec optimisations."""
-        self.settings = settings
+        # Permet d'initialiser sans accès env en tests en injectant Settings
+        self.settings = settings or Settings()
         self._cache: Dict[str, CacheEntry] = {}
         self._batch_queue: List[BatchRequest] = []
         self._max_batch_size = 5
@@ -49,6 +51,9 @@ class GeminiClient(AIServiceInterface):
         self._executor = ThreadPoolExecutor(max_workers=3)
         
         try:
+            # Gestion explicite de la clé API pour les tests: si absente, lever une erreur claire
+            if not self.settings.google_api_key:
+                raise ConfigurationError("Required environment variable GOOGLE_API_KEY is missing")
             genai.configure(api_key=self.settings.google_api_key)
             self.model = genai.GenerativeModel("models/gemini-1.5-flash")
             logger.info("✅ Gemini client initialized with optimizations")
