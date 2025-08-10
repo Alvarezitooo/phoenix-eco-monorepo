@@ -5,7 +5,11 @@ from datetime import date, datetime
 from typing import Optional
 import os
 from supabase import create_client, Client
-from packages.phoenix_shared_auth.services.jwt_manager import JWTManager
+# Local fallback to avoid import issues in deployment
+try:
+    from packages.phoenix_shared_auth.services.jwt_manager import JWTManager  # type: ignore
+except Exception:
+    from .local_jwt_manager import JWTManager  # type: ignore
 
 # Initialisation de Supabase
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
