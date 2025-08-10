@@ -7,7 +7,7 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
 
-# Copy only the Aube app into the image context
+# Copy only the Aube app into the image context (no requirements.txt or start.sh)
 COPY pyproject.toml /app/pyproject.toml
 COPY phoenix_aube /app/phoenix_aube
 
