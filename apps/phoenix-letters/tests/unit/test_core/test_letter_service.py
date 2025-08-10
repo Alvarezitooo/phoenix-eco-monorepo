@@ -1,14 +1,13 @@
 """Tests unitaires pour le service de génération de lettres."""
 
 from datetime import datetime
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 from core.entities.letter import GenerationRequest, Letter, ToneType, UserTier
 from core.services.letter_service import LetterService
 from shared.exceptions.specific_exceptions import LetterGenerationError, ValidationError
 from shared.interfaces.ai_interface import AIServiceInterface
-from shared.interfaces.monitoring_interface import MonitoringInterface
 from shared.interfaces.prompt_interface import PromptServiceInterface
 from shared.interfaces.validation_interface import ValidationServiceInterface
 

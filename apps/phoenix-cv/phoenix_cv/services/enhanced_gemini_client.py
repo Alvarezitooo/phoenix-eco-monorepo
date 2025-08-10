@@ -6,14 +6,13 @@ Author: Claude Phoenix DevSecOps Guardian
 Version: 2.0.0 - Perfect CV Generation
 """
 
-import json
 import os
 import re
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import google.generativeai as genai
 
@@ -23,7 +22,7 @@ try:
     from utils.rate_limiter import rate_limit
     from utils.secure_logging import secure_logger
     from utils.secure_validator import SecureValidator
-except ImportError as e:
+except ImportError:
     # Fallback pour développement sans toutes les dépendances
     import logging
 

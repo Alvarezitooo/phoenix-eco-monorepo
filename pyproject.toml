@@ -1,37 +1,22 @@
 [tool.poetry]
-name = "phoenix-ecosystem-workspace"
-version = "1.0.0"
-description = "Workspace orchestrator for the Phoenix Ecosystem. Not a package."
-authors = ["Matthieu Rubia <contact.phoenixletters@gmail.com>"]
-
-# LA LIGNE QUI DÉVERROUILLE TOUT
-# "Poetry, utilise ce fichier pour gérer les dépendances, 
-# mais n'essaie PAS d'installer le projet racine lui-même."
-package-mode = false
+name = "phoenix-ecosystem"
+version = "0.1.0"
+package-mode = false # Indique que ce n'est pas un package installable en soi
 
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
 
-# ✅ PACKAGES PRINCIPAUX
-phoenix_letters = { path = "apps/phoenix-letters", develop = true }
-phoenix_cv = { path = "apps/phoenix-cv", develop = true }
-phoenix_rise = { path = "apps/phoenix-rise", develop = true }
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.6.4"
+mypy = "^1.11.1"
+pytest = "^8.3.3"
+pre-commit = "^3.8.0"
+pytz = "^2024.1"
+python-dotenv = "^1.1.1"
+google-generativeai = "^0.8.5"
+pytest-mock = "^3.14.1"
 
-# ✅ PACKAGES PARTAGÉS - ARCHITECTURE CLEAN
-phoenix_event_bridge = { path = "packages/phoenix_event_bridge", develop = true }
-phoenix_shared_ui = { path = "packages/phoenix-shared-ui", develop = true }
-phoenix_shared_auth = { path = "packages/phoenix-shared-auth", develop = true }
-phoenix_shared_models = { path = "packages/phoenix-shared-models", develop = true }
-phoenix_security = { path = "packages/phoenix-security", develop = true }
-phoenix_shared_ai = { path = "packages/phoenix-shared-ai", develop = true }
-phoenix_shared_db = { path = "packages/phoenix-shared-db", develop = true }
-
-# ✅ PACKAGES IRIS
-iris_agent = { path = "packages/iris-agent", develop = true }
-iris_client = { path = "packages/iris-client", develop = true }
-
-# ✅ PACKAGES SÉCURITÉ
-pdf_security_patch = { path = "packages/pdf-security-patch", develop = true }
+ 
 
 [build-system]
 requires = ["poetry-core"]

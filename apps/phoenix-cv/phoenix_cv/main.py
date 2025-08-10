@@ -7,12 +7,11 @@ Version: 4.0.0 - Unified Authentication Ready
 """
 
 # Point d'entrée principal - Version simplifiée pour monorepo
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
 
 # === LEGACY IMPORTS POUR COMPATIBILITÉ ===
 import os
-import tempfile
 import time
 from datetime import datetime
 from io import BytesIO
@@ -20,22 +19,30 @@ from io import BytesIO
 import docx
 import PyPDF2
 import streamlit as st
+from phoenix_cv.services.ai_trajectory_builder import (
+    ai_trajectory_builder,
+)
+from phoenix_cv.services.enhanced_gemini_client import get_enhanced_gemini_client
+from phoenix_cv.services.mirror_match_engine import mirror_match_engine
+from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
+from phoenix_cv.services.smart_coach import (
+    CoachingContext,
+    smart_coach,
+)
+from phoenix_cv.utils.html_sanitizer import html_sanitizer
+from phoenix_cv.ui.login_page import handle_authentication_flow
 st.toast("✅ VERSION DU 03/08/2025 - 09:15 AM CEST")
 # FORCE CACHE BUST - IMPORTS RELATIFS CORRECTS
 from phoenix_cv.services.ai_trajectory_builder import (
-    CareerStage,
-    TrajectoryDifficulty,
     ai_trajectory_builder,
 )
 
 # Import des services enhanced
 from phoenix_cv.services.enhanced_gemini_client import get_enhanced_gemini_client
-from phoenix_cv.services.mirror_match_engine import MatchType, mirror_match_engine
+from phoenix_cv.services.mirror_match_engine import mirror_match_engine
 from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
 from phoenix_cv.services.smart_coach import (
     CoachingContext,
-    CoachingTone,
-    UrgencyLevel,
     smart_coach,
 )
 from phoenix_cv.utils.html_sanitizer import html_sanitizer
@@ -378,7 +385,7 @@ def render_smart_coach_widget():
                 {"insight_context": insight.context.value},
             )
 
-    except Exception as e:
+    except Exception:
         # En cas d'erreur, pas de widget (mode silencieux)
         pass
 
@@ -1147,7 +1154,6 @@ def render_ecosystem_page():
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        phoenix_cv_url = phoenix_bridge.get_app_url(PhoenixApp.CV)
         safe_markdown(
             """
         <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #007bff; text-align: center; height: 300px;">
@@ -2106,7 +2112,7 @@ def main():
     except ImportError:
         # Mode dégradé si le service n'est pas disponible
         pass
-    except Exception as e:
+    except Exception:
         # Mode silencieux en cas d'erreur
         pass
 

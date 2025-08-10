@@ -1,7 +1,7 @@
 import os
 import stripe
 import logging
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

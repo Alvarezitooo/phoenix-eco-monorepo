@@ -6,7 +6,6 @@ from typing import Callable, List, Optional
 
 import streamlit as st
 from config.settings import Settings
-from infrastructure.security.input_validator import InputValidator
 from shared.exceptions.specific_exceptions import FileValidationError
 from shared.interfaces.validation_interface import ValidationServiceInterface
 
@@ -83,7 +82,7 @@ class SecureFileUploader:
             logger.warning(f"File validation error for {uploaded_file.name}: {e}")
             return None
         except Exception as e:
-            st.error(f"❌ Erreur inattendue lors du traitement du fichier")
+            st.error("❌ Erreur inattendue lors du traitement du fichier")
             logger.error(f"Unexpected error processing file {uploaded_file.name}: {e}")
             return None
 

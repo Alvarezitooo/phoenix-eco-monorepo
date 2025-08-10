@@ -1,11 +1,10 @@
 """Service d'optimisation des coûts API Gemini."""
 
-import json
 import logging
 from collections import defaultdict
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 
 @dataclass

@@ -1,8 +1,5 @@
 import asyncio
 import threading
-import time
-from concurrent.futures import Future
-from queue import Queue
 
 import streamlit as st  # Pour les messages de debug/info dans Streamlit
 

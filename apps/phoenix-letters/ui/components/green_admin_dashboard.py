@@ -10,14 +10,13 @@ Version: 1.0.0 - Phoenix Green AI Initiative
 
 import json
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 from infrastructure.monitoring.phoenix_green_metrics import (
-    CarbonImpactLevel,
     phoenix_green_metrics,
 )
 from plotly.subplots import make_subplots

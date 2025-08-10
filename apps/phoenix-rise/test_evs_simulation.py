@@ -9,13 +9,9 @@ Simule le comportement complet du système de persistance EEV.
 import json
 import uuid
 from datetime import datetime, timedelta
-from dataclasses import asdict
-from typing import Dict, List, Any
 
 # Import direct des modules
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '.'))
+import os  # noqa: F401
 
 from iris_core.event_processing.emotional_vector_state import EmotionalVectorState
 
@@ -112,7 +108,7 @@ def simulate_user_journey():
     
     # 2. Initialisation EEV
     evs = EmotionalVectorState(user_id=user_id)
-    print(f"🧠 EEV initialisé - État initial:")
+    print("🧠 EEV initialisé - État initial:")
     print(f"   Mood Average 7d: {evs.mood_average_7d}")
     print(f"   Burnout Risk: {evs.burnout_risk_score}")
     
@@ -198,7 +194,7 @@ def simulate_user_journey():
     
     # 4. Calcul final des métriques
     evs.calculate_burnout_risk()
-    print(f"\n🎯 MÉTRIQUES FINALES:")
+    print("\n🎯 MÉTRIQUES FINALES:")
     print(f"   Mood Average 7d: {evs.mood_average_7d:.2f}")
     print(f"   Mood Count 7d: {evs.mood_count_7d}")
     print(f"   Confidence Trend: {evs.confidence_trend:.2f}")
@@ -206,7 +202,7 @@ def simulate_user_journey():
     print(f"   Burnout Risk: {evs.burnout_risk_score:.2f}")
     
     # 5. Test reconstruction depuis événements
-    print(f"\n🔄 TEST RECONSTRUCTION DEPUIS ÉVÉNEMENTS")
+    print("\n🔄 TEST RECONSTRUCTION DEPUIS ÉVÉNEMENTS")
     print("-" * 40)
     
     # Simuler reconstruction
@@ -226,7 +222,7 @@ def simulate_user_journey():
     
     reconstructed_evs.calculate_burnout_risk()
     
-    print(f"🔍 COMPARAISON ÉTATS:")
+    print("🔍 COMPARAISON ÉTATS:")
     print(f"   Original Mood 7d: {evs.mood_average_7d:.2f}")
     print(f"   Reconstruit Mood 7d: {reconstructed_evs.mood_average_7d:.2f}")
     print(f"   Original Burnout: {evs.burnout_risk_score:.2f}")
@@ -242,7 +238,7 @@ def simulate_user_journey():
         print(f"⚠️ Différences: mood={mood_diff:.3f}, burnout={burnout_diff:.3f}")
     
     # 6. Test sérialisation JSON
-    print(f"\n💾 TEST SÉRIALISATION JSON")
+    print("\n💾 TEST SÉRIALISATION JSON")
     print("-" * 25)
     
     json_data = evs.to_json()
@@ -266,7 +262,7 @@ def simulate_user_journey():
         print(f"❌ Erreur JSON: {e}")
     
     # 7. Performance test
-    print(f"\n⚡ TEST PERFORMANCE")
+    print("\n⚡ TEST PERFORMANCE")
     print("-" * 18)
     
     import time
@@ -299,7 +295,7 @@ def simulate_user_journey():
 
 def test_evs_edge_cases():
     """Test des cas limites de l'EEV."""
-    print(f"\n🧪 TEST CAS LIMITES EEV")
+    print("\n🧪 TEST CAS LIMITES EEV")
     print("=" * 25)
     
     user_id = str(uuid.uuid4())
@@ -342,7 +338,7 @@ if __name__ == "__main__":
         test_evs_edge_cases()
         
         # Résumé final
-        print(f"\n🎉 RÉSUMÉ SIMULATION")
+        print("\n🎉 RÉSUMÉ SIMULATION")
         print("=" * 20)
         print(f"👤 Utilisateur: {results['user_id'][:8]}...")
         print(f"📊 Événements créés: {results['events_created']}")
@@ -352,7 +348,7 @@ if __name__ == "__main__":
         print(f"💾 Taille JSON: {results['json_size']} chars")
         print(f"⚡ Performance: {results['performance_updates_per_sec']:.0f} updates/s")
         
-        print(f"\n✅ SIMULATION RÉUSSIE - EEV PRÊT POUR PRODUCTION!")
+        print("\n✅ SIMULATION RÉUSSIE - EEV PRÊT POUR PRODUCTION!")
         
     except Exception as e:
         print(f"❌ Erreur simulation: {e}")

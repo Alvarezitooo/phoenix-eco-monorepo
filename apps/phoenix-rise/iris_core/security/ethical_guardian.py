@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict
 from iris_core.event_processing.emotional_vector_state import EmotionalVectorState
 
 class EthicalGuardian:

@@ -1,0 +1,47 @@
+# 🎯 SMART ROUTER API GATEWAY - Docker
+FROM python:3.11-slim
+
+# Métadonnées
+LABEL maintainer="Phoenix Letters Team"
+LABEL version="1.0.0"
+LABEL description="Smart Router API Gateway pour agents IA Phoenix"
+
+# Variables d'environnement
+ENV PYTHONUNBUFFERED=1
+ENV SECURITY_GUARDIAN_URL=http://security-guardian:8001
+ENV DATA_FLYWHEEL_URL=http://data-flywheel:8002
+ENV MAX_RESPONSE_TIME=10
+ENV ENABLE_CLOUD_FALLBACK=true
+
+# Installation dépendances système minimales
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Création utilisateur
+RUN useradd -m -u 1000 phoenix && \
+    mkdir -p /app /app/logs && \
+    chown -R phoenix:phoenix /app
+
+# Copie code et dépendances
+COPY --chown=phoenix:phoenix requirements.txt /app/
+COPY --chown=phoenix:phoenix smart_router_api.py /app/
+
+# Installation dépendances Python
+WORKDIR /app
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Switch utilisateur
+USER phoenix
+
+# Santé container
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Port API Gateway
+EXPOSE 8000
+
+# Démarrage direct (pas besoin d'Ollama)
+CMD ["python", "smart_router_api.py"]

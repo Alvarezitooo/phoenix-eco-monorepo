@@ -1,3 +1,33 @@
+# Global Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+dist/
+build/
+
+# Virtual envs
+venv/
+.venv/
+*/venv/
+*/.venv/
+apps/phoenix-letters/phoenix_env/
+apps/phoenix-rise/venv/
+
+# Node
+node_modules/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# OS/Editor
+.DS_Store
+.idea/
+.vscode/
 # 🔥 Phoenix Ecosystem - Global Gitignore
 
 # ===============================================================================

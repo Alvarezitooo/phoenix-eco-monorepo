@@ -2,7 +2,6 @@
 
 import logging
 import re
-from dataclasses import asdict
 from typing import Dict, List, Optional
 
 from core.entities.letter import SmartCoachFeedback, UserTier

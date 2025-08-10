@@ -1,0 +1,44 @@
+# 🚀 PHOENIX LETTERS - Kubernetes Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: phoenix-letters
+  labels:
+    app: phoenix-letters
+    version: v1.0.0
+    environment: production
+---
+# 🔒 Network Policy - Sécurité réseau
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: phoenix-network-policy
+  namespace: phoenix-letters
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: phoenix-letters
+    ports:
+    - protocol: TCP
+      port: 8000
+    - protocol: TCP
+      port: 8001
+    - protocol: TCP
+      port: 8002
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+  - to:
+    - podSelector:
+        matchLabels:
+          app: phoenix-letters

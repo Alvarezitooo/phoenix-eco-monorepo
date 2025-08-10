@@ -1,6 +1,5 @@
 import io
 import os
-import sys
 from pathlib import Path
 from typing import Tuple
 
@@ -10,10 +9,11 @@ from phoenix_cv.config.security_config import SecurityConfig
 from phoenix_cv.utils.secure_logging import secure_logger
 from phoenix_cv.utils.secure_validator import SecureValidator
 
-# Import de la protection pypdf DoS
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../packages/pdf-security-patch'))
 try:
-    from pypdf_dos_mitigation import safe_extract_pdf_text, PyPDFDoSMitigator
+    from pdf_security_patch.pypdf_dos_mitigation import (
+        safe_extract_pdf_text,
+        PyPDFDoSMitigator,
+    )
     PYPDF_DOS_PROTECTION_ENABLED = True
 except ImportError:
     secure_logger.log_security_event(

@@ -7,58 +7,22 @@ Version: 1.0.0 - Unified Authentication Integration
 """
 
 import os
-import sys
 
 import streamlit as st
 from dotenv import load_dotenv
 
-# Import du module d'authentification Phoenix
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from phoenix_shared_auth import (
+    JWTManager,
+    PhoenixApp,
+    PhoenixAuthService,
+    PhoenixStreamlitAuth,
+    get_phoenix_db_connection,
+    get_phoenix_settings,
+)
 
 from config.settings import Settings
 from core.services.letter_service import LetterService
 from infrastructure.ai.gemini_client import GeminiClient
-# Import conditionnel du système d'authentification partagé
-try:
-    from phoenix_shared_auth import (
-        JWTManager,
-        PhoenixApp,
-        PhoenixAuthService,
-        PhoenixStreamlitAuth,
-        get_phoenix_db_connection,
-        get_phoenix_settings,
-    )
-    PHOENIX_SHARED_AUTH_AVAILABLE = True
-except ImportError:
-    PHOENIX_SHARED_AUTH_AVAILABLE = False
-    
-    # Fallbacks pour mode dégradé
-    class JWTManager:
-        def __init__(self, *args, **kwargs):
-            pass
-        def create_token(self, *args, **kwargs):
-            return "mock_token"
-        def verify_token(self, *args, **kwargs):
-            return {"user_id": "mock_user", "email": "mock@example.com"}
-    
-    class PhoenixApp:
-        CV = "cv"
-        LETTERS = "letters"
-        RISE = "rise"
-    
-    class PhoenixAuthService:
-        def __init__(self, *args, **kwargs):
-            pass
-    
-    class PhoenixStreamlitAuth:
-        def __init__(self, *args, **kwargs):
-            pass
-    
-    def get_phoenix_db_connection(*args, **kwargs):
-        return None
-    
-    def get_phoenix_settings(*args, **kwargs):
-        return None
 from ui.pages.about_page import AboutPage
 
 # Import des services Phoenix Letters existants

@@ -8,7 +8,6 @@ Version: 2.0.0 - Production Ready avec Stripe
 
 from typing import Any, Callable, Optional
 from functools import wraps
-from datetime import datetime
 import logging
 
 import streamlit as st
@@ -180,7 +179,7 @@ class PremiumBarrier:
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
             if st.button(
-                f"🚀 Passer à Premium",
+                "🚀 Passer à Premium",
                 use_container_width=True,
                 type="primary",
                 key=f"upgrade_premium_{feature_name.lower().replace(' ', '_')}",
@@ -397,7 +396,6 @@ class ConversionOptimizer:
     @staticmethod
     def get_cta_variant() -> dict:
         """Retourne variant CTA pour A/B test."""
-        import random
 
         variants = [
             {"text": "🚀 Passer Premium", "color": "primary", "style": "standard"},

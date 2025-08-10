@@ -1,0 +1,50 @@
+# 🚀 PHOENIX LETTERS - Docker Compose LITE (test rapide)
+version: '3.8'
+
+services:
+  # 🎯 Smart Router uniquement pour test
+  smart-router:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.smart-router
+    container_name: phoenix-smart-router-lite
+    ports:
+      - "8000:8000"
+    environment:
+      - SECURITY_GUARDIAN_URL=http://localhost:8001
+      - DATA_FLYWHEEL_URL=http://localhost:8002
+      - ENABLE_CLOUD_FALLBACK=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - phoenix-test
+
+  # 🛡️ Security Guardian (version simplifiée)
+  security-guardian-mock:
+    image: python:3.11-slim
+    container_name: phoenix-security-mock
+    ports:
+      - "8001:8001"
+    command: >
+      bash -c "
+        pip install fastapi uvicorn &&
+        python -c \"
+        from fastapi import FastAPI
+        import uvicorn
+        app = FastAPI()
+        @app.get('/health')
+        def health(): return {'status': 'healthy', 'service': 'mock-security'}
+        @app.post('/api/security/analyze')
+        def analyze(data: dict): return {'safe_to_process': True, 'risk_score': 10, 'recommendations': ['Mock analysis'], 'processing_time': 0.1}
+        uvicorn.run(app, host='0.0.0.0', port=8001)
+        \"
+      "
+    networks:
+      - phoenix-test
+
+networks:
+  phoenix-test:
+    driver: bridge

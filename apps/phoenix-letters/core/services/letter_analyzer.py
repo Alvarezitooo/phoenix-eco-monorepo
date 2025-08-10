@@ -96,7 +96,7 @@ class LetterAnalyzer:
             result = self._parse_analysis_result(raw_analysis)
 
             logger.info(
-                f"Letter analysis completed",
+                "Letter analysis completed",
                 extra={
                     "user_tier": user_tier.value,
                     "score": result.score,

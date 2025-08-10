@@ -1,5 +1,4 @@
 import os
-import json
 import logging
 from flask import Flask, request, jsonify
 from services.stripe_service import StripeService, PaymentError
@@ -80,7 +79,7 @@ def stripe_webhook():
 
     except Exception as e:
         logger.error(f"Erreur lors du traitement de l'événement {event_type}: {e}")
-        return jsonify({'error': 'Erreur interne du serveur lors du traitement de l'événement'}), 500
+        return jsonify({'error': "Erreur interne du serveur lors du traitement de l'evenement"}), 500
 
     return jsonify({'status': 'success'}), 200
 

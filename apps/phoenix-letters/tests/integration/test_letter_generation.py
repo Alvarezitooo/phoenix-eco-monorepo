@@ -1,14 +1,12 @@
 """Tests d'intégration pour la génération de lettres."""
 
 import os
-import tempfile
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 from core.entities.letter import GenerationRequest, ToneType, UserTier
 from core.services.letter_service import LetterService
 from infrastructure.ai.gemini_client import GeminiClient
-from infrastructure.monitoring.performance_monitor import PerformanceMonitor
 from shared.interfaces.prompt_interface import PromptServiceInterface
 from shared.interfaces.validation_interface import ValidationServiceInterface
 

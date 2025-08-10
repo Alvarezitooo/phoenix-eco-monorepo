@@ -8,61 +8,21 @@ Version: 1.0.0 - Unified Authentication Integration
 
 import os
 
-# Import du module d'authentification Phoenix
-import sys
-
 import streamlit as st
 from dotenv import load_dotenv
 
-load_dotenv() # Déplacé ici pour s'assurer que les variables d'environnement sont chargées tôt
+load_dotenv()  # charge tôt les variables d'environnement
 
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-
-# Import conditionnel du système d'authentification partagé
-try:
-    from packages.phoenix_shared_auth import (
-        JWTManager,
-        PhoenixApp,
-        PhoenixAuthService,
-        PhoenixStreamlitAuth,
-        get_phoenix_db_connection,
-        get_phoenix_settings,
-    )
-    PHOENIX_SHARED_AUTH_AVAILABLE = True
-except ImportError:
-    PHOENIX_SHARED_AUTH_AVAILABLE = False
-    
-    # Fallbacks pour mode dégradé
-    class JWTManager:
-        def __init__(self, *args, **kwargs):
-            pass
-        def create_token(self, *args, **kwargs):
-            return "mock_token"
-        def verify_token(self, *args, **kwargs):
-            return {"user_id": "mock_user", "email": "mock@example.com"}
-    
-    class PhoenixApp:
-        CV = "cv"
-        LETTERS = "letters"
-        RISE = "rise"
-    
-    class PhoenixAuthService:
-        def __init__(self, *args, **kwargs):
-            pass
-    
-    class PhoenixStreamlitAuth:
-        def __init__(self, *args, **kwargs):
-            pass
-    
-    def get_phoenix_db_connection(*args, **kwargs):
-        return None
-    
-    def get_phoenix_settings(*args, **kwargs):
-        return None
+from phoenix_shared_auth import (
+    JWTManager,
+    PhoenixApp,
+    PhoenixAuthService,
+    PhoenixStreamlitAuth,
+    get_phoenix_db_connection,
+    get_phoenix_settings,
+)
 
 # Import des services Phoenix CV existants
-from services.enhanced_gemini_client import get_enhanced_gemini_client
-from services.phoenix_ecosystem_bridge import phoenix_bridge
 from ui.create_cv_page import render_create_cv_page
 from ui.home_page import render_home_page
 from ui.pricing_page import render_pricing_page

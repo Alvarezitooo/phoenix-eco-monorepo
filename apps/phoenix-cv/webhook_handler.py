@@ -7,7 +7,6 @@ Version: 1.0.0 - Production Ready
 """
 
 import streamlit as st
-import json
 import logging
 from phoenix_cv.services.stripe_service import stripe_service
 

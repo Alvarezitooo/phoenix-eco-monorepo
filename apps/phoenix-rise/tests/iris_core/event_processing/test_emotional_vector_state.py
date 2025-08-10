@@ -1,6 +1,5 @@
 import pytest
 from datetime import datetime, timedelta
-from collections import deque
 import pytz
 from iris_core.event_processing.emotional_vector_state import EmotionalVectorState
 

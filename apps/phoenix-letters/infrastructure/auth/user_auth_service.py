@@ -78,7 +78,7 @@ class UserAuthService:
                 ),
                 subscription=UserSubscription(),  # Subscription par défaut (FREE)
             )
-        except (UserNotFoundError, AuthenticationError) as e:
+        except (UserNotFoundError, AuthenticationError):
             raise
         except Exception as e:
             raise AuthenticationError(f"Erreur inattendue lors de l'authentification: {e}")

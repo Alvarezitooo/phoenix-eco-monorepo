@@ -1,8 +1,7 @@
 import logging
-from typing import Optional
 
 from config.settings import Settings
-from core.entities.letter import GenerationRequest, UserTier
+from core.entities.letter import GenerationRequest
 from shared.interfaces.prompt_interface import PromptServiceInterface
 
 logger = logging.getLogger(__name__)

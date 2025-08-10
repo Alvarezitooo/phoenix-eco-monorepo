@@ -4,14 +4,15 @@ Module d'intégration de l'agent Iris dans Phoenix Rise.
 Spécialisé pour l'accompagnement développement personnel et reconversion.
 """
 
-import sys
 import os
 
-# Ajouter le path vers le client Iris
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../packages/iris-client'))
-
 try:
-    from iris_client import IrisStreamlitClient, IrisAppContext, render_iris_chat, render_iris_status
+    from iris_client import (
+        IrisStreamlitClient,
+        IrisAppContext,
+        render_iris_chat,
+        render_iris_status,
+    )
 except ImportError:
     # Fallback si le package n'est pas disponible
     class IrisStreamlitClient:

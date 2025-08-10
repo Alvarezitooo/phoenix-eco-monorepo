@@ -38,11 +38,6 @@ from infrastructure.payment.stripe_service import StripeService
 from core.services.subscription_service import SubscriptionService
 from ui.pages.settings_page import SettingsPage
 from utils.async_runner import AsyncServiceRunner
-from utils.monitoring import (
-    diagnostic_urgence_50_requetes,
-    render_api_monitoring_dashboard,
-    render_detailed_monitoring,
-)
 # from phoenix_shared_ui.components import render_primary_button, render_info_card, render_section_header, render_alert, render_ariadne_thread  # Module non trouvé
 
 # Configuration du logger

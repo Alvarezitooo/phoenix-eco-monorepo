@@ -51,7 +51,7 @@ def render_templates_page_secure(template_engine, create_demo_profile_secure_fun
                     st.session_state.current_page = "pricing"
                     st.rerun()
             else:
-                if st.button(f"👁️ Apercu Securise", key=f"preview_{template.id}"):
+                if st.button("👁️ Apercu Securise", key=f"preview_{template.id}"):
                     # Profil demo securise
                     demo_profile = create_demo_profile_secure_func()
                     html_preview = template_engine.render_cv_secure(

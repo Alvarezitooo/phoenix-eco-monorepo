@@ -3,8 +3,7 @@
 import logging
 import re
 from collections import Counter
-from dataclasses import asdict
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from core.entities.letter import ATSAnalysis, UserTier
 from infrastructure.security.input_validator import InputValidator

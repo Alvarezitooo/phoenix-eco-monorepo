@@ -1,12 +1,10 @@
 """Service RAG avancé pour personnalisation lettres de motivation."""
 
-import hashlib
 import json
 import logging
-from collections import defaultdict
-from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 
 @dataclass

@@ -1,7 +1,6 @@
 """Client Google Gemini optimisé avec batch processing et caching intelligent."""
 
 import logging
-import asyncio
 import time
 from typing import Any, Dict, Optional, List, Tuple
 from dataclasses import dataclass

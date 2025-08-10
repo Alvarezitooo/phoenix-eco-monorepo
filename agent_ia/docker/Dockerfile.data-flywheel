@@ -1,0 +1,62 @@
+# 🧠 DATA FLYWHEEL AGENT - Docker optimisé
+FROM python:3.11-slim
+
+# Métadonnées
+LABEL maintainer="Phoenix Letters Team"
+LABEL version="1.0.0"
+LABEL description="Data Flywheel Agent avec Qwen2.5 optimisé"
+
+# Variables d'environnement
+ENV PYTHONUNBUFFERED=1
+ENV OLLAMA_HOST=0.0.0.0
+ENV OLLAMA_PORT=11434
+ENV MODEL_NAME=qwen2.5:3b
+ENV DATABASE_PATH=/app/data/flywheel.db
+
+# Installation des dépendances système
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    sqlite3 \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+# Installation Ollama
+RUN curl -fsSL https://ollama.ai/install.sh | sh
+
+# Création utilisateur et répertoires
+RUN useradd -m -u 1000 phoenix && \
+    mkdir -p /app /app/data /home/phoenix/.ollama && \
+    chown -R phoenix:phoenix /app /home/phoenix
+
+# Copie du code
+COPY --chown=phoenix:phoenix requirements.txt /app/
+COPY --chown=phoenix:phoenix data_flywheel_agent.py /app/
+COPY --chown=phoenix:phoenix flywheel_api.py /app/
+
+# Installation dépendances
+WORKDIR /app
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Switch utilisateur
+USER phoenix
+
+# Note: Modèles téléchargés au premier démarrage pour optimiser le build
+
+# Volume pour persistance données
+VOLUME ["/app/data"]
+
+# Santé container
+HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
+    CMD curl -f http://localhost:11434/api/version || exit 1
+
+# Ports
+EXPOSE 11434 8002
+
+# Script démarrage
+COPY --chown=phoenix:phoenix docker/entrypoint-flywheel.sh /app/
+RUN chmod +x /app/entrypoint-flywheel.sh
+
+ENTRYPOINT ["/app/entrypoint-flywheel.sh"]
+CMD ["python", "flywheel_api.py"]

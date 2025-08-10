@@ -2,17 +2,15 @@
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional
 
 from core.entities.letter import GenerationRequest, UserTier
 from core.services.api_cost_optimizer import APICostOptimizer, APIUsageMetrics
 from core.services.rag_personalization_service import (
     RAGPersonalizationService,
-    UserContext,
 )
 from infrastructure.security.prompt_injection_guard import (
     PromptInjectionGuard,
-    ThreatLevel,
 )
 from shared.interfaces.ai_interface import AIServiceInterface
 

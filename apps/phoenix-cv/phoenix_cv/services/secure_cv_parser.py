@@ -2,10 +2,9 @@ import io
 import os
 import re
 import json
-import sys
 import asyncio
 import concurrent.futures
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Tuple
 
 import docx
 import fitz  # PyMuPDF
@@ -20,9 +19,8 @@ from phoenix_cv.utils.secure_logging import secure_logger
 from phoenix_cv.utils.secure_validator import SecureValidator
 
 # Import de la protection pypdf DoS pour référence
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../packages/pdf-security-patch'))
 try:
-    from pypdf_dos_mitigation import safe_extract_pdf_text
+    from pdf_security_patch.pypdf_dos_mitigation import safe_extract_pdf_text
     PYPDF_DOS_PROTECTION_ENABLED = True
     secure_logger.log_security_event(
         "PYPDF_DOS_PROTECTION_AVAILABLE",

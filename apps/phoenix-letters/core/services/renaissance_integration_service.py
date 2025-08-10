@@ -8,15 +8,16 @@ Version: 1.0.0 - Renaissance Letters Integration
 
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from typing import Dict, List
 from dataclasses import dataclass
 
 # Import conditionnel du RenaissanceProtocolAnalyzer
 try:
-    import sys
-    import os
-    sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../packages/phoenix-shared-ai/services'))
-    from renaissance_protocol_analyzer import RenaissanceProtocolAnalyzer, UserEvent, RenaissanceAnalysis
+    from phoenix_shared_ai.services.renaissance_protocol_analyzer import (
+        RenaissanceProtocolAnalyzer,
+        UserEvent,
+        RenaissanceAnalysis,
+    )
 except ImportError:
     logging.warning("RenaissanceProtocolAnalyzer non disponible - mode dégradé activé")
     

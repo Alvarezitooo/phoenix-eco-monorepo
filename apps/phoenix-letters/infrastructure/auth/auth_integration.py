@@ -1,7 +1,6 @@
 """Module d'intégration progressive du système d'authentification avec l'architecture existante."""
 
 import logging
-from datetime import datetime
 from typing import Optional
 
 import streamlit as st
@@ -89,7 +88,6 @@ class AuthIntegration:
             return "anonymous"
         else:
             # Mode legacy : utilisation du user_id de session
-            from infrastructure.storage.session_manager import SecureSessionManager
 
             session_info = st.session_state.get("session_data")
             if session_info and hasattr(session_info, "user_id"):

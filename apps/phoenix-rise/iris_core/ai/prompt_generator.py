@@ -1,7 +1,6 @@
 import json
-from typing import Dict, Any
 from iris_core.event_processing.emotional_vector_state import EmotionalVectorState
-from iris_core.interaction.renaissance_protocol import RenaissanceProtocol, RenaissanceState
+from iris_core.interaction.renaissance_protocol import RenaissanceState
 
 class IrisPromptGenerator:
     def __init__(self):

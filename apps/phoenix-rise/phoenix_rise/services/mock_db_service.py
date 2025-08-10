@@ -9,8 +9,8 @@ permettant un développement rapide sans dépendance à une base de données ré
 import uuid
 from typing import Any, Dict, List
 
-from phoenix_shared_ui.adapters import session_manager
-from models.journal_entry import JournalEntry
+from phoenix_shared_ui.adapters.session_adapter import session_manager
+from phoenix_rise.models.journal_entry import JournalEntry
 
 
 class MockDBService:

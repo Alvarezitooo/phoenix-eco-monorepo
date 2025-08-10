@@ -1,0 +1,183 @@
+# 🛡️ SECURITY GUARDIAN - Kubernetes Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: security-guardian
+  namespace: phoenix-letters
+  labels:
+    app: phoenix-letters
+    component: security-guardian
+    version: v1.0.0
+spec:
+  replicas: 2  # Haute disponibilité
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: phoenix-letters
+      component: security-guardian
+  template:
+    metadata:
+      labels:
+        app: phoenix-letters
+        component: security-guardian
+        version: v1.0.0
+    spec:
+      containers:
+      - name: security-guardian
+        image: phoenix-letters/security-guardian:latest
+        imagePullPolicy: Always
+        
+        ports:
+        - containerPort: 8001
+          name: http-api
+        - containerPort: 11434
+          name: ollama
+        
+        # Ressources optimisées
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "2"
+        
+        # Variables d'environnement
+        env:
+        - name: LOG_LEVEL
+          value: "INFO"
+        - name: MAX_CONCURRENT_REQUESTS
+          value: "5"
+        - name: MODEL_TIMEOUT
+          value: "30"
+        
+        # Sondes de santé
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 2
+        
+        # Volumes pour modèles et logs
+        volumeMounts:
+        - name: models-storage
+          mountPath: /home/phoenix/.ollama
+        - name: logs-storage
+          mountPath: /app/logs
+      
+      # Volumes persistants
+      volumes:
+      - name: models-storage
+        persistentVolumeClaim:
+          claimName: security-models-pvc
+      - name: logs-storage
+        persistentVolumeClaim:
+          claimName: security-logs-pvc
+      
+      # Politique de redémarrage
+      restartPolicy: Always
+      
+      # Sécurité
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+---
+# 🌐 Service pour Security Guardian
+apiVersion: v1
+kind: Service
+metadata:
+  name: security-guardian-service
+  namespace: phoenix-letters
+  labels:
+    app: phoenix-letters
+    component: security-guardian
+spec:
+  type: ClusterIP
+  ports:
+  - name: http-api
+    port: 8001
+    targetPort: 8001
+    protocol: TCP
+  - name: ollama
+    port: 11434
+    targetPort: 11434
+    protocol: TCP
+  selector:
+    app: phoenix-letters
+    component: security-guardian
+
+---
+# 💾 Stockage persistant pour modèles
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: security-models-pvc
+  namespace: phoenix-letters
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: fast-ssd  # À adapter selon votre cluster
+
+---
+# 📝 Stockage pour logs
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: security-logs-pvc
+  namespace: phoenix-letters
+spec:
+  accessModes:
+    - ReadWriteOnceOrWrites
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: standard
+
+---
+# 📊 HorizontalPodAutoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: security-guardian-hpa
+  namespace: phoenix-letters
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: security-guardian
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80

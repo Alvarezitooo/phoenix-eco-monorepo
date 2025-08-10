@@ -9,7 +9,6 @@ Version: 1.0.0 - Ecosystem Integration
 import hashlib
 import json
 import os
-import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
@@ -254,8 +253,8 @@ class PhoenixEcosystemBridge:
             # UTM tracking pour analytics
             if utm_source:
                 params.append(f"utm_source={utm_source}")
-                params.append(f"utm_medium=ecosystem_redirect")
-                params.append(f"utm_campaign=phoenix_integration")
+                params.append("utm_medium=ecosystem_redirect")
+                params.append("utm_campaign=phoenix_integration")
 
             # Token de transfert de données
             if transfer_token:

@@ -1,0 +1,25 @@
+line-length = 100
+target-version = "py311"
+extend-exclude = [
+  "apps/phoenix-aube/**",
+  "apps/phoenix-cv/**",
+  "apps/phoenix-letters/**",
+  "apps/phoenix-rise/**",
+  "infrastructure/testing/**",
+  "packages/phoenix_shared_ui/**",
+  "packages/iris-agent/**",
+  "phoenix_event_store/**",
+  "phoenix_user_profile_service/**",
+  "tests/**",
+]
+
+[lint]
+select = ["E", "F"]
+ignore = ["E501"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "lf"
+

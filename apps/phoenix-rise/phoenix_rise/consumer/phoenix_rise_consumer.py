@@ -4,11 +4,10 @@ Consumer pour écouter les événements Phoenix Rise et mettre à jour les vues 
 """
 
 import os
-import json
 import logging
 import asyncio
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from supabase import create_client, Client
 
 logger = logging.getLogger(__name__)

@@ -1,0 +1,7 @@
+# Code owners for review routing
+apps/phoenix-aube/    @Alvarezitooo
+apps/phoenix-cv/      @Alvarezitooo
+apps/phoenix-letters/ @Alvarezitooo
+apps/phoenix-rise/    @Alvarezitooo
+packages/             @Alvarezitooo
+

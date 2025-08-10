@@ -9,7 +9,7 @@ Version: 1.0.0 - Railway Deploy Ready
 import os
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware

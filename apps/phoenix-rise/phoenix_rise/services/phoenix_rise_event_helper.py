@@ -5,7 +5,7 @@ Service pour publier les événements Phoenix Rise vers la data pipeline Event S
 
 import logging
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Optional
 from packages.phoenix_event_bridge.phoenix_event_bridge import PhoenixEventBridge
 
 logger = logging.getLogger(__name__)
