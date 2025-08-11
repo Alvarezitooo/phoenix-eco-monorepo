@@ -8,8 +8,11 @@ import sys
 import os
 import streamlit as st
 
-# Import Event Bridge pour data pipeline
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+# Ajouter le chemin vers la racine du monorepo pour Streamlit Cloud
+monorepo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+if monorepo_root not in sys.path:
+    sys.path.insert(0, monorepo_root)
+
 from phoenix_event_bridge import PhoenixEventBridge, PhoenixEventData, PhoenixEventType
 
 # Initialiser Event Bridge global
