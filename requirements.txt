@@ -69,7 +69,6 @@ openai>=1.99.0
 
 # 📧 Phoenix Letters - Authentication & Async
 asyncpg>=0.29.0
-asyncio-compat>=0.1.2
 typing-extensions>=4.0.0
 
 # 🛠️ Build dependencies for Streamlit Cloud
