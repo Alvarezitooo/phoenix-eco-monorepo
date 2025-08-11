@@ -16,10 +16,19 @@ sys.path.insert(0, current_dir)
 def main():
     """Point d'entrée Phoenix Aube depuis la racine monorepo"""
     try:
-        # Import et lancement de Phoenix Aube main
-        from phoenix_aube.ui.main import main as aube_main
-        aube_main()
-    except ImportError as e:
+        # Import et lancement du launcher principal streamlit_main
+        import importlib.util
+        
+        # Charger streamlit_main.py directement
+        streamlit_main_path = os.path.join(aube_dir, 'streamlit_main.py')
+        spec = importlib.util.spec_from_file_location("streamlit_main", streamlit_main_path)
+        streamlit_main = importlib.util.module_from_spec(spec)
+        sys.modules["streamlit_main"] = streamlit_main
+        spec.loader.exec_module(streamlit_main)
+        
+        # Lancer l'application principale
+        streamlit_main.main()
+    except Exception as e:
         import streamlit as st
         st.error(f"""
         ❌ **Erreur d'import Phoenix Aube**: {str(e)}
