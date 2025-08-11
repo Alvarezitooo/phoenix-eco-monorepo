@@ -28,6 +28,12 @@ from shared.interfaces.prompt_interface import PromptServiceInterface
 from shared.interfaces.validation_interface import ValidationServiceInterface
 from utils.monitoring import track_api_call
 
+# Import Event Bridge pour data pipeline
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../..'))
+from phoenix_event_bridge import PhoenixEventBridge, PhoenixEventData, PhoenixEventType
+
 logger = logging.getLogger(__name__)
 
 
@@ -53,6 +59,9 @@ class LetterService:
         self._ai_service = ai_service
         self._validation_service = validation_service
         self._prompt_service = prompt_service
+        
+        # Initialiser Event Bridge pour data pipeline
+        self._event_bridge = PhoenixEventBridge()
 
         # Services spécialisés refactorisés
         self._job_parser = JobOfferParser()
@@ -123,6 +132,45 @@ class LetterService:
 
             # Mettre à jour le compteur de manière thread-safe
             self._limit_manager.increment_generation_count(request.user_tier, user_id)
+
+            # 🔥 PUBLIER ÉVÉNEMENT DANS DATA PIPELINE
+            try:
+                event_data = PhoenixEventData(
+                    event_type=PhoenixEventType.LETTER_GENERATED,
+                    user_id=user_id,
+                    app_source="phoenix-letters",
+                    payload={
+                        "job_title": request.job_title,
+                        "company_name": request.company_name,
+                        "user_tier": request.user_tier.value,
+                        "is_career_change": request.is_career_change,
+                        "letter_length": len(content),
+                        "generation_time": datetime.now().isoformat()
+                    },
+                    metadata={
+                        "prompt_tokens": len(prompt),
+                        "response_tokens": len(content),
+                        "tone": request.tone.value if request.tone else "default"
+                    }
+                )
+                # Publier l'événement (async dans un thread séparé pour ne pas bloquer)
+                import asyncio
+                try:
+                    loop = asyncio.get_event_loop()
+                    if loop.is_running():
+                        # Si on est déjà dans un event loop, on schedule la tâche
+                        asyncio.create_task(self._event_bridge.publish_event(event_data))
+                    else:
+                        # Sinon on run dans le loop courant
+                        asyncio.run(self._event_bridge.publish_event(event_data))
+                except Exception:
+                    # Fallback: run dans un nouveau thread
+                    asyncio.run(self._event_bridge.publish_event(event_data))
+                    
+                logger.info(f"✅ Event LETTER_GENERATED published for user {user_id}")
+            except Exception as e:
+                # Event publishing ne doit pas faire crasher la génération
+                logger.warning(f"⚠️ Failed to publish event: {e}")
 
             logger.info(f"Letter generated successfully for user {user_id}")
             return letter
