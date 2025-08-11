@@ -46,14 +46,29 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Import du style global du Design System (safe mode)
-try:
-    import os
-    style_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "packages", "phoenix-shared-ui", "phoenix_shared_ui", "style.css")
-    with open(style_path) as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-except FileNotFoundError:
-    logger.warning("Phoenix Shared UI style non trouvé - utilisation styles par défaut")
+# DISABLED: Phoenix Shared UI style supprimé - utilisation styles intégrés  
+# Style CSS intégré Phoenix Letters
+st.markdown("""
+<style>
+/* Phoenix Letters - Style intégré */
+.main-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.feature-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+    border-left: 4px solid #667eea;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # --- Fonctions de Rendu des Pages ---
 

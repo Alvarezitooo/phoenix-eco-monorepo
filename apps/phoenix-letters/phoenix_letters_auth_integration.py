@@ -11,13 +11,14 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 
-from phoenix_shared_auth import (
-    JWTManager,
-    PhoenixApp,
-    PhoenixAuthService,
-    PhoenixStreamlitAuth,
-    get_phoenix_db_connection,
-    get_phoenix_settings,
+# DISABLED: Package phoenix_shared_auth supprimé
+# from phoenix_shared_auth import (
+#     JWTManager,
+#     PhoenixApp,
+#     PhoenixAuthService,
+#     PhoenixStreamlitAuth,
+#     get_phoenix_db_connection,
+#     get_phoenix_settings,
 )
 
 from config.settings import Settings
