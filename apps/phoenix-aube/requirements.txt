@@ -1,23 +1,42 @@
-# Streamlit dependencies for UI
+# Core Streamlit & UI
 streamlit>=1.28.0
 plotly>=5.17.0
-pandas>=2.0.0
+pandas>=2.1.0
+numpy>=1.24.0
 
-# FastAPI dependencies for API
-fastapi==0.116.1
-uvicorn[standard]==0.24.0
-pydantic==2.11.7
-pydantic-settings==2.5.2
-aiohttp==3.12.15
-httpx==0.28.1
-pyjwt[cryptography]>=2.8.0
-structlog==25.4.0
-sentry-sdk[fastapi]==2.34.1
-python-dotenv==1.0.1
-pyyaml==6.0.2
+# AI & ML
+google-generativeai>=0.3.2
+openai>=1.0.0
 
-# External services
-supabase==2.18.0
-redis==6.4.0
-openai==1.99.6
-google-generativeai==0.8.5
+# Database & Storage (Event Bridge)
+supabase>=2.0.0
+redis>=5.0.0
+
+# Data & Validation
+pydantic>=2.5.0
+pydantic-settings>=2.0.0
+
+# HTTP & Async
+httpx>=0.25.0
+aiohttp>=3.9.0
+requests>=2.31.0
+
+# Security & Crypto
+cryptography>=41.0.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+
+# Monitoring & Logging
+structlog>=23.2.0
+sentry-sdk[fastapi]>=1.38.0
+
+# Configuration
+python-dotenv>=1.0.0
+pyyaml>=6.0
+
+# Build dependencies for Streamlit Cloud
+wheel>=0.40.0
+setuptools>=68.0.0
+
+# Additional runtime dependencies
+typing-extensions>=4.0.0

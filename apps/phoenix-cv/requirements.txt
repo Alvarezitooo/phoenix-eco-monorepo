@@ -37,7 +37,17 @@ python-dotenv>=1.0.0
 # Paiement
 stripe>=8.0.0
 
-# Intégration Phoenix Auth
+# Intégration Phoenix Auth & Event Bridge
 requests>=2.31.0
 phoenix-shared-auth>=1.0.0
+supabase>=2.0.0
+
+# Additional Event Bridge dependencies
+aiohttp>=3.8.0
+asyncio-compat>=0.1.2
+typing-extensions>=4.0.0
+
+# Build dependencies for Streamlit Cloud
+wheel>=0.40.0
+setuptools>=68.0.0
 
