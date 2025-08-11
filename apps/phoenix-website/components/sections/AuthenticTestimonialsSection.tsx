@@ -1,6 +1,7 @@
 import React from 'react';
+import { RenderHtml } from '../../components/RenderHtml';
 
-const AuthenticTestimonialsSection: React.FC = () => {
+const AuthenticTestimonialsSection: React.FC<{ customHtml?: string }> = ({ customHtml }) => {
   return (
     <section className="real-testimonials py-16 px-4 bg-gray-50">
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800">
@@ -28,6 +29,11 @@ const AuthenticTestimonialsSection: React.FC = () => {
           Donner mon Feedback
         </a>
       </div>
+      {customHtml ? (
+        <div className="mt-8 max-w-3xl mx-auto">
+          <RenderHtml html={customHtml} />
+        </div>
+      ) : null}
     </section>
   );
 };

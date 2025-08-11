@@ -192,6 +192,32 @@ IRIS_SECURITY_AUDIT_REPORT.md
 **/security_scan_results/
 
 # ===============================================================================
+# AGENTS IA - SÉCURITÉ CRITIQUE
+# ===============================================================================
+# Modèles et poids IA
+agent_ia/models/
+agent_ia/weights/
+agent_ia/checkpoints/
+
+# Données sensibles agents
+agent_ia/data/
+agent_ia/logs/
+agent_ia/temp/
+
+# Configurations de production
+agent_ia/config/production/
+agent_ia/secrets/
+
+# Historiques et caches
+agent_ia/.cache/
+agent_ia/cache/
+agent_ia/history/
+
+# Fichiers de debug agents  
+agent_ia/debug_*.log
+agent_ia/agent_*.log
+
+# ===============================================================================
 # STRIPE & PAIEMENTS
 # ===============================================================================
 stripe_events.log
