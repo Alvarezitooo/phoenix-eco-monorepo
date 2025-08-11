@@ -44,6 +44,16 @@ def main():
     # Navigation principale
     with st.sidebar:
         st.title("🌅 Navigation")
+        # Choix du mode d'interface (parcours guidé vs mode classique)
+        mode = st.selectbox(
+            "Mode d'interface",
+            ["Parcours Guidé (Recommandé)", "Mode Classique"],
+            index=0,
+        )
+        if mode == "Parcours Guidé (Recommandé)":
+            from phoenix_aube.ui.guided_flow import main as guided_main
+            guided_main()
+            return
         
         page = st.radio(
             "Choisissez votre parcours :",
