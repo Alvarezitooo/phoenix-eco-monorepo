@@ -126,7 +126,7 @@ async def get_enriched_job(job_title: str) -> Dict[str, Any]:
         async with DataAggregationService() as svc:
             return await svc.get_enriched_job_data(job_title)
     except Exception as e:
-        logger.error(f"Erreur enriched-job: {e}")
+        logger.error("Erreur enriched-job")
         raise HTTPException(status_code=500, detail="Enriched job retrieval failed")
 
 
@@ -137,7 +137,7 @@ async def get_market_analysis(sector: str) -> Dict[str, Any]:
         async with DataAggregationService() as svc:
             return await svc.get_comprehensive_market_analysis(sector)
     except Exception as e:
-        logger.error(f"Erreur market-analysis: {e}")
+        logger.error("Erreur market-analysis")
         raise HTTPException(status_code=500, detail="Market analysis failed")
 
 @app.post("/api/v1/analyze/anxiety-score")

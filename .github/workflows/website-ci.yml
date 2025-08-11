@@ -8,6 +8,9 @@ on:
     paths:
       - 'apps/phoenix-website/**'
 
+permissions:
+  contents: read
+
 jobs:
   web:
     runs-on: ubuntu-latest

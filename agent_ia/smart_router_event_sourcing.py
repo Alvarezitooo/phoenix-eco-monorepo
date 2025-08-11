@@ -424,7 +424,7 @@ async def health_check():
     except Exception as e:
         return {
             "status": "unhealthy",
-            "error": str(e),
+            "error": "System health check failed",
             "timestamp": datetime.now().isoformat()
         }
 

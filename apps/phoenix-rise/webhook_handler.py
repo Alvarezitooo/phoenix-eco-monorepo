@@ -24,8 +24,8 @@ def stripe_webhook():
     try:
         event = stripe_service.handle_webhook(payload, sig_header)
     except PaymentError as e:
-        logger.error(f"Erreur de traitement du webhook: {e}")
-        return jsonify({'error': str(e)}), 400
+        logger.error("Erreur de traitement du webhook")
+        return jsonify({'error': 'Payment processing error'}), 400
     except Exception as e:
         logger.error(f"Erreur inattendue lors de la vérification du webhook: {e}")
         return jsonify({'error': 'Erreur interne du serveur'}), 500
