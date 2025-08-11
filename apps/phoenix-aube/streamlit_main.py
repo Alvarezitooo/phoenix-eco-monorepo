@@ -8,6 +8,13 @@ import sys
 import os
 import streamlit as st
 
+# Import Event Bridge pour data pipeline
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from phoenix_event_bridge import PhoenixEventBridge, PhoenixEventData, PhoenixEventType
+
+# Initialiser Event Bridge global
+event_bridge = PhoenixEventBridge()
+
 # Ajouter le répertoire au path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -212,6 +219,43 @@ def render_ia_validation():
             st.metric("Timeline", "5-10 ans")
         
         st.success(f"💡 Excellente nouvelle ! Le métier de **{job_to_analyze}** évolue positivement avec l'IA.")
+        
+        # 🔥 PUBLIER ÉVÉNEMENT DANS DATA PIPELINE
+        try:
+            import asyncio
+            from datetime import datetime
+            
+            # Obtenir user_id depuis session state ou générer un ID temporaire
+            user_id = st.session_state.get('user_id', f"anonymous_{hash(st.session_state.get('session_id', 'default'))}")
+            
+            event_data = PhoenixEventData(
+                event_type=PhoenixEventType.JOB_OFFER_ANALYZED,
+                user_id=user_id,
+                app_source="phoenix-aube",
+                payload={
+                    "job_title": job_to_analyze,
+                    "resistance_score": resistance_score,
+                    "evolution_type": "enhanced",
+                    "timeline": "5-10 ans",
+                    "analysis_time": datetime.now().isoformat(),
+                    "recommendation": "positive"
+                },
+                metadata={
+                    "analysis_method": "mock_validation",
+                    "confidence": resistance_score,
+                    "source_app": "phoenix-aube-streamlit"
+                }
+            )
+            
+            # Publier l'événement en mode non-bloquant
+            try:
+                asyncio.run(event_bridge.publish_event(event_data))
+                st.info("✅ Analyse sauvegardée dans votre profil Phoenix")
+            except Exception:
+                pass  # Mode dégradé silencieux
+                
+        except Exception:
+            pass  # Event publishing ne doit pas faire crasher l'interface
 
 def render_ecosystem_links():
     """Liens vers l'écosystème Phoenix"""
