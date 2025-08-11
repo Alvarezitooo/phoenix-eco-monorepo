@@ -12,6 +12,8 @@ google-generativeai>=0.3.2
 bleach>=6.0.0
 marshmallow>=3.20.0
 cryptography>=41.0.0
+bcrypt>=4.0.0
+passlib[bcrypt]>=1.7.4
 
 # 📄 Traitement documents & PDF
 PyPDF2>=3.0.0
@@ -25,6 +27,8 @@ Pillow>=10.3.0
 # 📡 HTTP & Multipart
 requests>=2.31.0
 python-multipart>=0.0.6
+flask>=2.3.0
+tenacity>=8.0.0
 
 # ✅ Validation de données
 pydantic>=2.5.0
@@ -62,3 +66,12 @@ sentry-sdk[fastapi]>=2.34.0
 pyyaml>=6.0.0
 redis>=6.4.0
 openai>=1.99.0
+
+# 📧 Phoenix Letters - Authentication & Async
+asyncpg>=0.29.0
+asyncio-compat>=0.1.2
+typing-extensions>=4.0.0
+
+# 🛠️ Build dependencies for Streamlit Cloud
+wheel>=0.40.0
+setuptools>=68.0.0
