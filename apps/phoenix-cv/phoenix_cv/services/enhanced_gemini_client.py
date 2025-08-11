@@ -13,8 +13,14 @@ import time
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from datetime import datetime
 from typing import Any, Dict, List
+import asyncio
+import sys
 
 import google.generativeai as genai
+
+# Import Event Bridge pour data pipeline
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../..'))
+from phoenix_event_bridge import PhoenixEventBridge, PhoenixEventData, PhoenixEventType
 
 # Imports conditionnels pour éviter les erreurs de dépendances
 try:
@@ -68,6 +74,9 @@ class EnhancedGeminiClient:
         self.executor = ThreadPoolExecutor(max_workers=3)
         self._request_history = []
         self._lock = threading.Lock()
+
+        # Event Bridge pour data pipeline Phoenix
+        self.event_bridge = PhoenixEventBridge()
 
         # Compteurs Green AI
         self._green_metrics = {
@@ -144,6 +153,41 @@ class EnhancedGeminiClient:
             green_impact = self._calculate_green_impact(
                 len(master_prompt), len(cv_content)
             )
+
+            # 🔥 PUBLIER ÉVÉNEMENT CV_GENERATED DANS DATA PIPELINE
+            try:
+                import asyncio
+                user_id = clean_data.get('user_id', f"anonymous_{hash(str(clean_data))}")
+                
+                event_data = PhoenixEventData(
+                    event_type=PhoenixEventType.CV_GENERATED,
+                    user_id=user_id,
+                    app_source="phoenix-cv",
+                    payload={
+                        "target_job": target_job,
+                        "user_tier": user_tier,
+                        "optimization_score": self._calculate_cv_quality_score(optimized_cv),
+                        "ats_compatibility": 95 if user_tier == "premium" else 85,
+                        "cv_sections": len(optimized_cv.split('\n\n')),
+                        "generation_method": "enhanced_gemini",
+                        "prompt_template": user_tier
+                    },
+                    metadata={
+                        "green_impact": green_impact,
+                        "generation_time": datetime.now().isoformat(),
+                        "cv_length_chars": len(optimized_cv),
+                        "source_client": "enhanced_gemini_v2"
+                    }
+                )
+                
+                # Publication en mode non-bloquant
+                try:
+                    asyncio.run(self.event_bridge.publish_event(event_data))
+                except Exception:
+                    pass  # Mode dégradé silencieux
+                    
+            except Exception:
+                pass  # Event publishing ne doit pas faire crasher la génération
 
             return {
                 "cv_content": optimized_cv,

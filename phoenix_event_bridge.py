@@ -137,11 +137,23 @@ class PhoenixEventBridge:
                 }
             }
             
-            # Insérer dans Supabase
-            response = self.supabase.table('events').insert(supabase_event).execute()
+            # Insérer dans Supabase - Utilise table existante user_activity_metrics
+            supabase_activity = {
+                "user_id": event_data.user_id,
+                "app_source": event_data.app_source,
+                "action_type": event_data.event_type.value,
+                "metadata": {
+                    **event_data.payload,
+                    **event_data.metadata,
+                    "bridge_version": "v1.0",
+                    "published_at": datetime.now().isoformat()
+                }
+            }
+            
+            response = self.supabase.table('user_activity_metrics').insert(supabase_activity).execute()
             
             if response.data:
-                event_id = response.data[0]['event_id']
+                event_id = response.data[0]['id']
                 logger.info(f"📤 Événement publié: {event_data.event_type.value} - {event_id}")
                 return event_id
             else:
@@ -167,14 +179,14 @@ class PhoenixEventBridge:
             List[Dict]: Liste des événements
         """
         try:
-            query = self.supabase.table('events').select('*').eq('stream_id', user_id)
+            query = self.supabase.table('user_activity_metrics').select('*').eq('user_id', user_id)
             
             if app_source:
                 query = query.eq('app_source', app_source)
             
             if event_types:
                 event_type_values = [et.value for et in event_types]
-                query = query.in_('event_type', event_type_values)
+                query = query.in_('action_type', event_type_values)
             
             response = query.order('timestamp', desc=True).limit(limit).execute()
             

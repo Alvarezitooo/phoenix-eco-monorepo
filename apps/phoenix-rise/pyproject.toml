@@ -31,10 +31,11 @@ cryptography = ">=3.4.8"  # Utilisé pour chiffrement sessions Premium
 # matplotlib = "*"
 # Dépendance locale gérée par l'orchestrateur racine
 phoenix_event_bridge = { path = "../../packages/phoenix_event_bridge", develop = true }
-phoenix_shared_ui = { path = "../../packages/phoenix_shared_ui", develop = true }
-phoenix_shared_auth = { path = "../../packages/phoenix-shared-auth", develop = true }
-phoenix_shared_ai = { path = "../../packages/phoenix-shared-ai", develop = true }
-phoenix_shared_db = { path = "../../packages/phoenix-shared-db", develop = true }
+# DISABLED: Packages locaux cassés - Migration vers architecture monorepo autonome
+# phoenix_shared_ui = { path = "../../packages/phoenix_shared_ui", develop = true }
+# phoenix_shared_auth = { path = "../../packages/phoenix-shared-auth", develop = true }
+# phoenix_shared_ai = { path = "../../packages/phoenix-shared-ai", develop = true }
+# phoenix_shared_db = { path = "../../packages/phoenix-shared-db", develop = true }
 
 [build-system]
 requires = ["poetry-core"]
