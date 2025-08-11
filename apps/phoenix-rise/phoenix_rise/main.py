@@ -14,9 +14,12 @@ st.set_page_config(
 )
 
 # Imports des services et UI
-from services.dojo_api_service import DojoApiService, KaizenEntry, ZazenSession
-from services.ai_coach_service import AICoachService
-from services.mock_db_service import MockDBService
+from .services.dojo_api_service import DojoApiService, KaizenEntry, ZazenSession
+from .services.ai_coach_service import AICoachService
+from .services.mock_db_service import MockDBService
+
+# Import iris_core depuis la racine phoenix-rise
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from iris_core.interaction.renaissance_protocol import RenaissanceProtocol, RenaissanceState
 
 # Configuration de l'API Gemini (optionnelle)
