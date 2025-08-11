@@ -41,20 +41,29 @@ def main():
     </div>
     """, unsafe_allow_html=True)
     
-    # Navigation principale
+    # Sélecteur de mode au-dessus du contenu (hors sidebar, discret)
+    if 'ui_mode' not in st.session_state:
+        st.session_state['ui_mode'] = 'guided'
+
+    with st.expander("Options avancées", expanded=False):
+        if st.session_state['ui_mode'] == 'guided':
+            if st.button("Basculer en mode classique"):
+                st.session_state['ui_mode'] = 'classic'
+                st.rerun()
+        else:
+            if st.button("Revenir au parcours guidé"):
+                st.session_state['ui_mode'] = 'guided'
+                st.rerun()
+
+    # Mode guidé par défaut (pas de sidebar navigation)
+    if st.session_state['ui_mode'] == 'guided':
+        from phoenix_aube.ui.guided_flow import main as guided_main
+        guided_main()
+        return
+
+    # Navigation principale (mode classique uniquement)
     with st.sidebar:
         st.title("🌅 Navigation")
-        # Choix du mode d'interface (parcours guidé vs mode classique)
-        mode = st.selectbox(
-            "Mode d'interface",
-            ["Parcours Guidé (Recommandé)", "Mode Classique"],
-            index=0,
-        )
-        if mode == "Parcours Guidé (Recommandé)":
-            from phoenix_aube.ui.guided_flow import main as guided_main
-            guided_main()
-            return
-        
         page = st.radio(
             "Choisissez votre parcours :",
             [
@@ -65,7 +74,6 @@ def main():
                 "🔗 Écosystème Phoenix"
             ]
         )
-        
         st.markdown("---")
         st.info("""
         **Phoenix Aube** résout la "double anxiété" :
