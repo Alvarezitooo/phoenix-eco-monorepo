@@ -9,8 +9,27 @@ permettant un développement rapide sans dépendance à une base de données ré
 import uuid
 from typing import Any, Dict, List
 
-from phoenix_shared_ui.adapters.session_adapter import session_manager
-from phoenix_rise.models.journal_entry import JournalEntry
+import streamlit as st
+from ..models.journal_entry import JournalEntry
+
+
+class SessionManager:
+    """Mock session manager compatible avec l'interface originale"""
+    
+    @staticmethod
+    def get(key, default=None):
+        return st.session_state.get(key, default)
+    
+    @staticmethod
+    def set(key, value):
+        st.session_state[key] = value
+    
+    @staticmethod
+    def contains(key):
+        return key in st.session_state
+
+
+session_manager = SessionManager()
 
 
 class MockDBService:

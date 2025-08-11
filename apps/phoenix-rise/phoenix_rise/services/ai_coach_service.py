@@ -13,7 +13,7 @@ import os
 import sys
 
 import google.generativeai as genai
-from models.journal_entry import JournalEntry
+from ..models.journal_entry import JournalEntry
 
 # Import Event Bridge pour lire les événements cross-app
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../..'))
@@ -191,7 +191,7 @@ L'utilisateur Premium suivant, {user_profile.get('full_name', user_profile.get('
                 phoenix_context = {"source": "fallback"}
 
         if user_tier == "premium":
-            prompt = self._get_magistral_prompt(user_profile, journal_entries, phoenix_context)
+            prompt = self._get_magistral_prompt(user_profile, journal_entries)
         else:
             prompt = self._get_basic_advanced_prompt(user_profile, journal_entries, phoenix_context)
 
