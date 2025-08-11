@@ -1,3 +1,9 @@
+# Streamlit dependencies for UI
+streamlit>=1.28.0
+plotly>=5.17.0
+pandas>=2.0.0
+
+# FastAPI dependencies for API
 fastapi==0.116.1
 uvicorn[standard]==0.24.0
 pydantic==2.11.7
@@ -9,6 +15,8 @@ structlog==25.4.0
 sentry-sdk[fastapi]==2.34.1
 python-dotenv==1.0.1
 pyyaml==6.0.2
+
+# External services
 supabase==2.18.0
 redis==6.4.0
 openai==1.99.6
