@@ -367,8 +367,8 @@ async def get_system_alerts():
         }
 
     except Exception as e:
-        logger.error(f"❌ Alerts retrieval failed: {e}")
-        return {"alerts": [], "alert_count": 0, "error": str(e)}
+        logger.error("❌ Alerts retrieval failed")
+        return {"alerts": [], "alert_count": 0, "error": "Service temporarily unavailable"}
 
 
 # ========================================

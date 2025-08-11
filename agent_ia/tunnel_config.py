@@ -84,9 +84,12 @@ class PhoenixAgentsTunnel:
                 try:
                     line = self.tunnel_process.stdout.readline()
                     if "https://" in line and "trycloudflare.com" in line:
-                        # Extraire l'URL
-                        self.tunnel_url = line.strip().split()[-1]
-                        if self.tunnel_url.startswith("https://"):
+                        # Extraire l'URL de manière sécurisée
+                        import re
+                        url_pattern = r'https://[a-zA-Z0-9\-]+\.trycloudflare\.com'
+                        match = re.search(url_pattern, line)
+                        if match:
+                            self.tunnel_url = match.group(0)
                             logger.info(f"✅ Tunnel active: {self.tunnel_url}")
                             return self.tunnel_url
                 except:
