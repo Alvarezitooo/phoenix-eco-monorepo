@@ -16,33 +16,32 @@ sys.path.insert(0, current_dir)
 def main():
     """Point d'entrée Phoenix Aube depuis la racine monorepo"""
     try:
-        # Import et lancement du launcher principal streamlit_main
-        import importlib.util
+        # Import direct - plus simple et compatible Streamlit Cloud
+        sys.path.insert(0, os.path.join(aube_dir))
         
-        # Charger streamlit_main.py directement
-        streamlit_main_path = os.path.join(aube_dir, 'streamlit_main.py')
-        spec = importlib.util.spec_from_file_location("streamlit_main", streamlit_main_path)
-        streamlit_main = importlib.util.module_from_spec(spec)
-        sys.modules["streamlit_main"] = streamlit_main
-        spec.loader.exec_module(streamlit_main)
+        # Import direct du module principal
+        from streamlit_main import main as aube_main
+        aube_main()
         
-        # Lancer l'application principale
-        streamlit_main.main()
-    except Exception as e:
+    except ImportError as e:
         import streamlit as st
         st.error(f"""
         ❌ **Erreur d'import Phoenix Aube**: {str(e)}
-        
-        **Solutions possibles:**
-        1. Vérifiez que tous les packages sont installés
-        2. Vérifiez la structure des dossiers
-        3. Contactez le support Phoenix
         
         **Debug info:**
         - Répertoire actuel: {current_dir}
         - Répertoire Phoenix Aube: {aube_dir}
         - Python path: {sys.path[:3]}
+        - Fichier streamlit_main.py: {os.path.exists(os.path.join(aube_dir, 'streamlit_main.py'))}
+        
+        **Solutions:**
+        1. Utilisez apps/phoenix-aube/streamlit_app.py comme main file
+        2. Contactez le support Phoenix
         """)
+        raise e
+    except Exception as e:
+        import streamlit as st
+        st.error(f"❌ **Erreur Phoenix Aube**: {str(e)}")
         raise e
 
 if __name__ == "__main__":
