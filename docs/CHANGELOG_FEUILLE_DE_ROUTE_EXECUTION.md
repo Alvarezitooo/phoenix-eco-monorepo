@@ -66,6 +66,15 @@ Nouveaux fichiers
 
 ### 5) Nettoyage site vitrine et déplacement Dojo/Kaizen (Phoenix Rise)
 
+### 6) Paramétrage domaine via variable d’environnement
+
+Changements
+- `apps/phoenix-website/app/layout.tsx`: `metadataBase` et `openGraph.url` pilotés par `NEXT_PUBLIC_SITE_URL` (fallback Netlify).
+- `apps/phoenix-website/app/manifest.ts`: support de `NEXT_PUBLIC_SITE_URL` pour cohérence (start_url reste '/').
+
+Action requise
+- Définir `NEXT_PUBLIC_SITE_URL` dans l’hébergeur (Vercel/Netlify): ex. `https://phoenix-ecosystem.com`.
+
 Changements
 - `apps/phoenix-website/app/page.tsx`: remplacement de l’affichage DojoMental par sections marketing (`HeroSection`, `EcosystemSection`, `CTASection`).
 - Les composants Dojo/Kaizen/Zazen restent dans le repo mais seront utilisés par Phoenix Rise; la home du site vitrine est désormais purement marketing.

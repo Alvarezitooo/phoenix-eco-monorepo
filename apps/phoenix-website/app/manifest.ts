@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://phoenixcreator.netlify.app';
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Phoenix Ecosystem - Outils IA Reconversion',

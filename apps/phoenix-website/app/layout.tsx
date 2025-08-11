@@ -6,8 +6,10 @@ import Footer from '@/components/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://phoenixcreator.netlify.app';
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://phoenix-ecosystem.com'),
+  metadataBase: new URL(siteUrl),
   title: 'Phoenix Ecosystem - Outils IA pour votre reconversion professionnelle',
   description:
     "Transformez votre parcours atypique en votre plus grande force avec Phoenix, l'écosystème d'applications IA conçu par un reconverti, pour les reconvertis.",
@@ -38,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'fr_FR',
-    url: 'https://phoenix-ecosystem.com',
+    url: siteUrl,
     title: 'Phoenix Ecosystem - Outils IA pour votre reconversion professionnelle',
     description:
       "Transformez votre parcours atypique en votre plus grande force avec Phoenix, l'écosystème d'applications IA conçu par un reconverti, pour les reconvertis.",
