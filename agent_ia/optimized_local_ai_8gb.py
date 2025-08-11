@@ -33,25 +33,25 @@ class ModelConfig:
     speed_score: int
 
 
-# MODÈLES SÉLECTIONNÉS SPÉCIALEMENT POUR 8GB
+# MODÈLES SÉLECTIONNÉS SPÉCIALEMENT POUR 8GB - VERSION OPTIMISÉE RAM
 OPTIMIZED_MODELS = {
     "data_flywheel": ModelConfig(
-        name="Qwen2.5 3B Instruct",
-        ollama_name="qwen2.5:3b",
-        ram_usage_gb=2.1,
+        name="Qwen2.5 1.5B Instruct",
+        ollama_name="qwen2.5:1.5b",
+        ram_usage_gb=1.2,
         specialization="Analytics, Data insights, Business intelligence",
-        performance_score=9,
+        performance_score=8,
         french_quality=8,
         speed_score=9,
     ),
     "security_guardian": ModelConfig(
-        name="Phi-3.5 Mini",
-        ollama_name="phi3.5:3.8b",
-        ram_usage_gb=2.5,
+        name="Gemma2 2B",
+        ollama_name="gemma2:2b",
+        ram_usage_gb=1.6,
         specialization="Sécurité, RGPD, Analyse technique",
         performance_score=8,
-        french_quality=7,
-        speed_score=8,
+        french_quality=9,
+        speed_score=9,
     ),
 }
 
