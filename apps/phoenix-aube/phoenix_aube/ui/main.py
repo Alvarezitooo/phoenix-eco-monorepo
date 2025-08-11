@@ -101,11 +101,13 @@ def main():
     # Choix du mode d'interface
     interface_choice = st.sidebar.selectbox(
         "Mode d'interface:",
-        ["Trust by Design (Recommandé)", "Mode Basique"]
+        ["Parcours Guidé (Recommandé)", "Trust by Design", "Mode Basique"]
     )
     
-    if interface_choice == "Trust by Design (Recommandé)":
-        # Utiliser la nouvelle interface Trust by Design
+    if interface_choice == "Parcours Guidé (Recommandé)":
+        from .guided_flow import main as guided_main
+        guided_main()
+    elif interface_choice == "Trust by Design":
         from .trust_by_design_app import main as trust_main
         trust_main()
     else:

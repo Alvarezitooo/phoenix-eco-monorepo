@@ -112,6 +112,64 @@ def render_kaizen_grid_component():
         height: 16px;
         border-radius: 3px;
     }
+    
+    /* Animations Kaizen avancées */
+    @keyframes rippleEffect {
+        0% {
+            transform: scale(0);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes successPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(102, 126, 234, 0.4); }
+        100% { transform: scale(1); }
+    }
+    
+    .kaizen-stats {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 1rem;
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+        animation: slideInUp 0.5s ease-out;
+    }
+    
+    .stat-item {
+        flex: 1;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #667eea;
+        display: block;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    @keyframes slideInUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
     </style>
     """
     
@@ -130,6 +188,26 @@ def render_kaizen_grid_component():
             <div class="legend-item">
                 <div class="legend-box" style="background: #e9ecef; border: 2px dashed #adb5bd;"></div>
                 <span>Jour sans action</span>
+            </div>
+        </div>
+        
+        <!-- Stats temps réel -->
+        <div id="kaizen-stats" class="kaizen-stats">
+            <div class="stat-item">
+                <span id="total-actions" class="stat-number">0</span>
+                <span class="stat-label">Actions</span>
+            </div>
+            <div class="stat-item">
+                <span id="streak-days" class="stat-number">0</span>
+                <span class="stat-label">Série</span>
+            </div>
+            <div class="stat-item">
+                <span id="completion-rate" class="stat-number">0%</span>
+                <span class="stat-label">Taux</span>
+            </div>
+            <div class="stat-item">
+                <span id="momentum-score" class="stat-number">0</span>
+                <span class="stat-label">Momentum</span>
             </div>
         </div>
     </div>
@@ -171,11 +249,42 @@ def render_kaizen_grid_component():
                 }
             });
             
-            // Effet click pour toggle
+            // Effet click pour toggle avec animations et feedback
             cell.addEventListener('click', function(e) {
                 const isDone = e.target.classList.contains('done');
-                e.target.className = `kaizen-cell ${isDone ? 'missed' : 'done'}`;
-                e.target.title = e.target.title.replace(isDone ? '✅' : 'Aucune action', isDone ? 'Aucune action' : '✅');
+                
+                // Animation de feedback immédiat
+                e.target.style.transform = 'scale(1.3)';
+                e.target.style.transition = 'transform 0.1s ease';
+                
+                setTimeout(() => {
+                    e.target.className = `kaizen-cell ${isDone ? 'missed' : 'done'}`;
+                    e.target.title = e.target.title.replace(isDone ? '✅' : 'Aucune action', isDone ? 'Aucune action' : '✅');
+                    e.target.style.transform = 'scale(1.0)';
+                    
+                    // Effet de propagation (ripple effect)
+                    if (!isDone) {
+                        const ripple = document.createElement('div');
+                        ripple.style.cssText = `
+                            position: absolute;
+                            border-radius: 50%;
+                            background: rgba(102, 126, 234, 0.3);
+                            width: 40px;
+                            height: 40px;
+                            left: ${e.offsetX - 20}px;
+                            top: ${e.offsetY - 20}px;
+                            animation: rippleEffect 0.6s ease-out;
+                            pointer-events: none;
+                        `;
+                        e.target.style.position = 'relative';
+                        e.target.appendChild(ripple);
+                        
+                        setTimeout(() => ripple.remove(), 600);
+                    }
+                    
+                    // Mise à jour stats en temps réel
+                    updateKaizenStats();
+                }, 100);
             });
             
             grid.appendChild(cell);
@@ -185,6 +294,72 @@ def render_kaizen_grid_component():
                 grid.appendChild(document.createElement('br'));
             }
         }
+        
+        // 🧠 INTELLIGENCE KAIZEN - Calcul stats avancées
+        function updateKaizenStats() {
+            const cells = document.querySelectorAll('.kaizen-cell');
+            const doneCells = document.querySelectorAll('.kaizen-cell.done');
+            const totalActions = doneCells.length;
+            const totalDays = cells.length;
+            
+            // Calcul série actuelle (streak)
+            let currentStreak = 0;
+            for (let i = cells.length - 1; i >= 0; i--) {
+                if (cells[i].classList.contains('done')) {
+                    currentStreak++;
+                } else {
+                    break;
+                }
+            }
+            
+            // Taux de completion
+            const completionRate = Math.round((totalActions / totalDays) * 100);
+            
+            // Score momentum (actions récentes pondérées)
+            let momentumScore = 0;
+            for (let i = 0; i < Math.min(7, cells.length); i++) {
+                const cell = cells[cells.length - 1 - i];
+                if (cell.classList.contains('done')) {
+                    momentumScore += (7 - i) * 2; // Pondération décroissante
+                }
+            }
+            momentumScore = Math.min(100, momentumScore);
+            
+            // Animation de mise à jour des stats
+            animateStatUpdate('total-actions', totalActions);
+            animateStatUpdate('streak-days', currentStreak);
+            animateStatUpdate('completion-rate', completionRate + '%');
+            animateStatUpdate('momentum-score', momentumScore);
+            
+            // Feedback visuel selon performance
+            const statsContainer = document.getElementById('kaizen-stats');
+            if (currentStreak >= 7) {
+                statsContainer.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
+                statsContainer.style.animation = 'successPulse 1s ease-out';
+            } else if (currentStreak >= 3) {
+                statsContainer.style.background = 'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)';
+            } else {
+                statsContainer.style.background = 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)';
+            }
+        }
+        
+        function animateStatUpdate(elementId, newValue) {
+            const element = document.getElementById(elementId);
+            const currentValue = element.textContent;
+            
+            if (currentValue !== newValue.toString()) {
+                element.style.transform = 'scale(1.2)';
+                element.style.transition = 'transform 0.2s ease';
+                
+                setTimeout(() => {
+                    element.textContent = newValue;
+                    element.style.transform = 'scale(1)';
+                }, 100);
+            }
+        }
+        
+        // Initialisation stats
+        setTimeout(updateKaizenStats, 500);
     })();
     </script>
     """
@@ -230,19 +405,28 @@ def render_zazen_breathing_component():
     .zazen-circle.inspire {
         background: radial-gradient(circle, #4facfe 0%, #00f2fe 100%);
         transform: scale(1.2);
-        box-shadow: 0 0 40px rgba(79, 172, 254, 0.6);
+        box-shadow: 
+            0 0 40px rgba(79, 172, 254, 0.6),
+            inset 0 0 20px rgba(255, 255, 255, 0.2);
+        animation: breatheInPulse 4s ease-in-out infinite;
     }
     
     .zazen-circle.hold {
         background: radial-gradient(circle, #ffecd2 0%, #fcb69f 100%);
         transform: scale(1.1);
-        box-shadow: 0 0 30px rgba(252, 182, 159, 0.6);
+        box-shadow: 
+            0 0 30px rgba(252, 182, 159, 0.6),
+            inset 0 0 15px rgba(255, 255, 255, 0.3);
+        animation: holdStable 2s ease-in-out infinite;
     }
     
     .zazen-circle.expire {
         background: radial-gradient(circle, #a8edea 0%, #fed6e3 100%);
         transform: scale(0.9);
-        box-shadow: 0 0 20px rgba(168, 237, 234, 0.6);
+        box-shadow: 
+            0 0 20px rgba(168, 237, 234, 0.6),
+            inset 0 0 10px rgba(255, 255, 255, 0.4);
+        animation: breatheOutGlow 5s ease-in-out infinite;
     }
     
     .zazen-text {
@@ -280,6 +464,89 @@ def render_zazen_breathing_component():
         opacity: 0.8;
         margin-bottom: 1rem;
         font-style: italic;
+        animation: fadeInOut 3s ease-in-out infinite;
+    }
+    
+    /* Animations de respiration avancées */
+    @keyframes breatheInPulse {
+        0% { 
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(79, 172, 254, 0.4);
+        }
+        50% { 
+            transform: scale(1.25);
+            box-shadow: 0 0 50px rgba(79, 172, 254, 0.8);
+        }
+        100% { 
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(79, 172, 254, 0.4);
+        }
+    }
+    
+    @keyframes holdStable {
+        0%, 100% { 
+            opacity: 0.9;
+            filter: brightness(1);
+        }
+        50% { 
+            opacity: 1;
+            filter: brightness(1.1);
+        }
+    }
+    
+    @keyframes breatheOutGlow {
+        0% { 
+            transform: scale(1);
+            box-shadow: 0 0 25px rgba(168, 237, 234, 0.6);
+        }
+        50% { 
+            transform: scale(0.85);
+            box-shadow: 0 0 15px rgba(168, 237, 234, 0.3);
+        }
+        100% { 
+            transform: scale(1);
+            box-shadow: 0 0 25px rgba(168, 237, 234, 0.6);
+        }
+    }
+    
+    @keyframes fadeInOut {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+    }
+    
+    /* Particules méditation */
+    .meditation-particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+    }
+    
+    .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 50%;
+        animation: floatUp 8s linear infinite;
+    }
+    
+    @keyframes floatUp {
+        0% {
+            transform: translateY(100px) translateX(0px);
+            opacity: 0;
+        }
+        10% {
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-100px) translateX(20px);
+            opacity: 0;
+        }
     }
     </style>
     """
@@ -287,6 +554,8 @@ def render_zazen_breathing_component():
     # JavaScript pour le cycle de respiration
     zazen_breathing_js = """
     <div class="zazen-container">
+        <div class="meditation-particles" id="particles-container"></div>
+        
         <div class="breathing-guide">Suivez le rythme de votre respiration...</div>
         
         <div id="zazen-circle" class="zazen-circle inspire">
@@ -381,8 +650,55 @@ def render_zazen_breathing_component():
         pauseBtn.addEventListener('click', pause);
         resetBtn.addEventListener('click', reset);
         
+        // 🎨 PARTICULES MÉDITATION
+        function createMeditationParticles() {
+            const container = document.getElementById('particles-container');
+            
+            setInterval(() => {
+                if (!isActive) return;
+                
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                
+                container.appendChild(particle);
+                
+                // Suppression automatique
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.parentNode.removeChild(particle);
+                    }
+                }, 8000);
+            }, 1000);
+        }
+        
+        // 🧠 AMÉLIORATION VISUEL SELON PHASE
+        function updateUI() {
+            const config = breathingCycle[currentPhase];
+            circle.className = `zazen-circle ${currentPhase}`;
+            phaseText.textContent = config.label;
+            phaseLabel.textContent = config.text;
+            timerRemaining.textContent = remaining;
+            
+            // Effet de pulsation sur le texte selon la phase
+            const textElement = document.querySelector('.zazen-text');
+            if (currentPhase === 'inspire') {
+                textElement.style.transform = 'scale(1.05)';
+                textElement.style.color = '#4facfe';
+            } else if (currentPhase === 'hold') {
+                textElement.style.transform = 'scale(1)';
+                textElement.style.color = '#fcb69f';
+            } else {
+                textElement.style.transform = 'scale(0.95)';
+                textElement.style.color = '#a8edea';
+            }
+        }
+        
         // Initialisation
         updateUI();
+        createMeditationParticles();
         
         // Auto-start après 2 secondes pour demo
         setTimeout(() => {
