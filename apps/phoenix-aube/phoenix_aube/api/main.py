@@ -61,17 +61,20 @@ app = FastAPI(
 )
 
 # Middleware de sécurité
+allowed_origins = os.getenv("AUBE_ALLOWED_ORIGINS", "http://localhost:8501").split(",")
+allowed_hosts = os.getenv("AUBE_ALLOWED_HOSTS", "localhost").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # À restreindre en production
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["*"]  # À configurer pour production
+    allowed_hosts=allowed_hosts,
 )
 
 # Security
@@ -307,7 +310,7 @@ async def health_check() -> Dict[str, str]:
 
 @app.get("/api/v1/metrics")
 async def get_metrics(
-    # admin_user = Depends(get_admin_user)
+    admin_user = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """📊 Métriques business Phoenix Aube"""
     try:
@@ -340,7 +343,7 @@ async def get_metrics(
 @app.post("/api/v1/transparency/explain-recommendation")
 async def explain_recommendation(
     recommendation_data: Dict[str, Any],
-    # current_user = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     🔍 Explique une recommandation (Trust by Design)
@@ -381,7 +384,7 @@ async def explain_recommendation(
 @app.post("/api/v1/orchestration/complete-journey")
 async def complete_user_journey(
     user_data: Dict[str, Any],
-    # current_user = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     🚀 Orchestre un parcours complet utilisateur

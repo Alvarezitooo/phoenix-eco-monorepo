@@ -136,7 +136,17 @@ async function handleStripeEvent(event: Stripe.Event): Promise<boolean> {
           sessionId: checkoutSession.id,
           customerId: checkoutSession.customer,
         });
-        // TODO: Activer compte premium utilisateur
+        // Publish pending activation (await subscription events for final state)
+        await publishSubscriptionEvent({
+          type: 'SUBSCRIPTION_ACTIVATED',
+          userId: extractUserIdFromSession(checkoutSession),
+          planId: extractPlanIdFromSession(checkoutSession),
+          status: 'pending',
+          payload: {
+            session_id: checkoutSession.id,
+            customer_id: checkoutSession.customer,
+          },
+        });
         return true;
 
       case 'customer.subscription.created':
@@ -146,7 +156,16 @@ async function handleStripeEvent(event: Stripe.Event): Promise<boolean> {
           customerId: subscriptionCreated.customer,
           status: subscriptionCreated.status,
         });
-        // TODO: Traitement création abonnement
+        await publishSubscriptionEvent({
+          type: 'SUBSCRIPTION_ACTIVATED',
+          userId: extractUserIdFromSubscription(subscriptionCreated),
+          planId: extractPlanIdFromSubscription(subscriptionCreated),
+          status: subscriptionCreated.status,
+          payload: {
+            subscription_id: subscriptionCreated.id,
+            customer_id: subscriptionCreated.customer,
+          },
+        });
         return true;
 
       case 'customer.subscription.updated':
@@ -156,7 +175,16 @@ async function handleStripeEvent(event: Stripe.Event): Promise<boolean> {
           customerId: subscriptionUpdated.customer,
           status: subscriptionUpdated.status,
         });
-        // TODO: Traitement mise à jour abonnement
+        await publishSubscriptionEvent({
+          type: 'SUBSCRIPTION_UPDATED',
+          userId: extractUserIdFromSubscription(subscriptionUpdated),
+          planId: extractPlanIdFromSubscription(subscriptionUpdated),
+          status: subscriptionUpdated.status,
+          payload: {
+            subscription_id: subscriptionUpdated.id,
+            customer_id: subscriptionUpdated.customer,
+          },
+        });
         return true;
 
       case 'customer.subscription.deleted':
@@ -165,7 +193,16 @@ async function handleStripeEvent(event: Stripe.Event): Promise<boolean> {
           subscriptionId: subscriptionDeleted.id,
           customerId: subscriptionDeleted.customer,
         });
-        // TODO: Désactiver compte premium utilisateur
+        await publishSubscriptionEvent({
+          type: 'SUBSCRIPTION_CANCELLED',
+          userId: extractUserIdFromSubscription(subscriptionDeleted),
+          planId: extractPlanIdFromSubscription(subscriptionDeleted),
+          status: 'canceled',
+          payload: {
+            subscription_id: subscriptionDeleted.id,
+            customer_id: subscriptionDeleted.customer,
+          },
+        });
         return true;
 
       case 'invoice.payment_succeeded':
@@ -175,7 +212,17 @@ async function handleStripeEvent(event: Stripe.Event): Promise<boolean> {
           customerId: paymentSucceeded.customer,
           amount: paymentSucceeded.amount_paid,
         });
-        // TODO: Confirmer paiement
+        await publishSubscriptionEvent({
+          type: 'SUBSCRIPTION_UPDATED',
+          userId: extractUserIdFromInvoice(paymentSucceeded),
+          planId: extractPlanIdFromInvoice(paymentSucceeded),
+          status: 'payment_succeeded',
+          payload: {
+            invoice_id: paymentSucceeded.id,
+            customer_id: paymentSucceeded.customer,
+            amount: paymentSucceeded.amount_paid,
+          },
+        });
         return true;
 
       case 'invoice.payment_failed':
@@ -185,7 +232,17 @@ async function handleStripeEvent(event: Stripe.Event): Promise<boolean> {
           customerId: paymentFailed.customer,
           amount: paymentFailed.amount_due,
         });
-        // TODO: Gérer échec paiement
+        await publishSubscriptionEvent({
+          type: 'SUBSCRIPTION_UPDATED',
+          userId: extractUserIdFromInvoice(paymentFailed),
+          planId: extractPlanIdFromInvoice(paymentFailed),
+          status: 'payment_failed',
+          payload: {
+            invoice_id: paymentFailed.id,
+            customer_id: paymentFailed.customer,
+            amount: paymentFailed.amount_due,
+          },
+        });
         return true;
 
       default:
@@ -198,5 +255,117 @@ async function handleStripeEvent(event: Stripe.Event): Promise<boolean> {
       error: error.message,
     });
     return false;
+  }
+}
+
+type SubscriptionEventPayload = {
+  type: 'SUBSCRIPTION_ACTIVATED' | 'SUBSCRIPTION_UPDATED' | 'SUBSCRIPTION_CANCELLED';
+  userId: string | null;
+  planId: string | null;
+  status: string;
+  payload: Record<string, any>;
+};
+
+async function publishSubscriptionEvent(data: SubscriptionEventPayload): Promise<void> {
+  try {
+    const SUPABASE_URL = process.env.SUPABASE_URL;
+    const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      console.warn('Supabase env not configured; skipping event publish');
+      return;
+    }
+
+    if (!data.userId) {
+      console.warn('Missing userId in subscription event; skipping publish');
+      return;
+    }
+
+    const eventBody = {
+      stream_id: data.userId,
+      event_type: data.type,
+      payload: {
+        ...data.payload,
+        plan_id: data.planId,
+        status: data.status,
+        source: 'stripe',
+      },
+      app_source: 'website',
+      timestamp: new Date().toISOString(),
+      metadata: {
+        bridge_version: 'v1',
+        published_at: new Date().toISOString(),
+      },
+    };
+
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/events`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        Prefer: 'return=representation',
+      },
+      body: JSON.stringify(eventBody),
+    });
+
+    if (!resp.ok) {
+      const text = await resp.text();
+      console.error('Supabase publish failed', { status: resp.status, text });
+    }
+  } catch (e: any) {
+    console.error('Supabase publish error', { error: e.message });
+  }
+}
+
+function extractUserIdFromSession(session: Stripe.Checkout.Session): string | null {
+  // Prefer metadata phoenix_user_id, fallback to client_reference_id
+  const md = (session.metadata || {}) as Record<string, string>;
+  if (md['phoenix_user_id']) return md['phoenix_user_id'];
+  if (session.client_reference_id) return session.client_reference_id;
+  return null;
+}
+
+function extractPlanIdFromSession(session: Stripe.Checkout.Session): string | null {
+  const md = (session.metadata || {}) as Record<string, string>;
+  if (md['plan_id']) return md['plan_id'];
+  // When not expanded, plan/price may not be available
+  return null;
+}
+
+function extractUserIdFromSubscription(sub: Stripe.Subscription): string | null {
+  const md = (sub.metadata || {}) as Record<string, string>;
+  if (md['phoenix_user_id']) return md['phoenix_user_id'];
+  // Try default payment method billing details email mapping if needed (not recommended without mapping)
+  return null;
+}
+
+function extractPlanIdFromSubscription(sub: Stripe.Subscription): string | null {
+  try {
+    const item = sub.items?.data?.[0];
+    // price id is stable reference for plan
+    // @ts-ignore
+    return item?.price?.id || null;
+  } catch {
+    return null;
+  }
+}
+
+function extractUserIdFromInvoice(inv: Stripe.Invoice): string | null {
+  // Invoices do not carry metadata by default; rely on subscription
+  // @ts-ignore
+  const sub = inv.subscription as unknown as Stripe.Subscription | string | null;
+  if (typeof sub === 'string' || !sub) return null;
+  return extractUserIdFromSubscription(sub);
+}
+
+function extractPlanIdFromInvoice(inv: Stripe.Invoice): string | null {
+  try {
+    // @ts-ignore
+    const sub = inv.subscription as unknown as Stripe.Subscription | string | null;
+    if (typeof sub === 'string' || !sub) return null;
+    return extractPlanIdFromSubscription(sub);
+  } catch {
+    return null;
   }
 }

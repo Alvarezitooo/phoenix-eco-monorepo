@@ -19,6 +19,7 @@ RABBITMQ_PORT = 5672
 EXCHANGE_NAME = 'phoenix_events'
 QUEUE_NAME = 'event_store_queue'
 ROUTING_KEY = 'phoenix.#' # Listen to all phoenix events
+PAUSE_RABBITMQ_CONSUMER = os.getenv('PAUSE_RABBITMQ', 'true').lower() in ('1','true','yes')
 
 def get_db_connection():
     """Établit une connexion à la base de données PostgreSQL."""
@@ -139,6 +140,9 @@ def main():
     create_events_table()
 
     # Connexion à RabbitMQ et consommation des événements
+    if PAUSE_RABBITMQ_CONSUMER:
+        print("RabbitMQ consumer is paused (PAUSE_RABBITMQ=true). Using Supabase Event Bridge as standard.")
+        return
     try:
         connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST, port=RABBITMQ_PORT))
         channel = connection.channel()

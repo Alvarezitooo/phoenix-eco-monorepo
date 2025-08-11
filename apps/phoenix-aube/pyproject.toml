@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "phoenix-aube"
-version = "1.0.0"
+dynamic = ["version"]
 description = "Premier outil européen d'exploration métier + validation IA future-proof"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -27,7 +27,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Topic :: Office/Business",
+    "Topic :: Office/Business :: Human Resources",
 ]
 
 dependencies = [
@@ -91,7 +91,8 @@ Documentation = "https://docs.phoenix-aube.com"
 Repository = "https://github.com/Alvarezitooo/phoenix-eco-monorepo"
 "Bug Tracker" = "https://github.com/Alvarezitooo/phoenix-eco-monorepo/issues"
 
- 
+[tool.hatch.version]
+path = "phoenix_aube/__init__.py"
 
 [tool.black]
 line-length = 88
