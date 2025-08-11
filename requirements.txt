@@ -50,3 +50,15 @@ supabase>=2.0.0
 # 📊 Dashboards et visualisation données (Phoenix Rise)
 pandas>=2.0.0
 plotly>=5.15.0
+
+# 🌅 Phoenix Aube - Exploration métier IA
+fastapi>=0.116.0
+uvicorn[standard]>=0.24.0
+pydantic-settings>=2.5.0
+aiohttp>=3.12.0
+httpx>=0.28.0
+pyjwt[cryptography]>=2.8.0
+sentry-sdk[fastapi]>=2.34.0
+pyyaml>=6.0.0
+redis>=6.4.0
+openai>=1.99.0
