@@ -39,7 +39,63 @@ def init_services():
     return dojo_service, db_service, ai_service, renaissance
 
 
-def render_kaizen_grid_component():
+def render_kaizen_grid_native():
+    """🎯 Kaizen Grid en Streamlit natif - GARANTI DE MARCHER"""
+    
+    # Initialiser session state
+    if 'kaizen_days' not in st.session_state:
+        st.session_state.kaizen_days = {i: False for i in range(30)}
+    
+    st.markdown("### 📊 **Historique Kaizen - 30 Derniers Jours**")
+    
+    # Stats calculées en temps réel
+    total_actions = sum(st.session_state.kaizen_days.values())
+    completion_rate = (total_actions / 30) * 100
+    
+    # Calcul série
+    streak = 0
+    for i in range(29, -1, -1):
+        if st.session_state.kaizen_days[i]:
+            streak += 1
+        else:
+            break
+    
+    # Affichage stats
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("🎯 Actions", total_actions, delta=f"+{total_actions-20}")
+    with col2:
+        st.metric("🔥 Série", f"{streak} jours", delta=streak-3 if streak > 3 else None)
+    with col3:
+        st.metric("📊 Taux", f"{completion_rate:.0f}%")
+    with col4:
+        momentum = min(100, streak * 15 + total_actions * 2)
+        st.metric("⚡ Momentum", momentum)
+    
+    # Grid interactive avec boutons
+    st.markdown("**Cliquez sur un jour pour toggle votre action Kaizen :**")
+    
+    # 5 lignes de 6 colonnes = 30 jours
+    for week in range(5):
+        cols = st.columns(6)
+        for day in range(6):
+            day_idx = week * 6 + day
+            if day_idx < 30:
+                with cols[day]:
+                    day_label = f"J-{29-day_idx}"
+                    is_done = st.session_state.kaizen_days[day_idx]
+                    
+                    if st.button(
+                        "✅" if is_done else "⭕", 
+                        key=f"kaizen_day_{day_idx}",
+                        help=f"{day_label} - {'Accompli' if is_done else 'Pas d\'action'}",
+                        use_container_width=True
+                    ):
+                        st.session_state.kaizen_days[day_idx] = not st.session_state.kaizen_days[day_idx]
+                        st.rerun()
+
+
+def render_kaizen_grid_component_OLD():
     """🎨 Composant React KaizenGrid intégré dans Streamlit"""
     
     # CSS pour le style Kaizen Grid
@@ -368,7 +424,92 @@ def render_kaizen_grid_component():
     components.html(kaizen_grid_css + kaizen_grid_js, height=250)
 
 
-def render_zazen_breathing_component():
+def render_zazen_timer_native():
+    """🧘 Timer Zazen en Streamlit natif - Cycle respiration 4-2-5"""
+    
+    # État timer
+    if 'zazen_active' not in st.session_state:
+        st.session_state.zazen_active = False
+        st.session_state.zazen_phase = 'inspire'  # inspire, hold, expire
+        st.session_state.zazen_remaining = 4
+        st.session_state.zazen_cycle_count = 0
+    
+    # Phases configuration
+    phases = {
+        'inspire': {'duration': 4, 'next': 'hold', 'emoji': '🌬️', 'text': 'Inspirez profondément', 'color': '#4facfe'},
+        'hold': {'duration': 2, 'next': 'expire', 'emoji': '⏸️', 'text': 'Retenez votre souffle', 'color': '#fcb69f'}, 
+        'expire': {'duration': 5, 'next': 'inspire', 'emoji': '💨', 'text': 'Expirez lentement', 'color': '#a8edea'}
+    }
+    
+    current_phase = phases[st.session_state.zazen_phase]
+    
+    # Interface centrée
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        # Affichage phase actuelle avec couleur
+        st.markdown(f"""
+        <div style="
+            text-align: center;
+            background: linear-gradient(135deg, {current_phase['color']}, {current_phase['color']}66);
+            padding: 2rem;
+            border-radius: 20px;
+            margin: 1rem 0;
+            color: white;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        ">
+            <h1 style="margin: 0; font-size: 3rem;">{current_phase['emoji']}</h1>
+            <h3 style="margin: 0.5rem 0; font-weight: 400;">{current_phase['text']}</h3>
+            <h2 style="margin: 0; font-size: 2.5rem; font-weight: 300;">{st.session_state.zazen_remaining}s</h2>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Barre de progression
+        progress_pct = 1 - (st.session_state.zazen_remaining / current_phase['duration'])
+        st.progress(progress_pct)
+        
+        # Contrôles
+        col_start, col_pause, col_reset = st.columns(3)
+        
+        with col_start:
+            if st.button("🧘 Start" if not st.session_state.zazen_active else "⏸️ Pause", 
+                        use_container_width=True, type="primary"):
+                st.session_state.zazen_active = not st.session_state.zazen_active
+                if st.session_state.zazen_active:
+                    st.rerun()
+        
+        with col_reset:
+            if st.button("🔄 Reset", use_container_width=True):
+                st.session_state.zazen_active = False
+                st.session_state.zazen_phase = 'inspire'
+                st.session_state.zazen_remaining = 4
+                st.session_state.zazen_cycle_count = 0
+                st.rerun()
+        
+        # Stats
+        if st.session_state.zazen_cycle_count > 0:
+            st.info(f"🔄 Cycles complétés : {st.session_state.zazen_cycle_count}")
+    
+    # Auto-update si actif
+    if st.session_state.zazen_active:
+        import time
+        time.sleep(1)
+        
+        st.session_state.zazen_remaining -= 1
+        
+        if st.session_state.zazen_remaining <= 0:
+            # Passage phase suivante
+            next_phase = current_phase['next']
+            st.session_state.zazen_phase = next_phase
+            st.session_state.zazen_remaining = phases[next_phase]['duration']
+            
+            if next_phase == 'inspire':  # Cycle complet
+                st.session_state.zazen_cycle_count += 1
+                
+        st.rerun()
+
+
+def render_zazen_breathing_component_OLD():
     """🧘 Composant ZazenTimer - Cycle de respiration interactif"""
     
     # CSS pour le style Zazen Timer
@@ -994,8 +1135,8 @@ def render_kaizen_tracker(dojo_service):
     st.markdown("### 🎯 **Kaizen Quotidien - L'Art du Micro-Progrès**")
     st.markdown("*Une action infiniment petite aujourd'hui = une transformation infinie demain*")
     
-    # 🎨 KAIZEN GRID INTERACTIVE - Composant React intégré
-    render_kaizen_grid_component()
+    # 🎯 KAIZEN GRID STREAMLIT NATIF
+    render_kaizen_grid_native()
     
     # Formulaire Kaizen
     with st.expander("✨ **Créer une nouvelle action Kaizen**", expanded=True):
@@ -1083,8 +1224,8 @@ def render_zazen_timer(dojo_service):
     st.markdown("### 🧘 **Zazen - La Méditation de l'Instant Présent**")
     st.markdown("*Dans l'immobilité du corps, l'esprit trouve sa clarté*")
     
-    # 🎨 ZAZEN TIMER INTERACTIF - Composant React intégré
-    render_zazen_breathing_component()
+    # 🧘 ZAZEN TIMER STREAMLIT NATIF  
+    render_zazen_timer_native()
     
     # Configuration de la session
     col1, col2 = st.columns([2, 1])
