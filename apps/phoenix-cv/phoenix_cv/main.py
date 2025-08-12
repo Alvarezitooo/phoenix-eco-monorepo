@@ -221,20 +221,14 @@ def render_tier_selector():
             st.session_state["user_tier"] = "gratuit"
             st.session_state["tier_selected"] = True
 
-        st.markdown(
-            """
-        <div class="tier-selector">
-            <h4>🆓 Gratuit</h4>
-            <div>
-                <p>✅ <strong>1 CV par mois</strong></p>
-                <p>✅ <strong>Prompt magistral reconversion</strong></p>
-                <p>✅ <strong>Optimisation ATS de base (85%)</strong></p>
-                <p>✅ <strong>Génération IA avancée</strong></p>
-            </div>
-        </div>
-        """, 
-            unsafe_allow_html=True
-        )
+        with st.container():
+            st.markdown("#### 🆓 Gratuit")
+            st.markdown("""
+            - ✅ **1 CV par mois**
+            - ✅ **Prompt magistral reconversion**
+            - ✅ **Optimisation ATS de base (85%)**
+            - ✅ **Génération IA avancée**
+            """)
 
     with col2:
         if st.button(
@@ -246,22 +240,16 @@ def render_tier_selector():
             st.session_state["user_tier"] = "premium"
             st.session_state["tier_selected"] = True
 
-        st.markdown(
-            """
-        <div class="tier-selector premium">
-            <h4>⭐ Premium</h4>
-            <div>
-                <p>✅ <strong>CV illimités</strong></p>
-                <p>✅ <strong>Prompt executive magistral</strong></p>
-                <p>✅ <strong>Optimisation ATS avancée (95%)</strong></p>
-                <p>✅ <strong>Analyse correspondance CV/Offre</strong></p>
-                <p>✅ <strong>Green AI intégré</strong></p>
-                <p>✅ <strong>Support prioritaire</strong></p>
-            </div>
-        </div>
-        """, 
-            unsafe_allow_html=True
-        )
+        with st.container():
+            st.markdown("#### ⭐ Premium")
+            st.markdown("""
+            - ✅ **CV illimités**
+            - ✅ **Prompt executive magistral**
+            - ✅ **Optimisation ATS avancée (95%)**
+            - ✅ **Analyse correspondance CV/Offre**
+            - ✅ **Green AI intégré**
+            - ✅ **Support prioritaire**
+            """)
 
 
 def render_smart_coach_widget():
@@ -1156,57 +1144,31 @@ def render_ecosystem_page():
 
     with col2:
         phoenix_letters_url = phoenix_bridge.get_app_url(PhoenixApp.LETTERS)
-        st.markdown(
-            f"""
-        <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #28a745; text-align: center; height: 300px;">
-            <h3 style="color: #333;">📝 Phoenix Letters</h3>
-            <p style="color: #666; font-size: 0.9rem;">Générateur IA de lettres de motivation personnalisées</p>
-            
-            <div style="text-align: left; color: #333; font-size: 0.85rem;">
-                <p style="margin: 0.3rem 0;">✅ IA ultra-personnalisée</p>
-                <p style="margin: 0.3rem 0;">✅ Analyse d'entreprise poussée</p>
-                <p style="margin: 0.3rem 0;">✅ Première app française spécialisée</p>
-                <p style="margin: 0.3rem 0;">✅ Fonds solidaire intégré</p>
-            </div>
-            
-            <div style="margin-top: 1rem;">
-                <a href="{phoenix_letters_url}" target="_blank" style="text-decoration: none;">
-                    <button style="background: #28a745; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-weight: bold;">
-                        📝 Créer ma lettre →
-                    </button>
-                </a>
-            </div>
-        </div>
-        """, 
-            unsafe_allow_html=True
-        )
+        with st.container():
+            st.markdown("### 📝 Phoenix Letters")
+            st.markdown("*Générateur IA de lettres de motivation personnalisées*")
+            st.markdown("""
+            - ✅ IA ultra-personnalisée
+            - ✅ Analyse d'entreprise poussée
+            - ✅ Première app française spécialisée
+            - ✅ Fonds solidaire intégré
+            """)
+            if st.button("📝 Créer ma lettre →", key="letters_ecosystem", type="primary"):
+                st.markdown(f"[Ouvrir Phoenix Letters]({phoenix_letters_url})")
 
     with col3:
         phoenix_site_url = phoenix_bridge.get_app_url(PhoenixApp.SITE)
-        st.markdown(
-            f"""
-        <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #FFD700; text-align: center; height: 300px;">
-            <h3 style="color: #333;">🌐 Phoenix Site</h3>
-            <p style="color: #666; font-size: 0.9rem;">Hub central de l'écosystème Phoenix</p>
-            
-            <div style="text-align: left; color: #333; font-size: 0.85rem;">
-                <p style="margin: 0.3rem 0;">✅ Dashboard unifié</p>
-                <p style="margin: 0.3rem 0;">✅ Trajectory Builder</p>
-                <p style="margin: 0.3rem 0;">✅ Smart Coach IA</p>
-                <p style="margin: 0.3rem 0;">✅ Métriques Green AI</p>
-            </div>
-            
-            <div style="margin-top: 1rem;">
-                <a href="{phoenix_site_url}" target="_blank" style="text-decoration: none;">
-                    <button style="background: #FFD700; color: #333; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-weight: bold;">
-                        🌐 Découvrir →
-                    </button>
-                </a>
-            </div>
-        </div>
-        """, 
-            unsafe_allow_html=True
-        )
+        with st.container():
+            st.markdown("### 🌐 Phoenix Site")
+            st.markdown("*Hub central de l'écosystème Phoenix*")
+            st.markdown("""
+            - ✅ Dashboard unifié
+            - ✅ Trajectory Builder
+            - ✅ Smart Coach IA
+            - ✅ Métriques Green AI
+            """)
+            if st.button("🌐 Découvrir →", key="site_ecosystem", type="secondary"):
+                st.markdown(f"[Ouvrir Phoenix Site]({phoenix_site_url})")
 
     st.markdown("---")
 

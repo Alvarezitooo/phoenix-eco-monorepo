@@ -5,6 +5,7 @@ Plans tarifaires avec garanties securite enterprise
 
 import streamlit as st
 from phoenix_cv.utils.safe_markdown import safe_markdown, safe_redirect
+from phoenix_cv.main import initiate_stripe_checkout
 
 
 
@@ -107,85 +108,78 @@ def render_pricing_page_secure():
 
     # Plan Gratuit
     with col1:
-        st.markdown("""
-        <div class="pricing-card card-gratuit">
-            <h3>🆓 Gratuit</h3>
-            <div class="price-tag">0€<small>/mois</small></div>
-            <div class="features-list">
-                <p>🔒 3 générations/mois</p>
-                <p>🛡️ Templates sécurisés</p>
-                <p>📊 Export PDF basic</p>
-                <p>⚡ IA anti-injection</p>
-                <p>🔐 Anonymisation PII</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        st.success("🎯 Plan actuel gratuit")
+        with st.container():
+            st.markdown("### 🆓 Gratuit")
+            st.markdown("**0€/mois**")
+            st.markdown("""
+            - 🔒 3 générations/mois
+            - 🛡️ Templates sécurisés
+            - 📊 Export PDF basic
+            - ⚡ IA anti-injection
+            - 🔐 Anonymisation PII
+            """)
+            st.success("🎯 Plan actuel gratuit")
 
     # Phoenix Letters
     with col2:
-        st.markdown("""
-        <div class="pricing-card card-letters">
-            <h3>📝 Phoenix Letters</h3>
-            <div class="price-tag">9,99€<small>/mois</small></div>
-            <div class="features-list">
-                <p>🔒 Lettres illimitées</p>
-                <p>🛡️ Analyses ATS avancées</p>
-                <p>🧠 Mirror Match précis</p>
-                <p>⚡ Smart Coach IA</p>
-                <p>📊 Templates exclusifs</p>
-                <p>🔐 Support prioritaire</p>
-                <p>📋 Export PDF premium</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button("🚀 S'abonner Letters", key="letters_btn", type="primary"):
-            safe_redirect('https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00', "🔄 Redirection vers Stripe...")
+        with st.container():
+            st.markdown("### 📝 Phoenix Letters")
+            st.markdown("**9,99€/mois**")
+            st.markdown("""
+            - 🔒 Lettres illimitées
+            - 🛡️ Analyses ATS avancées
+            - 🧠 Mirror Match précis
+            - ⚡ Smart Coach IA
+            - 📊 Templates exclusifs
+            - 🔐 Support prioritaire
+            - 📋 Export PDF premium
+            """)
+            
+            if st.button("🚀 S'abonner Letters", key="letters_btn", type="primary"):
+                user_id = st.session_state.get("user_id", "guest_user")
+                user_email = st.session_state.get("user_email", None)
+                initiate_stripe_checkout(user_id, "letters_premium", user_email)
 
     # Phoenix CV
     with col3:
-        st.markdown("""
-        <div class="pricing-card card-cv">
-            <h3>📄 Phoenix CV</h3>
-            <div class="price-tag">7,99€<small>/mois</small></div>
-            <div class="features-list">
-                <p>🔒 CV illimités</p>
-                <p>🛡️ Templates premium</p>
-                <p>🧠 ATS Optimizer avancé</p>
-                <p>⚡ Mirror Match précis</p>
-                <p>📊 Export multi-formats</p>
-                <p>🔐 Support prioritaire</p>
-                <p>📋 Analytics avancées</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button("📄 S'abonner CV", key="cv_btn", type="primary"):
-            safe_redirect('https://buy.stripe.com/00w28r9Br9260gTcss6EU02', "🔄 Redirection vers Stripe...")
+        with st.container():
+            st.markdown("### 📄 Phoenix CV")
+            st.markdown("**7,99€/mois**")
+            st.markdown("""
+            - 🔒 CV illimités
+            - 🛡️ Templates premium
+            - 🧠 ATS Optimizer avancé
+            - ⚡ Mirror Match précis
+            - 📊 Export multi-formats
+            - 🔐 Support prioritaire
+            - 📋 Analytics avancées
+            """)
+            
+            if st.button("📄 S'abonner CV", key="cv_btn", type="primary"):
+                user_id = st.session_state.get("user_id", "guest_user")
+                user_email = st.session_state.get("user_email", None)
+                initiate_stripe_checkout(user_id, "premium", user_email)
 
-    # Phoenix Bundle
+    # Phoenix Bundle  
     with col4:
-        st.markdown("""
-        <div class="pricing-card card-bundle">
-            <div class="best-deal">🔥 BEST</div>
-            <h3>🚀 Bundle Complet</h3>
-            <div class="price-tag">15,99€<small>/mois</small></div>
-            <p style="background: rgba(255,255,255,0.2); padding: 5px; border-radius: 10px; margin: 0.5rem 0;">Économie 1,99€</p>
-            <div class="features-list">
-                <p>✨ Phoenix Letters complet</p>
-                <p>✨ Phoenix CV complet</p>
-                <p>🎁 Smart Coach universel</p>
-                <p>🎁 Mirror Match cross-platform</p>
-                <p>🎁 Analytics avancées</p>
-                <p>🎁 Support VIP prioritaire</p>
-                <p>🎁 Accès bêta features</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button("🔥 Bundle Deal", key="bundle_btn", type="primary"):
-            safe_redirect('https://buy.stripe.com/cNi14n9Brcei3t5akk6EU01', "🔄 Redirection vers Stripe...")
+        with st.container():
+            st.markdown("### 🚀 Bundle Complet")
+            st.markdown("**15,99€/mois**")
+            st.info("🔥 BEST DEAL - Économie 1,99€")
+            st.markdown("""
+            - ✨ Phoenix Letters complet
+            - ✨ Phoenix CV complet
+            - 🎁 Smart Coach universel
+            - 🎁 Mirror Match cross-platform
+            - 🎁 Analytics avancées
+            - 🎁 Support VIP prioritaire
+            - 🎁 Accès bêta features
+            """)
+            
+            if st.button("🔥 Bundle Deal", key="bundle_btn", type="primary"):
+                user_id = st.session_state.get("user_id", "guest_user")
+                user_email = st.session_state.get("user_email", None)
+                initiate_stripe_checkout(user_id, "bundle_premium", user_email)
 
     # Message de comparaison
     st.markdown("---")
