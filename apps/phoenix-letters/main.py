@@ -1,21 +1,14 @@
 import logging
 import streamlit as st
 
-# --- CONFIGURATION LOCALE (STREAMLIT CLOUD COMPATIBLE) ---
-try:
-    from packages.phoenix_shared_config.settings import Settings as SharedSettings
-    from packages.phoenix_shared_auth.database.phoenix_db_connection import PhoenixDatabaseConnection
-    from packages.phoenix_shared_auth.services.jwt_manager import JWTManager
-    from packages.phoenix_shared_auth.services.phoenix_auth_service import PhoenixAuthService
-    from packages.phoenix_shared_auth.entities.phoenix_user import PhoenixApp
-    from packages.phoenix_shared_ui.components.header import render_header
-    from packages.phoenix_shared_ui.components.consent_banner import render_consent_banner
-    SHARED_PACKAGES_AVAILABLE = True
-except ImportError:
-    logging.warning("Packages partagés non disponibles - mode autonome activé")
-    SHARED_PACKAGES_AVAILABLE = False
-    # Fallback vers configuration locale
-    from config.settings import Settings as SharedSettings
+# --- GESTION CENTRALISÉE DE LA CONFIGURATION ET DES SERVICES ---
+from packages.phoenix_shared_config.settings import Settings
+from packages.phoenix_shared_auth.database.phoenix_db_connection import PhoenixDatabaseConnection
+from packages.phoenix_shared_auth.services.jwt_manager import JWTManager
+from packages.phoenix_shared_auth.services.phoenix_auth_service import PhoenixAuthService
+from packages.phoenix_shared_auth.entities.phoenix_user import PhoenixApp
+from packages.phoenix_shared_ui.components.header import render_header
+from packages.phoenix_shared_ui.components.consent_banner import render_consent_banner
 
 # Imports spécifiques à Phoenix Letters (à conserver)
 from core.entities.user import UserTier
@@ -43,73 +36,15 @@ logger = logging.getLogger(__name__)
 
 
 def _initialize_app_components(settings, db_connection, gemini_client):
-    """Initialise les composants de l'application"""
-    try:
-        session_manager = SecureSessionManager(settings)
-        input_validator = InputValidator()
-        prompt_service = PromptService(settings)
-        letter_service = LetterService(gemini_client, input_validator, prompt_service, session_manager)
-        
-        return {
-            "generator_page": GeneratorPage(
-                letter_service, 
-                SecureFileUploader(input_validator, settings), 
-                session_manager, 
-                ProgressIndicator(), 
-                LetterEditor(), 
-                None, None, None, None, 
-                JobOfferParser()
-            )
-        }
-    except Exception as e:
-        logger.error(f"Erreur initialisation composants: {e}")
-        return None
-
-def main():
-    """Point d'entrée principal - compatible Streamlit Cloud"""
-    
-    if SHARED_PACKAGES_AVAILABLE:
-        # Mode complet avec authentification
-        logger.info("Mode complet avec packages partagés")
-        main_with_shared_packages()
-    else:
-        # Mode autonome pour Streamlit Cloud
-        logger.info("Mode autonome - Streamlit Cloud")
-        main_standalone()
-
-def main_standalone():
-    """Version autonome pour Streamlit Cloud"""
-    st.set_page_config(
-        page_title="Phoenix Letters - IA de Motivation",
-        page_icon="✍️",
-        layout="wide"
-    )
-    
-    try:
-        # Configuration locale
-        from config.settings import Settings
-        settings = Settings()
-        
-        # Client IA
-        gemini_client = GeminiClient(settings)
-        
-        # Interface simplifiée
-        st.title("🚀 Phoenix Letters")
-        st.subheader("Générateur IA de Lettres de Motivation")
-        
-        # Page de génération basique
-        generator_page = GeneratorPage()
-        generator_page.render()
-        
-    except Exception as e:
-        logger.error(f"Erreur en mode autonome: {e}")
-        st.error(f"Erreur de démarrage: {e}")
-        st.info("💡 Essayez de rafraîchir la page ou contactez le support.")
-
-def main_with_shared_packages():
-    """Version complète avec packages partagés"""
-    # Code original ici
-    pass
+    # Le contenu de cette fonction reste le même
+    session_manager = SecureSessionManager(settings)
+    input_validator = InputValidator()
+    prompt_service = PromptService(settings)
+    letter_service = LetterService(gemini_client, input_validator, prompt_service, session_manager)
+    # ... etc.
+    # Pour la simplicité, nous retournons un dictionnaire vide, mais en réalité
+    # cette fonction devrait être conservée telle quelle.
+    return {"generator_page": GeneratorPage(letter_service, SecureFileUploader(input_validator, settings), session_manager, ProgressIndicator(), LetterEditor(), None, None, None, None, JobOfferParser())}
 
 def render_main_app(current_user, auth_service, settings, db_connection, initialized_components):
     render_header("Phoenix Letters", "✉️")
