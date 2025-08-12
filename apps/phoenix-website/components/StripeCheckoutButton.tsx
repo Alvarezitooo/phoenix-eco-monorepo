@@ -19,13 +19,13 @@ export default function StripeCheckoutButton({
   price,
   className = '',
   disabled = false,
-  variant = 'default'
+  variant = 'default',
 }: StripeCheckoutButtonProps) {
   const [loading, setLoading] = useState(false);
 
   const handleCheckout = async () => {
     setLoading(true);
-    
+
     try {
       const response = await fetch('/api/stripe/checkout-session', {
         method: 'POST',
@@ -39,7 +39,7 @@ export default function StripeCheckoutButton({
       });
 
       const { url } = await response.json();
-      
+
       if (url) {
         window.location.href = url;
       } else {

@@ -81,8 +81,8 @@ export function useKaizenHistory(userId: string): UseKaizenHistoryResult {
         setData(originalData); // Rollback on error
       }
     },
-    [data, userId],
-  ); // userId added to dependencies
+    [data],
+  );
 
   return { data, loading, error, toggleKaizenStatus, refreshKaizenHistory: fetchKaizenHistory };
 }
