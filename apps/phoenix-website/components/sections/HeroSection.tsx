@@ -1,5 +1,6 @@
 import { Button } from '../ui/button';
 import { ArrowRight, Sparkles, Leaf } from 'lucide-react';
+import StripeCheckoutButton from '@/components/StripeCheckoutButton';
 import GreenAIBadge from '@/components/green/GreenAIBadge';
 import Image from 'next/image';
 
@@ -59,14 +60,13 @@ export default function HeroSection() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </a>
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-lg px-8 py-4 h-auto border-green-300 text-green-700 hover:bg-green-50"
-              asChild
-            >
-              <a href="/green-ai">Notre démarche écologique</a>
-            </Button>
+            <StripeCheckoutButton
+              priceId={process.env.NEXT_PUBLIC_STRIPE_PACK_PRICE_ID || 'price_pack_monthly'}
+              productName="Bundle Phoenix (Letters + CV)"
+              price="15,99€/mois"
+              label="Passer Premium"
+              className="text-lg px-8 py-4 h-auto bg-gradient-to-r from-purple-600 to-orange-600 hover:from-purple-700 hover:to-orange-700 text-white"
+            />
           </div>
 
           {/* Stats - Temporairement désactivé pour des raisons d'exactitude des données
