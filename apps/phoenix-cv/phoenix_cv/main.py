@@ -202,12 +202,12 @@ def render_tier_selector():
             """
         <div class="tier-selector">
             <h4>🆓 Gratuit</h4>
-            <ul>
-                <li>✅ <strong>1 CV par mois</strong></li>
-                <li>✅ <strong>Prompt magistral reconversion</strong></li>
-                <li>✅ <strong>Optimisation ATS de base (85%)</strong></li>
-                <li>✅ <strong>Génération IA avancée</strong></li>
-            </ul>
+            <div>
+                <p>✅ <strong>1 CV par mois</strong></p>
+                <p>✅ <strong>Prompt magistral reconversion</strong></p>
+                <p>✅ <strong>Optimisation ATS de base (85%)</strong></p>
+                <p>✅ <strong>Génération IA avancée</strong></p>
+            </div>
         </div>
         """, 
             unsafe_allow_html=True
@@ -227,14 +227,14 @@ def render_tier_selector():
             """
         <div class="tier-selector premium">
             <h4>⭐ Premium</h4>
-            <ul>
-                <li>✅ <strong>CV illimités</strong></li>
-                <li>✅ <strong>Prompt executive magistral</strong></li>
-                <li>✅ <strong>Optimisation ATS avancée (95%)</strong></li>
-                <li>✅ <strong>Analyse correspondance CV/Offre</strong></li>
-                <li>✅ <strong>Green AI intégré</strong></li>
-                <li>✅ <strong>Support prioritaire</strong></li>
-            </ul>
+            <div>
+                <p>✅ <strong>CV illimités</strong></p>
+                <p>✅ <strong>Prompt executive magistral</strong></p>
+                <p>✅ <strong>Optimisation ATS avancée (95%)</strong></p>
+                <p>✅ <strong>Analyse correspondance CV/Offre</strong></p>
+                <p>✅ <strong>Green AI intégré</strong></p>
+                <p>✅ <strong>Support prioritaire</strong></p>
+            </div>
         </div>
         """, 
             unsafe_allow_html=True
@@ -1126,12 +1126,12 @@ def render_ecosystem_page():
             <h3 style="color: #333;">📄 Phoenix CV</h3>
             <p style="color: #666; font-size: 0.9rem;">Générateur IA de CV optimisé pour reconversions</p>
             
-            <ul style="text-align: left; color: #333; font-size: 0.85rem;">
-                <li>✅ Prompts magistraux Gemini Pro</li>
-                <li>✅ Optimisation ATS avancée</li>
-                <li>✅ Spécialisé reconversions</li>
-                <li>✅ Green AI intégré</li>
-            </ul>
+            <div style="text-align: left; color: #333; font-size: 0.85rem;">
+                <p style="margin: 0.3rem 0;">✅ Prompts magistraux Gemini Pro</p>
+                <p style="margin: 0.3rem 0;">✅ Optimisation ATS avancée</p>
+                <p style="margin: 0.3rem 0;">✅ Spécialisé reconversions</p>
+                <p style="margin: 0.3rem 0;">✅ Green AI intégré</p>
+            </div>
             
             <div style="margin-top: 1rem;">
                 <span style="background: #007bff; color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem;">
@@ -1151,12 +1151,12 @@ def render_ecosystem_page():
             <h3 style="color: #333;">📝 Phoenix Letters</h3>
             <p style="color: #666; font-size: 0.9rem;">Générateur IA de lettres de motivation personnalisées</p>
             
-            <ul style="text-align: left; color: #333; font-size: 0.85rem;">
-                <li>✅ IA ultra-personnalisée</li>
-                <li>✅ Analyse d'entreprise poussée</li>
-                <li>✅ Première app française spécialisée</li>
-                <li>✅ Fonds solidaire intégré</li>
-            </ul>
+            <div style="text-align: left; color: #333; font-size: 0.85rem;">
+                <p style="margin: 0.3rem 0;">✅ IA ultra-personnalisée</p>
+                <p style="margin: 0.3rem 0;">✅ Analyse d'entreprise poussée</p>
+                <p style="margin: 0.3rem 0;">✅ Première app française spécialisée</p>
+                <p style="margin: 0.3rem 0;">✅ Fonds solidaire intégré</p>
+            </div>
             
             <div style="margin-top: 1rem;">
                 <a href="{phoenix_letters_url}" target="_blank" style="text-decoration: none;">
@@ -1178,12 +1178,12 @@ def render_ecosystem_page():
             <h3 style="color: #333;">🌐 Phoenix Site</h3>
             <p style="color: #666; font-size: 0.9rem;">Hub central de l'écosystème Phoenix</p>
             
-            <ul style="text-align: left; color: #333; font-size: 0.85rem;">
-                <li>✅ Dashboard unifié</li>
-                <li>✅ Trajectory Builder</li>
-                <li>✅ Smart Coach IA</li>
-                <li>✅ Métriques Green AI</li>
-            </ul>
+            <div style="text-align: left; color: #333; font-size: 0.85rem;">
+                <p style="margin: 0.3rem 0;">✅ Dashboard unifié</p>
+                <p style="margin: 0.3rem 0;">✅ Trajectory Builder</p>
+                <p style="margin: 0.3rem 0;">✅ Smart Coach IA</p>
+                <p style="margin: 0.3rem 0;">✅ Métriques Green AI</p>
+            </div>
             
             <div style="margin-top: 1rem;">
                 <a href="{phoenix_site_url}" target="_blank" style="text-decoration: none;">
@@ -2154,12 +2154,12 @@ def render_test_page():
         <h3 style="color: #333;">📄 Phoenix CV Test</h3>
         <p style="color: #666; font-size: 0.9rem;">Test du widget écosystème</p>
         
-        <ul style="text-align: left; color: #333; font-size: 0.85rem;">
-            <li>✅ Prompts magistraux Gemini Pro</li>
-            <li>✅ Optimisation ATS avancée</li>
-            <li>✅ Spécialisé reconversions</li>
-            <li>✅ Green AI intégré</li>
-        </ul>
+        <div style="text-align: left; color: #333; font-size: 0.85rem;">
+            <p>✅ Prompts magistraux Gemini Pro</p>
+            <p>✅ Optimisation ATS avancée</p>
+            <p>✅ Spécialisé reconversions</p>
+            <p>✅ Green AI intégré</p>
+        </div>
     </div>
     """
     

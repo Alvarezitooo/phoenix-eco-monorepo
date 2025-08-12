@@ -112,11 +112,11 @@ def render_pricing_page_secure():
             <h3>🆓 Gratuit</h3>
             <div class="price-tag">0€<small>/mois</small></div>
             <div class="features-list">
-                <li>🔒 3 générations/mois</li>
-                <li>🛡️ Templates sécurisés</li>
-                <li>📊 Export PDF basic</li>
-                <li>⚡ IA anti-injection</li>
-                <li>🔐 Anonymisation PII</li>
+                <p>🔒 3 générations/mois</p>
+                <p>🛡️ Templates sécurisés</p>
+                <p>📊 Export PDF basic</p>
+                <p>⚡ IA anti-injection</p>
+                <p>🔐 Anonymisation PII</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -129,13 +129,13 @@ def render_pricing_page_secure():
             <h3>📝 Phoenix Letters</h3>
             <div class="price-tag">9,99€<small>/mois</small></div>
             <div class="features-list">
-                <li>🔒 Lettres illimitées</li>
-                <li>🛡️ Analyses ATS avancées</li>
-                <li>🧠 Mirror Match précis</li>
-                <li>⚡ Smart Coach IA</li>
-                <li>📊 Templates exclusifs</li>
-                <li>🔐 Support prioritaire</li>
-                <li>📋 Export PDF premium</li>
+                <p>🔒 Lettres illimitées</p>
+                <p>🛡️ Analyses ATS avancées</p>
+                <p>🧠 Mirror Match précis</p>
+                <p>⚡ Smart Coach IA</p>
+                <p>📊 Templates exclusifs</p>
+                <p>🔐 Support prioritaire</p>
+                <p>📋 Export PDF premium</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -150,13 +150,13 @@ def render_pricing_page_secure():
             <h3>📄 Phoenix CV</h3>
             <div class="price-tag">7,99€<small>/mois</small></div>
             <div class="features-list">
-                <li>🔒 CV illimités</li>
-                <li>🛡️ Templates premium</li>
-                <li>🧠 ATS Optimizer avancé</li>
-                <li>⚡ Mirror Match précis</li>
-                <li>📊 Export multi-formats</li>
-                <li>🔐 Support prioritaire</li>
-                <li>📋 Analytics avancées</li>
+                <p>🔒 CV illimités</p>
+                <p>🛡️ Templates premium</p>
+                <p>🧠 ATS Optimizer avancé</p>
+                <p>⚡ Mirror Match précis</p>
+                <p>📊 Export multi-formats</p>
+                <p>🔐 Support prioritaire</p>
+                <p>📋 Analytics avancées</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -173,13 +173,13 @@ def render_pricing_page_secure():
             <div class="price-tag">15,99€<small>/mois</small></div>
             <p style="background: rgba(255,255,255,0.2); padding: 5px; border-radius: 10px; margin: 0.5rem 0;">Économie 1,99€</p>
             <div class="features-list">
-                <li>✨ Phoenix Letters complet</li>
-                <li>✨ Phoenix CV complet</li>
-                <li>🎁 Smart Coach universel</li>
-                <li>🎁 Mirror Match cross-platform</li>
-                <li>🎁 Analytics avancées</li>
-                <li>🎁 Support VIP prioritaire</li>
-                <li>🎁 Accès bêta features</li>
+                <p>✨ Phoenix Letters complet</p>
+                <p>✨ Phoenix CV complet</p>
+                <p>🎁 Smart Coach universel</p>
+                <p>🎁 Mirror Match cross-platform</p>
+                <p>🎁 Analytics avancées</p>
+                <p>🎁 Support VIP prioritaire</p>
+                <p>🎁 Accès bêta features</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
