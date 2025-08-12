@@ -32,6 +32,29 @@ from packages.phoenix_shared_ui.components.consent_banner import render_consent_
 st.toast("✅ VERSION DU 03/08/2025 - 09:15 AM CEST")
 
 
+def initiate_stripe_checkout(user_id: str, plan_id: str, user_email: str = None):
+    """
+    Initialise une session Stripe Checkout et redirige l'utilisateur.
+    """
+    success_url = st.secrets.get("BASE_URL") + "/?payment_status=success"
+    cancel_url = st.secrets.get("BASE_URL") + "/?payment_status=cancelled"
+
+    checkout_url = stripe_service.create_subscription_checkout(
+        user_id=user_id,
+        plan_id=plan_id,
+        success_url=success_url,
+        cancel_url=cancel_url,
+        user_email=user_email
+    )
+
+    if checkout_url:
+        st.info("Redirection vers la page de paiement Stripe...")
+        st.markdown(f"<meta http-equiv='refresh' content='0; url={checkout_url}'>", unsafe_allow_html=True)
+        st.stop() # Arrête l'exécution de l'application Streamlit
+    else:
+        st.error("Impossible de créer la session de paiement. Veuillez réessayer.")
+
+
 def safe_markdown(content: str):
     """Version locale qui fonctionne - remplace la version bugguée"""
     st.markdown(content, unsafe_allow_html=True)
@@ -829,9 +852,9 @@ def render_analyze_cv_page():
         )
 
         if st.button("⭐ Passer au Premium", type="primary"):
-            st.session_state["user_tier"] = "premium"
-            st.session_state["tier_selected"] = True
-            st.rerun()
+            user_id = st.session_state.get("user_id", "guest_user")
+            user_email = st.session_state.get("user_email", None)
+            initiate_stripe_checkout(user_id, "premium", user_email)
         return
 
     # Upload de CV
@@ -1085,9 +1108,9 @@ def render_pricing_page():
         )
 
         if st.button("⭐ Choisir Premium", type="primary", use_container_width=True):
-            st.session_state["user_tier"] = "premium"
-            st.session_state["tier_selected"] = True
-            st.success("✅ Niveau Premium activé !")
+            user_id = st.session_state.get("user_id", "guest_user")
+            user_email = st.session_state.get("user_email", None)
+            initiate_stripe_checkout(user_id, "premium", user_email)
 
     st.markdown("---")
     st.markdown(
@@ -1120,28 +1143,16 @@ def render_ecosystem_page():
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.markdown(
-            """
-        <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #007bff; text-align: center; height: 300px;">
-            <h3 style="color: #333;">📄 Phoenix CV</h3>
-            <p style="color: #666; font-size: 0.9rem;">Générateur IA de CV optimisé pour reconversions</p>
-            
-            <div style="text-align: left; color: #333; font-size: 0.85rem;">
-                <p style="margin: 0.3rem 0;">✅ Prompts magistraux Gemini Pro</p>
-                <p style="margin: 0.3rem 0;">✅ Optimisation ATS avancée</p>
-                <p style="margin: 0.3rem 0;">✅ Spécialisé reconversions</p>
-                <p style="margin: 0.3rem 0;">✅ Green AI intégré</p>
-            </div>
-            
-            <div style="margin-top: 1rem;">
-                <span style="background: #007bff; color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem;">
-                    ✅ VOUS ÊTES ICI
-                </span>
-            </div>
-        </div>
-        """, 
-            unsafe_allow_html=True
-        )
+        with st.container():
+            st.markdown("### 📄 Phoenix CV")
+            st.markdown("*Générateur IA de CV optimisé pour reconversions*")
+            st.markdown("""
+            - ✅ Prompts magistraux Gemini Pro
+            - ✅ Optimisation ATS avancée
+            - ✅ Spécialisé reconversions  
+            - ✅ Green AI intégré
+            """)
+            st.info("✅ VOUS ÊTES ICI")
 
     with col2:
         phoenix_letters_url = phoenix_bridge.get_app_url(PhoenixApp.LETTERS)
@@ -2148,23 +2159,19 @@ def render_test_page():
         st.error(f"❌ Erreur lors de l'exécution de safe_markdown locale : {e}")
     
     # Test des widgets problématiques
-    st.subheader("Test 4: Widget Écosystème Reproductible")
-    phoenix_html = """
-    <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #007bff; text-align: center;">
-        <h3 style="color: #333;">📄 Phoenix CV Test</h3>
-        <p style="color: #666; font-size: 0.9rem;">Test du widget écosystème</p>
-        
-        <div style="text-align: left; color: #333; font-size: 0.85rem;">
-            <p>✅ Prompts magistraux Gemini Pro</p>
-            <p>✅ Optimisation ATS avancée</p>
-            <p>✅ Spécialisé reconversions</p>
-            <p>✅ Green AI intégré</p>
-        </div>
-    </div>
-    """
+    st.subheader("Test 4: Widget Écosystème en Markdown Natif")
     
-    st.markdown(phoenix_html, unsafe_allow_html=True)
-    st.success("✅ Widget écosystème rendu avec st.markdown DIRECT")
+    with st.container():
+        st.markdown("### 📄 Phoenix CV Test")
+        st.markdown("*Test du widget écosystème*")
+        st.markdown("""
+        - ✅ Prompts magistraux Gemini Pro
+        - ✅ Optimisation ATS avancée  
+        - ✅ Spécialisé reconversions
+        - ✅ Green AI intégré
+        """)
+    
+    st.success("✅ Widget écosystème rendu en MARKDOWN NATIF")
     
     # Informations de debug
     st.subheader("🔍 Informations de Debug")

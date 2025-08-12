@@ -180,15 +180,14 @@ class PremiumCheckout:
             """, unsafe_allow_html=True)
             
             if st.button("🚀 S'abonner Letters", key="letters_premium", type="primary"):
-                # Si services disponibles → checkout dynamique; sinon fallback lien Stripe hébergé
+                # Si services disponibles → checkout dynamique
                 if self.subscription_service and self.stripe_service:
                     if not current_user_id or current_user_id == "guest":
                         st.warning("🔒 Connectez-vous pour procéder au paiement sécurisé.")
                     else:
                         self._handle_checkout(current_user_id, "premium")
                 else:
-                    st.markdown('<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00">', unsafe_allow_html=True)
-                    st.markdown('[Redirection vers Stripe...](https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00)')
+                    st.error("⚠️ Services de paiement non disponibles. Veuillez réessayer plus tard ou contacter le support.")
         
         # Phoenix CV Premium
         with col3:
@@ -209,8 +208,10 @@ class PremiumCheckout:
             """, unsafe_allow_html=True)
             
             if st.button("📄 S'abonner CV", key="cv_premium", type="primary"):
-                st.markdown('<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/00w28r9Br9260gTcss6EU02">', unsafe_allow_html=True)
-                st.markdown('[Redirection vers Stripe...](https://buy.stripe.com/00w28r9Br9260gTcss6EU02)')
+                if not current_user_id or current_user_id == "guest":
+                    st.warning("🔒 Connectez-vous pour procéder au paiement sécurisé.")
+                else:
+                    self._handle_checkout(current_user_id, "premium")
         
         # Phoenix Bundle
         with col4:
@@ -233,8 +234,10 @@ class PremiumCheckout:
             """, unsafe_allow_html=True)
             
             if st.button("🔥 Bundle Deal", key="bundle_premium", type="primary"):
-                st.markdown('<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/cNi14n9Brcei3t5akk6EU01">', unsafe_allow_html=True)
-                st.markdown('[Redirection vers Stripe...](https://buy.stripe.com/cNi14n9Brcei3t5akk6EU01)')
+                if not current_user_id or current_user_id == "guest":
+                    st.warning("🔒 Connectez-vous pour procéder au paiement sécurisé.")
+                else:
+                    self._handle_checkout(current_user_id, "bundle_premium")
         
         # Message de comparaison
         st.markdown("---")
@@ -377,10 +380,7 @@ class PremiumCheckout:
                     )
                     payment_session = future.result(timeout=20)
                 else:
-                    # Fallback: informer et rediriger vers lien hébergé
-                    st.warning("🧰 Service asynchrone indisponible. Redirection vers page Stripe hébergée.")
-                    st.markdown('<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00">', unsafe_allow_html=True)
-                    st.markdown('[Procéder au paiement](https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00)')
+                    st.error("⚠️ Le service de paiement asynchrone n'est pas disponible. Veuillez contacter le support.")
                     return
                 
                 # Redirection vers Stripe
