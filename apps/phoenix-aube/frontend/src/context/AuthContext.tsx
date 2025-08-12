@@ -20,11 +20,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Simuler une authentification (à remplacer par l'API Phoenix réelle)
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
-      // TODO: Remplacer par l'appel API Phoenix Auth
+      // Appel API Phoenix Auth via Supabase
       const response = await fetch('/api/v1/auth/login', {
         method: 'POST',
         headers: {
@@ -38,21 +37,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(userData.user);
         localStorage.setItem('phoenix_auth_token', userData.token);
       } else {
-        throw new Error('Échec de la connexion');
+        throw new Error('Email ou mot de passe incorrect');
       }
     } catch (error) {
       console.error('Erreur de connexion:', error);
-      // Mode démonstration - créer un utilisateur fictif
-      const demoUser: User = {
-        id: 'demo-user-' + Date.now(),
-        email,
-        firstName: 'Demo',
-        lastName: 'User',
-        isPremium: Math.random() > 0.5, // 50% chance d'être premium pour les tests
-        hasCompletedDiagnosis: false
-      };
-      setUser(demoUser);
-      localStorage.setItem('phoenix_auth_token', 'demo-token');
+      throw new Error('Échec de la connexion. Vérifiez vos identifiants.');
     } finally {
       setLoading(false);
     }
@@ -66,19 +55,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Vérifier le token au chargement
   useEffect(() => {
     const token = localStorage.getItem('phoenix_auth_token');
-    if (token && token === 'demo-token') {
-      // Mode démonstration
-      const demoUser: User = {
-        id: 'demo-user',
-        email: 'demo@phoenix.fr',
-        firstName: 'Demo',
-        lastName: 'User',
-        isPremium: true, // Pour les tests
-        hasCompletedDiagnosis: false
-      };
-      setUser(demoUser);
+    if (token) {
+      // Vérifier le token avec l'API Supabase
+      fetch('/api/v1/auth/verify', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Token invalide');
+      })
+      .then(userData => {
+        setUser(userData.user);
+      })
+      .catch(() => {
+        localStorage.removeItem('phoenix_auth_token');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   const value = {

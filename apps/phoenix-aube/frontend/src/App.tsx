@@ -63,8 +63,8 @@ const AppContent: React.FC = () => {
 
   // Formulaire de connexion simple
   const LoginForm = () => {
-    const [email, setEmail] = useState('demo@phoenix.fr');
-    const [password, setPassword] = useState('demo123');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleLogin = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -119,7 +119,7 @@ const AppContent: React.FC = () => {
           </form>
           
           <div className="mt-6 text-center text-sm text-gray-500">
-            Mode démonstration - utilisez les identifiants pré-remplis
+            Connectez-vous avec votre compte Phoenix
           </div>
         </div>
       </div>
