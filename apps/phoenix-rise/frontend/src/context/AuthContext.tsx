@@ -54,6 +54,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       setIsLoading(true);
+      
+      // Mode démo pour les credentials de test
+      if (email === 'demo@phoenix-rise.com' && password === 'demo123') {
+        const mockUser: User = {
+          id: 'demo-user-123',
+          email: 'demo@phoenix-rise.com',
+          firstName: 'Demo',
+          lastName: 'User',
+          isPremium: true,
+          createdAt: new Date().toISOString()
+        };
+        
+        localStorage.setItem('phoenix_auth_token', 'demo-token-123');
+        setUser(mockUser);
+        return true;
+      }
+
+      // Tentative avec le backend réel
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
