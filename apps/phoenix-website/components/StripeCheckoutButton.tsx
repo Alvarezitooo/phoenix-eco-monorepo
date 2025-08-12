@@ -11,6 +11,7 @@ interface StripeCheckoutButtonProps {
   className?: string;
   disabled?: boolean;
   variant?: 'default' | 'outline' | 'ghost';
+  label?: string; // libellé personnalisé du bouton
 }
 
 export default function StripeCheckoutButton({
@@ -20,6 +21,7 @@ export default function StripeCheckoutButton({
   className = '',
   disabled = false,
   variant = 'default',
+  label,
 }: StripeCheckoutButtonProps) {
   const [loading, setLoading] = useState(false);
 
@@ -78,7 +80,7 @@ export default function StripeCheckoutButton({
           Redirection...
         </>
       ) : (
-        `S'abonner - ${price}`
+        label || `S'abonner - ${price}`
       )}
     </Button>
   );

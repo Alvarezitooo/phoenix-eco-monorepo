@@ -25,11 +25,16 @@ from phoenix_cv.services.mirror_match_engine import mirror_match_engine
 from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
 from phoenix_cv.services.smart_coach import CoachingContext, smart_coach
 from phoenix_cv.utils.html_sanitizer import html_sanitizer
-from phoenix_cv.utils.safe_markdown import safe_markdown
+# from phoenix_cv.utils.safe_markdown import safe_markdown  # Commenté pour forcer st.markdown direct
 from phoenix_cv.ui.login_page import handle_authentication_flow
 from packages.phoenix_shared_ui.components.header import render_header as render_shared_header
 from packages.phoenix_shared_ui.components.consent_banner import render_consent_banner
 st.toast("✅ VERSION DU 03/08/2025 - 09:15 AM CEST")
+
+
+def safe_markdown(content: str):
+    """Version locale forcée pour corriger les problèmes d'affichage HTML"""
+    st.markdown(content, unsafe_allow_html=True)
 
 
 def safe_redirect(url: str, message: str = "🔄 Redirection..."):
@@ -338,7 +343,7 @@ def render_smart_coach_widget():
                             {insight.message}
                         </p>
                         
-                        {"<div style='margin-bottom: 1rem;'><strong style='color: " + urgency_color + "; font-size: 0.8rem;'>⚡ ACTIONS:</strong><br>" + "<br>".join(f"• {action}" for action in insight.quick_wins[:2]) + "</div>" if insight.quick_wins else ""}
+                        {f"<div style='margin-bottom: 1rem;'><strong style='color: {urgency_color}; font-size: 0.8rem;'>⚡ ACTIONS:</strong><br>{'<br>'.join(f'• {action}' for action in insight.quick_wins[:2])}</div>" if insight.quick_wins else ""}
                     </div>
                 </div>
                 """,
@@ -539,7 +544,7 @@ def render_home_page():
     )
 
     # Stats v3.0
-    safe_markdown(
+    st.markdown(
         """
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 2rem 0;">
     
@@ -562,7 +567,8 @@ def render_home_page():
         </div>
         
     </div>
-    """
+    """, 
+        unsafe_allow_html=True
     )
 
     # Recommandations écosystème pour les nouveaux utilisateurs

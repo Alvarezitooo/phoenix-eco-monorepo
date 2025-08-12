@@ -16,18 +16,19 @@ def render_pricing_page_secure():
     st.title("🔥 Phoenix Ecosystem - Solutions Reconversion")
 
     # Badge securite
-    safe_markdown(
+    st.markdown(
         """
     <div style="text-align: center; margin-bottom: 30px;">
         <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 20px; border-radius: 20px; font-weight: bold;">
             🛡️ CERTIFICATION SECURISE ENTERPRISE - ISO 27001 Compliant
         </span>
     </div>
-    """
+    """, 
+        unsafe_allow_html=True
     )
 
     # CSS pour les cartes de pricing
-    safe_markdown("""
+    st.markdown("""
     <style>
     .pricing-grid {
         display: grid;
@@ -99,14 +100,14 @@ def render_pricing_page_secure():
         margin-top: 1rem;
     }
     </style>
-    """)
+    """, unsafe_allow_html=True)
 
     # Grille de pricing pour les 4 plans
     col1, col2, col3, col4 = st.columns(4)
 
     # Plan Gratuit
     with col1:
-        safe_markdown("""
+        st.markdown("""
         <div class="pricing-card card-gratuit">
             <h3>🆓 Gratuit</h3>
             <div class="price-tag">0€<small>/mois</small></div>
@@ -118,12 +119,12 @@ def render_pricing_page_secure():
                 <li>🔐 Anonymisation PII</li>
             </div>
         </div>
-        """)
+        """, unsafe_allow_html=True)
         st.success("🎯 Plan actuel gratuit")
 
     # Phoenix Letters
     with col2:
-        safe_markdown("""
+        st.markdown("""
         <div class="pricing-card card-letters">
             <h3>📝 Phoenix Letters</h3>
             <div class="price-tag">9,99€<small>/mois</small></div>
@@ -137,14 +138,14 @@ def render_pricing_page_secure():
                 <li>📋 Export PDF premium</li>
             </div>
         </div>
-        """)
+        """, unsafe_allow_html=True)
         
         if st.button("🚀 S'abonner Letters", key="letters_btn", type="primary"):
             safe_redirect('https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00', "🔄 Redirection vers Stripe...")
 
     # Phoenix CV
     with col3:
-        safe_markdown("""
+        st.markdown("""
         <div class="pricing-card card-cv">
             <h3>📄 Phoenix CV</h3>
             <div class="price-tag">7,99€<small>/mois</small></div>
@@ -158,14 +159,14 @@ def render_pricing_page_secure():
                 <li>📋 Analytics avancées</li>
             </div>
         </div>
-        """)
+        """, unsafe_allow_html=True)
         
         if st.button("📄 S'abonner CV", key="cv_btn", type="primary"):
             safe_redirect('https://buy.stripe.com/00w28r9Br9260gTcss6EU02', "🔄 Redirection vers Stripe...")
 
     # Phoenix Bundle
     with col4:
-        safe_markdown("""
+        st.markdown("""
         <div class="pricing-card card-bundle">
             <div class="best-deal">🔥 BEST</div>
             <h3>🚀 Bundle Complet</h3>
@@ -181,21 +182,21 @@ def render_pricing_page_secure():
                 <li>🎁 Accès bêta features</li>
             </div>
         </div>
-        """)
+        """, unsafe_allow_html=True)
         
         if st.button("🔥 Bundle Deal", key="bundle_btn", type="primary"):
             safe_redirect('https://buy.stripe.com/cNi14n9Brcei3t5akk6EU01', "🔄 Redirection vers Stripe...")
 
     # Message de comparaison
     st.markdown("---")
-    safe_markdown("""
+    st.markdown("""
     <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px;">
         <p><strong>💡 Recommandation Phoenix :</strong></p>
         <p>🎯 <strong>Letters seul</strong> : Spécialisé lettres de motivation reconversion</p>
         <p>📄 <strong>CV seul</strong> : Optimisation CV et profil LinkedIn exclusivement</p>
         <p>🚀 <strong>Bundle</strong> : Solution complète reconversion avec économie de 1,99€/mois !</p>
     </div>
-    """)
+    """, unsafe_allow_html=True)
 
 
     # Certifications securite
