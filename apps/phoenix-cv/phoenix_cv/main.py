@@ -1028,7 +1028,7 @@ def render_pricing_page():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown(
+        safe_markdown(
             """
         <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e9ecef; height: 300px;">
             <h3 style="color: #333; margin-bottom: 0.5rem;">🆓 Gratuit</h3>
@@ -1044,8 +1044,7 @@ def render_pricing_page():
                 <p>❌ Support prioritaire</p>
             </div>
         </div>
-        """,
-            unsafe_allow_html=True,
+        """
         )
 
         if st.button(
