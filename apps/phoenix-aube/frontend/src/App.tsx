@@ -63,12 +63,22 @@ const AppContent: React.FC = () => {
 
   // Formulaire de connexion simple
   const LoginForm = () => {
-    const [email, setEmail] = useState('');
+    // Persistance des données du formulaire pour éviter la perte lors des refresh
+    const [email, setEmail] = useState(localStorage.getItem('phoenix_login_email') || '');
     const [password, setPassword] = useState('');
 
     const handleLogin = async (e: React.FormEvent) => {
       e.preventDefault();
+      // Sauvegarder l'email pour éviter la perte
+      localStorage.setItem('phoenix_login_email', email);
       await login(email, password);
+    };
+
+    // Sauvegarder l'email à chaque modification
+    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newEmail = e.target.value;
+      setEmail(newEmail);
+      localStorage.setItem('phoenix_login_email', newEmail);
     };
 
     return (
@@ -91,7 +101,7 @@ const AppContent: React.FC = () => {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="votre@email.com"
               />

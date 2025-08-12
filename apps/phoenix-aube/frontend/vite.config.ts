@@ -6,6 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+    hmr: {
+      // Désactiver HMR sur les pages d'auth pour éviter les refresh intempestifs
+      overlay: false,
+    },
     proxy: {
       // Proxy API calls vers le FastAPI backend existant
       '/api': {
