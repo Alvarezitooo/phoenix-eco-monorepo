@@ -2163,8 +2163,8 @@ def render_test_page():
     </div>
     """
     
-    safe_markdown(phoenix_html)
-    st.success("✅ Widget écosystème rendu avec safe_markdown LOCALE")
+    st.markdown(phoenix_html, unsafe_allow_html=True)
+    st.success("✅ Widget écosystème rendu avec st.markdown DIRECT")
     
     # Informations de debug
     st.subheader("🔍 Informations de Debug")
