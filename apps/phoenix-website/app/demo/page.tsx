@@ -8,12 +8,10 @@ export default function DemoPage() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 py-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Démonstration Phoenix
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Démonstration Phoenix</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Découvrez la puissance de Phoenix avant de vous abonner. 
-            Testez nos outils gratuitement et voyez la différence !
+            Découvrez la puissance de Phoenix avant de vous abonner. Testez nos outils gratuitement
+            et voyez la différence !
           </p>
         </div>
 
@@ -35,11 +33,11 @@ export default function DemoPage() {
                 <p className="text-sm text-orange-700">✓ Valorisation de votre parcours</p>
                 <p className="text-sm text-orange-700">✓ Export PDF professionnel</p>
               </div>
-              
+
               <div className="space-y-2">
-                <a 
-                  href="https://phoenix-letters.streamlit.app/" 
-                  target="_blank" 
+                <a
+                  href="https://phoenix-letters.streamlit.app/"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="block"
                 >
@@ -70,11 +68,11 @@ export default function DemoPage() {
                 <p className="text-sm text-blue-700">✓ Optimisation mots-clés</p>
                 <p className="text-sm text-blue-700">✓ Score de compatibilité</p>
               </div>
-              
+
               <div className="space-y-2">
-                <a 
-                  href="https://phoenix-cv.streamlit.app/" 
-                  target="_blank" 
+                <a
+                  href="https://phoenix-cv.streamlit.app/"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="block"
                 >
@@ -105,11 +103,11 @@ export default function DemoPage() {
                 <p className="text-sm text-purple-700">✓ Journal de motivation</p>
                 <p className="text-sm text-purple-700">✓ Suivi de progression</p>
               </div>
-              
+
               <div className="space-y-2">
-                <a 
-                  href="https://phoenix-rise.vercel.app/" 
-                  target="_blank" 
+                <a
+                  href="https://phoenix-rise.vercel.app/"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="block"
                 >
