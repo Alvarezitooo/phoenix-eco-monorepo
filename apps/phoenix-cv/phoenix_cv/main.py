@@ -550,7 +550,7 @@ def render_home_page():
     )
 
     # Stats v3.0
-    st.markdown(
+    safe_markdown(
         """
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 2rem 0;">
     
@@ -573,8 +573,7 @@ def render_home_page():
         </div>
         
     </div>
-    """,
-        unsafe_allow_html=True,
+    """
     )
 
     # Recommandations écosystème pour les nouveaux utilisateurs
@@ -1948,7 +1947,7 @@ def render_trajectory_builder_page():
 
     for i, testimonial in enumerate(testimonials):
         with cols[i]:
-            st.markdown(
+            safe_markdown(
                 f"""
             <div style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e9ecef; height: 250px; display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
@@ -1966,15 +1965,14 @@ def render_trajectory_builder_page():
                     </p>
                 </div>
             </div>
-            """,
-                unsafe_allow_html=True,
+            """
             )
 
 
 def render_footer():
     """Footer de l'application"""
     safe_markdown("---")
-    st.markdown(
+    safe_markdown(
         """
     <div style="text-align: center; color: #666; padding: 1rem;">
         <p>🚀 <strong>Phoenix CV Perfect v3.0</strong> - Prompts Magistraux by Gemini Pro</p>
