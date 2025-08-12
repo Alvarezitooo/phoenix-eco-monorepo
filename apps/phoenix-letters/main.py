@@ -308,8 +308,14 @@ def main():
 
     current_user = auth_middleware.get_current_user()
     
-    # 🔬 BANNIÈRE RECHERCHE-ACTION PHOENIX
-    render_research_action_banner()
+    # 🔬 BANNIÈRE RECHERCHE-ACTION PHOENIX (désactivable via ENV)
+    try:
+        import os
+        enable_banner = os.getenv("ENABLE_RESEARCH_BANNER", "false").lower() == "true"
+    except Exception:
+        enable_banner = False
+    if enable_banner:
+        render_research_action_banner()
     
     # 🔮 PROTOCOLE RENAISSANCE - Vérification si utilisateur connecté
     if current_user and hasattr(current_user, 'id'):

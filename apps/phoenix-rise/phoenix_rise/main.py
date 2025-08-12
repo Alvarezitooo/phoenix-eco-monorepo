@@ -258,8 +258,14 @@ def main():
 
     # Vérification de l'authentification
     if 'phoenix_user' in st.session_state:
-        # 🔬 BANNIÈRE RECHERCHE-ACTION PHOENIX
-        render_research_action_banner()
+        # 🔬 BANNIÈRE RECHERCHE-ACTION PHOENIX (désactivable via ENV)
+        try:
+            import os
+            enable_banner = os.getenv("ENABLE_RESEARCH_BANNER", "false").lower() == "true"
+        except Exception:
+            enable_banner = False
+        if enable_banner:
+            render_research_action_banner()
         
         # Interface principale du Dojo Mental
         render_dojo_mental_interface()
