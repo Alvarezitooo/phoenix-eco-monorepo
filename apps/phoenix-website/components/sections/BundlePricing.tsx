@@ -36,6 +36,7 @@ const BundlePricing: React.FC = () => {
               priceId={process.env.NEXT_PUBLIC_STRIPE_PACK_PRICE_ID || 'price_pack_monthly'}
               productName="Bundle Phoenix (Letters + CV)"
               price="15,99€/mois"
+              label="Découvrir Bundle Phoenix"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             />
           </CardContent>

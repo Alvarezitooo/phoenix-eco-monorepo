@@ -68,17 +68,19 @@ const IndividualAppPricing: React.FC = () => {
               </li>
             </ul>
             <div className="space-y-2">
+              <Link href="/demo">
+                <Button
+                  variant="outline"
+                  className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
+                >
+                  Tester Gratuitement
+                </Button>
+              </Link>
               <StripeCheckoutButton
                 priceId={process.env.NEXT_PUBLIC_STRIPE_LETTERS_PRICE_ID || 'price_letters_monthly'}
                 productName="Phoenix Letters"
                 price="9,99€/mois"
-                variant="outline"
-                className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
-              />
-              <StripeCheckoutButton
-                priceId={process.env.NEXT_PUBLIC_STRIPE_LETTERS_PRICE_ID || 'price_letters_monthly'}
-                productName="Phoenix Letters"
-                price="9,99€/mois"
+                label="Tester Letters Premium"
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white"
               />
             </div>
@@ -109,17 +111,19 @@ const IndividualAppPricing: React.FC = () => {
               </li>
             </ul>
             <div className="space-y-2">
+              <Link href="/demo">
+                <Button
+                  variant="outline"
+                  className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
+                >
+                  Tester Gratuitement
+                </Button>
+              </Link>
               <StripeCheckoutButton
                 priceId={process.env.NEXT_PUBLIC_STRIPE_CV_PRICE_ID || 'price_cv_monthly'}
                 productName="Phoenix CV"
                 price="7,99€/mois"
-                variant="outline"
-                className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
-              />
-              <StripeCheckoutButton
-                priceId={process.env.NEXT_PUBLIC_STRIPE_CV_PRICE_ID || 'price_cv_monthly'}
-                productName="Phoenix CV"
-                price="7,99€/mois"
+                label="Tester CV Premium"
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white"
               />
             </div>
