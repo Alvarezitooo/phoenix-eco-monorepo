@@ -2,6 +2,8 @@ import React from 'react';
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import StripeCheckoutButton from '../StripeCheckoutButton';
+import Link from 'next/link';
 
 const IndividualAppPricing: React.FC = () => {
   return (
@@ -65,15 +67,19 @@ const IndividualAppPricing: React.FC = () => {
                 </small>
               </li>
             </ul>
-            <a
-              href="https://phoenix-letters.streamlit.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-                Tester Letters Premium
-              </Button>
-            </a>
+            <div className="space-y-2">
+              <Link href="/demo">
+                <Button variant="outline" className="w-full border-purple-600 text-purple-600 hover:bg-purple-50">
+                  Tester Gratuitement
+                </Button>
+              </Link>
+              <StripeCheckoutButton
+                priceId={process.env.NEXT_PUBLIC_STRIPE_LETTERS_PRICE_ID || 'price_letters_monthly'}
+                productName="Phoenix Letters"
+                price="9,99€/mois"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+              />
+            </div>
             <p className="text-center text-sm text-gray-500">vs 23,70€ Zety</p>
           </CardContent>
         </Card>
@@ -100,11 +106,19 @@ const IndividualAppPricing: React.FC = () => {
                 <Check className="h-5 w-5 text-green-500 mr-2" /> Passe filtres ATS
               </li>
             </ul>
-            <a href="https://phoenix-cv.streamlit.app/" target="_blank" rel="noopener noreferrer">
-              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-                Tester CV Premium
-              </Button>
-            </a>
+            <div className="space-y-2">
+              <Link href="/demo">
+                <Button variant="outline" className="w-full border-purple-600 text-purple-600 hover:bg-purple-50">
+                  Tester Gratuitement
+                </Button>
+              </Link>
+              <StripeCheckoutButton
+                priceId={process.env.NEXT_PUBLIC_STRIPE_CV_PRICE_ID || 'price_cv_monthly'}
+                productName="Phoenix CV"
+                price="7,99€/mois"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+              />
+            </div>
             <p className="text-center text-sm text-gray-500">vs outils CV premium</p>
           </CardContent>
         </Card>
@@ -131,9 +145,16 @@ const IndividualAppPricing: React.FC = () => {
                 <Check className="h-5 w-5 text-green-500 mr-2" /> Plan de carrière
               </li>
             </ul>
-            <Button className="w-full bg-gray-400 text-white" disabled>
-              Bientôt disponible
-            </Button>
+            <div className="space-y-2">
+              <Link href="/demo">
+                <Button variant="outline" className="w-full border-purple-600 text-purple-600 hover:bg-purple-50">
+                  Tester la Démo
+                </Button>
+              </Link>
+              <Button className="w-full bg-gray-400 text-white" disabled>
+                Bientôt disponible
+              </Button>
+            </div>
             <p className="text-center text-sm text-gray-500">vs coaching 50€/h</p>
           </CardContent>
         </Card>

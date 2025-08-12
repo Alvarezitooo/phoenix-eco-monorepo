@@ -386,7 +386,7 @@ export default function EcosystemSection() {
               Commencez gratuitement avec Phoenix Letters. Chaque étape de votre parcours 
               enrichit votre trajectory personnalisée.
             </p>
-            <Link href="https://phoenix-letters.streamlit.app/" target="_blank">
+            <Link href="/demo">
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white px-8 py-3 text-lg"

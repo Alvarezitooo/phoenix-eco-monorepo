@@ -26,7 +26,7 @@ export default function CTASection() {
               className="bg-white text-orange-600 hover:bg-orange-50 text-lg px-8 py-4 h-auto"
               asChild
             >
-              <a href="https://phoenix-letters.streamlit.app/" target="_blank" rel="noopener noreferrer">
+              <a href="/demo">
                 Commencer gratuitement
                 <ArrowRight className="ml-2 h-5 w-5" />
               </a>
