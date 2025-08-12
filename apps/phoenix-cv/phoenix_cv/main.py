@@ -25,30 +25,17 @@ from phoenix_cv.services.mirror_match_engine import mirror_match_engine
 from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
 from phoenix_cv.services.smart_coach import CoachingContext, smart_coach
 from phoenix_cv.utils.html_sanitizer import html_sanitizer
+from phoenix_cv.utils.safe_markdown import safe_markdown
 from phoenix_cv.ui.login_page import handle_authentication_flow
 from packages.phoenix_shared_ui.components.header import render_header as render_shared_header
 from packages.phoenix_shared_ui.components.consent_banner import render_consent_banner
 st.toast("✅ VERSION DU 03/08/2025 - 09:15 AM CEST")
 
 
-def safe_markdown(content: str, allow_styles: bool = True):
-    """Rendu markdown sécurisé avec protection XSS"""
-    sanitized_content = (
-        html_sanitizer.sanitize_ui_component(content)
-        if allow_styles
-        else html_sanitizer.sanitize_user_input(content)
-    )
-    st.markdown(sanitized_content, unsafe_allow_html=True)
-
 def safe_redirect(url: str, message: str = "🔄 Redirection..."):
-    """Effectue une redirection sécurisée via JavaScript"""
+    """Effectue une redirection sécurisée via Streamlit link_button"""
     st.success(message)
-    st.markdown(f"""
-        <script>
-            window.open('{url}', '_blank');
-        </script>
-        """, unsafe_allow_html=True)
-    st.markdown(f'[👉 Cliquez ici si la redirection ne marche pas]({url})')
+    st.link_button("👉 Ouvrir le lien", url, type="primary")
 
 
 def configure_page():
