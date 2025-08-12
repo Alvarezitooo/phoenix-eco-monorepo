@@ -19,6 +19,12 @@ from infrastructure.database.db_connection import DatabaseConnection
 from shared.exceptions.specific_exceptions import SubscriptionError, DatabaseError
 from infrastructure.security.input_validator import InputValidator
 
+# Import Event Bridge pour data pipeline
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../..')) # Ajustez le chemin si nécessaire
+from phoenix_event_bridge import PhoenixEventBridge, PhoenixEventData, PhoenixEventType
+
 logger = logging.getLogger(__name__)
 
 
@@ -232,6 +238,10 @@ class SubscriptionService:
             True si succès
         """
         try:
+            # Récupérer l'ancien tier avant la mise à jour
+            old_subscription = await self.get_user_subscription(user_id)
+            old_tier = old_subscription.current_tier if old_subscription else UserTier.FREE
+
             client = self.db.get_client()
             
             subscription_data = {
@@ -260,6 +270,25 @@ class SubscriptionService:
             # Mise à jour des stats utilisateur
             await self._update_user_stats_on_tier_change(user_id, new_tier)
             
+            # Publier l'événement UserTierUpdated
+            try:
+                event_data = PhoenixEventData(
+                    event_type=PhoenixEventType.USER_TIER_UPDATED,
+                    user_id=user_id,
+                    app_source="phoenix-letters", # Ou "phoenix-auth" si c'est le service qui gère l'auth
+                    payload={
+                        "old_tier": old_tier.value,
+                        "new_tier": new_tier.value,
+                        "subscription_id": subscription_id,
+                        "customer_id": customer_id
+                    }
+                )
+                event_bridge = PhoenixEventBridge()
+                await event_bridge.publish_event(event_data)
+                logger.info(f"✅ Event USER_TIER_UPDATED published for user {user_id}")
+            except Exception as e:
+                logger.warning(f"⚠️ Failed to publish USER_TIER_UPDATED event: {e}")
+
             logger.info(f"Tier utilisateur {user_id} mis à jour vers {new_tier.value}")
             return True
             

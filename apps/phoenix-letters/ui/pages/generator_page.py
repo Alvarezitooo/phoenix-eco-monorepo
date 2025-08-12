@@ -22,6 +22,7 @@ from ui.components.premium_results_renderer import (
     ResultSection,
 )
 from ui.components.progress_bar import ProgressIndicator
+from ui.components.paywall_modal import show_paywall_modal
 
 # Event-Sourcing (import conditionnel)
 try:
@@ -36,9 +37,26 @@ logger = logging.getLogger(__name__)
 
 # Décorateur de remplacement simple pour éviter les erreurs
 def premium_feature(feature_name: str):
-    """Décorateur de remplacement pour les fonctionnalités premium."""
+    """Décorateur pour les fonctionnalités premium."""
     def decorator(func):
-        return func  # Pas de restriction pour le moment
+        def wrapper(*args, **kwargs):
+            user_tier = st.session_state.get("user_tier", UserTier.FREE)
+            if isinstance(user_tier, str):
+                try:
+                    user_tier = UserTier(user_tier)
+                except ValueError:
+                    user_tier = UserTier.FREE
+
+            if user_tier == UserTier.FREE:
+                show_paywall_modal(
+                    title=f"Fonctionnalité Premium : {feature_name}",
+                    message=f"Cette fonctionnalité est réservée aux utilisateurs Premium. Passez à Phoenix Premium pour débloquer {feature_name} et bien plus encore !",
+                    cta_label="Passer Premium pour 9,99€/mois",
+                    plan_id="premium"
+                )
+                return None # Arrête l'exécution de la fonction décorée
+            return func(*args, **kwargs)
+        return wrapper
     return decorator
 
 
@@ -820,9 +838,18 @@ class GeneratorPage:
                         st.switch_page("Offres Premium")
 
         except ValidationError as e:
-            st.warning(f"💡 **Petit ajustement nécessaire** : {e}")
-            st.info("✨ **Conseil** : Vérifiez que vos fichiers sont bien uploadés et que tous les champs requis sont remplis.")
-            logger.warning(f"Validation error in generation: {e}")
+            # Vérifier si la ValidationError est due à la limite de génération
+            if "limit" in str(e).lower(): # Simple vérification du message d'erreur
+                show_paywall_modal(
+                    title="Vous avez atteint votre limite gratuite.",
+                    message=str(e) + " Passez à Phoenix Premium pour des générations illimitées, des modèles exclusifs et l'analyse 'Mirror Match'.",
+                    cta_label="Passer Premium pour 9,99€/mois",
+                    plan_id="premium"
+                )
+            else:
+                st.warning(f"💡 **Petit ajustement nécessaire** : {e}")
+                st.info("✨ **Conseil** : Vérifiez que vos fichiers sont bien uploadés et que tous les champs requis sont remplis.")
+                logger.warning(f"Validation error in generation: {e}")
         except LetterGenerationError as e:
             st.warning(f"🔄 **Génération temporairement indisponible** : {e}")
             st.info("⏰ **Pas de panique** : Essayez à nouveau dans quelques instants. Si le problème persiste, contactez notre support.")

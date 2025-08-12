@@ -12,6 +12,42 @@ const IndividualAppPricing: React.FC = () => {
         💰 Tarification Honnête : Applications Individuelles
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+        {/* Gratuit */}
+        <Card className="border-2 border-gray-200 shadow-lg">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-gray-700">Gratuit</CardTitle>
+            <p className="text-gray-600 mt-2">Découvrez Phoenix</p>
+            <div className="mt-4">
+              <span className="text-4xl font-bold text-gray-800">0€</span>
+              <span className="text-gray-600">/mois</span>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <ul className="space-y-2 text-gray-700">
+              <li className="flex items-center">
+                <Check className="h-5 w-5 text-green-500 mr-2" /> 3 lettres/mois (Phoenix Letters)
+              </li>
+              <li className="flex items-center">
+                <Check className="h-5 w-5 text-green-500 mr-2" /> 1 CV/mois (Phoenix CV)
+              </li>
+              <li className="flex items-center">
+                <Check className="h-5 w-5 text-green-500 mr-2" /> Templates de base
+              </li>
+              <li className="flex items-center">
+                <Check className="h-5 w-5 text-green-500 mr-2" /> Support communauté
+              </li>
+            </ul>
+            <Link href="/demo">
+              <Button
+                variant="outline"
+                className="w-full border-gray-600 text-gray-600 hover:bg-gray-50"
+              >
+                Commencer Gratuitement
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
         {/* Phoenix Letters */}
         <Card className="border-2 border-purple-200 shadow-lg">
           <CardHeader className="text-center">

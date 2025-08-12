@@ -27,6 +27,7 @@ from phoenix_cv.services.smart_coach import CoachingContext, smart_coach
 from phoenix_cv.utils.html_sanitizer import html_sanitizer
 # from phoenix_cv.utils.safe_markdown import safe_markdown  # DÉSACTIVÉ - problème de rendu HTML
 from phoenix_cv.ui.login_page import handle_authentication_flow
+from phoenix_cv.ui.components.paywall_modal import show_paywall_modal
 from packages.phoenix_shared_ui.components.header import render_header as render_shared_header
 from packages.phoenix_shared_ui.components.consent_banner import render_consent_banner
 st.toast("✅ VERSION DU 03/08/2025 - 09:15 AM CEST")
@@ -823,26 +824,12 @@ def render_analyze_cv_page():
     user_tier = st.session_state.get("user_tier", "gratuit")
 
     if user_tier != "premium":
-        safe_markdown(
-            """
-        <div style="text-align: center; padding: 2rem; background: #fff3cd; border-radius: 10px;">
-            <h3>⭐ Fonctionnalité Premium</h3>
-            <p>L'analyse de CV est disponible uniquement en version Premium.</p>
-            <p><strong>Passez au Premium pour accéder à :</strong></p>
-            <ul style="text-align: left; max-width: 400px; margin: 0 auto;">
-                <li>✅ Analyse de correspondance CV/Offre</li>
-                <li>✅ Score de compatibilité détaillé</li>
-                <li>✅ Recommandations d'optimisation</li>
-                <li>✅ Mots-clés manquants identifiés</li>
-            </ul>
-        </div>
-        """
+        show_paywall_modal(
+            title="Fonctionnalité Premium",
+            message="L'analyse de CV est disponible uniquement en version Premium. Passez à Phoenix Premium pour accéder à :<br><ul><li>✅ Analyse de correspondance CV/Offre</li><li>✅ Score de compatibilité détaillé</li><li>✅ Recommandations d'optimisation</li><li><li>✅ Mots-clés manquants identifiés</li></ul>",
+            cta_label="Passer Premium pour 9,99€/mois",
+            plan_id="premium"
         )
-
-        if st.button("⭐ Passer au Premium", type="primary"):
-            user_id = st.session_state.get("user_id", "guest_user")
-            user_email = st.session_state.get("user_email", None)
-            initiate_stripe_checkout(user_id, "premium", user_email)
         return
 
     # Upload de CV

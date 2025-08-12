@@ -7,7 +7,8 @@ import streamlit as st
 import uuid
 from phoenix_cv.models.user_profile import UserProfile
 from phoenix_cv.models.phoenix_user import UserTier
-from phoenix_cv.services.secure_session_manager import secure_session
+from phoenix_cv.utils.secure_session_manager import secure_session
+from phoenix_cv.ui.components.paywall_modal import show_paywall_modal
 from phoenix_cv.utils.exceptions import SecurityException, ValidationException
 from phoenix_cv.utils.safe_markdown import safe_markdown
 from phoenix_cv.utils.secure_logging import secure_logger
@@ -21,9 +22,13 @@ def render_create_cv_page_secure(gemini_client, display_generated_cv_secure_func
     # Verification des limites securisees
     user_tier = st.session_state.get("user_tier", UserTier.FREE)
     can_create, limit_message = secure_session.check_limits(user_tier)
-
     if not can_create:
-        st.error(limit_message)
+        show_paywall_modal(
+            title="Vous avez atteint votre limite gratuite.",
+            message=limit_message + " Passez à Phoenix Premium pour des CV illimités, des modèles exclusifs et l'analyse 'Mirror Match'.",
+            cta_label="Passer Premium pour 9,99€/mois",
+            plan_id="premium" # Assurez-vous que c'est le bon plan_id pour Phoenix CV
+        )
         return
 
     # Indicateurs de securite

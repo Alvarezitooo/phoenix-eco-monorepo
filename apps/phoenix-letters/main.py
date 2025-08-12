@@ -374,6 +374,26 @@ def main():
 
     initialized_components = _initialize_app_components(settings, db_connection, gemini_client)
 
+    # Bannière de mise à niveau pour les utilisateurs Free
+    if current_user and current_user.user_tier == UserTier.FREE:
+        st.markdown(
+            """
+            <div style="background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%); padding: 0.8rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <p style="margin: 0; font-size: 0.95rem; font-weight: 500; color: #333;">
+                    Vous utilisez la version gratuite. Libérez toute la puissance de Phoenix.
+                </p>
+                <div style="margin-top: 0.5rem;">
+                    <a href="/premium" target="_self" style="text-decoration: none;">
+                        <button style="background: #764ba2; color: white; border: none; padding: 0.4rem 1rem; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85rem;">
+                            Voir les offres
+                        </button>
+                    </a>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
     _route_app_pages(current_user, auth_middleware, settings, db_connection, initialized_components)
 
 if __name__ == "__main__":
