@@ -54,11 +54,11 @@ const nextConfig = {
             // SECURITY: lock down CSP. Consider using nonces/hashes if inline styles/scripts are needed.
             value: [
               "default-src 'self'",
-              "script-src 'self'",
+              "script-src 'self' https://js.stripe.com",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https:",
               "font-src 'self' data:",
-              `connect-src 'self' https://*.supabase.co http://localhost:8000 https://api.stripe.com ${connectSrcExtras}`.trim(),
+              `connect-src 'self' https://*.supabase.co http://localhost:8000 https://api.stripe.com https://js.stripe.com ${connectSrcExtras}`.trim(),
               "frame-ancestors 'none'",
             ].join('; '),
           },

@@ -33,7 +33,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}/cancel`,
       });
-      res.status(200).json({ url: session.url });
+      // retourner l'id pour Stripe.js et url en fallback
+      res.status(200).json({ id: session.id, url: session.url });
     } catch (err: any) {
       console.error('Stripe checkout session error', { error: err?.message || String(err) });
       res.status(err?.statusCode || 500).json({ message: err?.message || 'Erreur Stripe' });

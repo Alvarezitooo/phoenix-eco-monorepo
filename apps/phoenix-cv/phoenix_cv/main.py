@@ -25,14 +25,16 @@ from phoenix_cv.services.mirror_match_engine import mirror_match_engine
 from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
 from phoenix_cv.services.smart_coach import CoachingContext, smart_coach
 from phoenix_cv.utils.html_sanitizer import html_sanitizer
-from phoenix_cv.utils.safe_markdown import safe_markdown
+# from phoenix_cv.utils.safe_markdown import safe_markdown  # DÉSACTIVÉ - problème de rendu HTML
 from phoenix_cv.ui.login_page import handle_authentication_flow
 from packages.phoenix_shared_ui.components.header import render_header as render_shared_header
 from packages.phoenix_shared_ui.components.consent_banner import render_consent_banner
 st.toast("✅ VERSION DU 03/08/2025 - 09:15 AM CEST")
 
 
-# Fonction safe_markdown supprimée - utilisation de la version centralisée dans utils/
+def safe_markdown(content: str):
+    """Version locale qui fonctionne - remplace la version bugguée"""
+    st.markdown(content, unsafe_allow_html=True)
 
 
 def safe_redirect(url: str, message: str = "🔄 Redirection..."):
@@ -2136,14 +2138,14 @@ def render_test_page():
     """
     st.markdown(html_list, unsafe_allow_html=True)
     
-    # Test avec la fonction importée
-    st.subheader("Test 3: Fonction safe_markdown importée")
+    # Test avec la fonction locale
+    st.subheader("Test 3: Fonction safe_markdown locale")
     try:
-        test_html = "<div style='padding: 10px; border: 2px solid green; background: #e6ffe6;'><strong>✅ Test safe_markdown importé réussi!</strong></div>"
+        test_html = "<div style='padding: 10px; border: 2px solid green; background: #e6ffe6;'><strong>✅ Test safe_markdown LOCAL réussi!</strong></div>"
         safe_markdown(test_html)
-        st.success("✅ Import et exécution de safe_markdown réussis.")
+        st.success("✅ Exécution de safe_markdown locale réussie.")
     except Exception as e:
-        st.error(f"❌ Erreur lors de l'import ou l'exécution de safe_markdown : {e}")
+        st.error(f"❌ Erreur lors de l'exécution de safe_markdown locale : {e}")
     
     # Test des widgets problématiques
     st.subheader("Test 4: Widget Écosystème Reproductible")
@@ -2161,12 +2163,8 @@ def render_test_page():
     </div>
     """
     
-    try:
-        safe_markdown(phoenix_html)
-        st.success("✅ Widget écosystème rendu avec safe_markdown")
-    except Exception as e:
-        st.markdown(phoenix_html, unsafe_allow_html=True)
-        st.warning(f"⚠️ Widget rendu avec st.markdown direct (fallback) - Erreur: {e}")
+    safe_markdown(phoenix_html)
+    st.success("✅ Widget écosystème rendu avec safe_markdown LOCALE")
     
     # Informations de debug
     st.subheader("🔍 Informations de Debug")

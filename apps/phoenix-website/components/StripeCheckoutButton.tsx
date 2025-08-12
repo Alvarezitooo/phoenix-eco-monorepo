@@ -3,6 +3,7 @@
 import { Button } from './ui/button';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { loadStripe } from '@stripe/stripe-js';
 
 interface StripeCheckoutButtonProps {
   priceId: string;
@@ -29,6 +30,11 @@ export default function StripeCheckoutButton({
     setLoading(true);
 
     try {
+      const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string | undefined;
+      if (!publishableKey) {
+        throw new Error('Stripe non configuré côté client (clé publique manquante).');
+      }
+
       const response = await fetch('/api/stripe/checkout-session', {
         method: 'POST',
         headers: {
@@ -48,15 +54,24 @@ export default function StripeCheckoutButton({
         throw new Error(message);
       }
 
-      const { url } = payload as { url?: string };
+      const { id, url } = payload as { id?: string; url?: string };
+
+      if (id) {
+        const stripe = await loadStripe(publishableKey);
+        if (!stripe) throw new Error('Impossible de charger Stripe.js');
+        const result = await stripe.redirectToCheckout({ sessionId: id });
+        if (result.error) {
+          throw new Error(result.error.message || 'Redirection Stripe échouée');
+        }
+        return;
+      }
 
       if (url) {
-        // Redirection fiable
         window.location.assign(url);
         return;
       }
 
-      throw new Error('URL Stripe manquante. Vérifiez STRIPE_SECRET_KEY et les price IDs.');
+      throw new Error('Session Stripe manquante. Vérifiez la configuration serveur.');
     } catch (error) {
       console.error('Checkout error:', error);
       const message =
