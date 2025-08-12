@@ -55,15 +55,17 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Configuration CORS pour Streamlit Cloud
+# Configuration CORS pilotée par variables d'environnement
+# IRIS_ALLOWED_ORIGINS peut contenir une liste séparée par des virgules
+_iris_allowed_origins_env = os.getenv(
+    "IRIS_ALLOWED_ORIGINS",
+    "https://phoenix-eco-monorepo.vercel.app,https://phoenix-letters.streamlit.app,https://*.streamlit.app,http://localhost:3000,http://localhost:8501,http://localhost:8502",
+)
+IRIS_ALLOWED_ORIGINS = [origin.strip() for origin in _iris_allowed_origins_env.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://phoenix-letters.streamlit.app",
-        "https://*.streamlit.app",
-        "http://localhost:8501",
-        "http://localhost:8502"
-    ],
+    allow_origins=IRIS_ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],

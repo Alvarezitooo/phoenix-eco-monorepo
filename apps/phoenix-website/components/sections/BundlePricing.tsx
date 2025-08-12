@@ -1,6 +1,7 @@
 import React from 'react';
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import StripeCheckoutButton from '@/components/StripeCheckoutButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '../ui/badge';
 
@@ -31,11 +32,12 @@ const BundlePricing: React.FC = () => {
                 <Check className="h-5 w-5 text-green-500 mr-2" /> Toutes les fonctionnalités CV
               </li>
             </ul>
-            <a href="https://phoenixcreator.netlify.app/" target="_blank" rel="noopener noreferrer">
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                Découvrir Bundle Phoenix
-              </Button>
-            </a>
+            <StripeCheckoutButton
+              priceId={process.env.NEXT_PUBLIC_STRIPE_PACK_PRICE_ID || 'price_pack_monthly'}
+              productName="Bundle Phoenix (Letters + CV)"
+              price="15,99€/mois"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            />
           </CardContent>
         </Card>
 

@@ -38,16 +38,29 @@ export default function StripeCheckoutButton({
         }),
       });
 
-      const { url } = await response.json();
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const message =
+          (payload && (payload.message || payload.error)) || `Erreur ${response.status}`;
+        throw new Error(message);
+      }
+
+      const { url } = payload as { url?: string };
 
       if (url) {
-        window.location.href = url;
-      } else {
-        throw new Error('No checkout URL received');
+        // Redirection fiable
+        window.location.assign(url);
+        return;
       }
+
+      throw new Error('URL Stripe manquante. Vérifiez STRIPE_SECRET_KEY et les price IDs.');
     } catch (error) {
       console.error('Checkout error:', error);
-      alert('Erreur lors du paiement. Veuillez réessayer.');
+      const message =
+        error instanceof Error ? error.message : 'Erreur lors du paiement. Veuillez réessayer.';
+      alert(message);
+    } finally {
       setLoading(false);
     }
   };

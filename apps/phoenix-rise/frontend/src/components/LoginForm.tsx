@@ -15,11 +15,22 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     e.preventDefault();
     setError('');
 
-    const success = await login(email, password);
-    if (success) {
-      onSuccess?.();
-    } else {
-      setError('Email ou mot de passe incorrect');
+    console.log('🔍 Tentative de connexion:', { email, password });
+    
+    try {
+      const success = await login(email, password);
+      console.log('🔍 Résultat login:', success);
+      
+      if (success) {
+        console.log('✅ Connexion réussie');
+        onSuccess?.();
+      } else {
+        console.log('❌ Connexion échouée');
+        setError('Email ou mot de passe incorrect');
+      }
+    } catch (error) {
+      console.error('🚨 Erreur login:', error);
+      setError('Erreur de connexion: ' + error);
     }
   };
 
@@ -67,9 +78,8 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         </button>
 
         <div className="demo-credentials">
-          <p><strong>Mode démo :</strong></p>
-          <p>Email: demo@phoenix-rise.com</p>
-          <p>Mot de passe: demo123</p>
+          <p><strong>Phoenix Rise</strong></p>
+          <p>Connectez-vous avec votre compte Phoenix</p>
         </div>
       </form>
     </div>

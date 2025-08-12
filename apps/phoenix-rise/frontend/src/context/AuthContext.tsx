@@ -31,7 +31,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       // Vérifier la validité du token avec l'API
-      const response = await fetch('/api/auth/verify', {
+      const response = await fetch('/api/v1/auth/verify', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -55,24 +55,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setIsLoading(true);
       
-      // Mode démo pour les credentials de test
-      if (email === 'demo@phoenix-rise.com' && password === 'demo123') {
-        const mockUser: User = {
-          id: 'demo-user-123',
-          email: 'demo@phoenix-rise.com',
-          firstName: 'Demo',
-          lastName: 'User',
-          isPremium: true,
-          createdAt: new Date().toISOString()
-        };
-        
-        localStorage.setItem('phoenix_auth_token', 'demo-token-123');
-        setUser(mockUser);
-        return true;
-      }
-
-      // Tentative avec le backend réel
-      const response = await fetch('/api/auth/login', {
+      // Appel API Phoenix Auth via Supabase
+      const response = await fetch('/api/v1/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

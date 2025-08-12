@@ -193,7 +193,7 @@ def render_tier_selector():
             st.session_state["user_tier"] = "gratuit"
             st.session_state["tier_selected"] = True
 
-        safe_markdown(
+        st.markdown(
             """
         <div class="tier-selector">
             <h4>🆓 Gratuit</h4>
@@ -204,7 +204,8 @@ def render_tier_selector():
                 <li>✅ <strong>Génération IA avancée</strong></li>
             </ul>
         </div>
-        """
+        """, 
+            unsafe_allow_html=True
         )
 
     with col2:
@@ -217,7 +218,7 @@ def render_tier_selector():
             st.session_state["user_tier"] = "premium"
             st.session_state["tier_selected"] = True
 
-        safe_markdown(
+        st.markdown(
             """
         <div class="tier-selector premium">
             <h4>⭐ Premium</h4>
@@ -230,7 +231,8 @@ def render_tier_selector():
                 <li>✅ <strong>Support prioritaire</strong></li>
             </ul>
         </div>
-        """
+        """, 
+            unsafe_allow_html=True
         )
 
 
@@ -503,7 +505,7 @@ def render_home_page():
         st.session_state["current_page"] = "create"
         st.rerun()
 
-    safe_markdown("<div style='margin: 0.5rem 0;'></div>")
+    st.markdown("<div style='margin: 0.5rem 0;'></div>", unsafe_allow_html=True)
 
     if st.button(
         "📊 **ANALYSER MON CV EXISTANT**", use_container_width=True, key="analyze_cta"
@@ -1111,7 +1113,7 @@ def render_ecosystem_page():
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        safe_markdown(
+        st.markdown(
             """
         <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #007bff; text-align: center; height: 300px;">
             <h3 style="color: #333;">📄 Phoenix CV</h3>
@@ -1130,12 +1132,13 @@ def render_ecosystem_page():
                 </span>
             </div>
         </div>
-        """
+        """, 
+            unsafe_allow_html=True
         )
 
     with col2:
         phoenix_letters_url = phoenix_bridge.get_app_url(PhoenixApp.LETTERS)
-        safe_markdown(
+        st.markdown(
             f"""
         <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #28a745; text-align: center; height: 300px;">
             <h3 style="color: #333;">📝 Phoenix Letters</h3>
@@ -1156,12 +1159,13 @@ def render_ecosystem_page():
                 </a>
             </div>
         </div>
-        """
+        """, 
+            unsafe_allow_html=True
         )
 
     with col3:
         phoenix_site_url = phoenix_bridge.get_app_url(PhoenixApp.SITE)
-        safe_markdown(
+        st.markdown(
             f"""
         <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #FFD700; text-align: center; height: 300px;">
             <h3 style="color: #333;">🌐 Phoenix Site</h3>
@@ -1182,7 +1186,8 @@ def render_ecosystem_page():
                 </a>
             </div>
         </div>
-        """
+        """, 
+            unsafe_allow_html=True
         )
 
     st.markdown("---")
@@ -1796,7 +1801,7 @@ def render_trajectory_builder_page():
                     for strength in trajectory.strengths:
                         safe_markdown(f"- {strength}")
 
-                    safe_markdown("</div>")
+                    st.markdown("</div>", unsafe_allow_html=True)
 
                 with col2:
                     safe_markdown(
@@ -1809,7 +1814,7 @@ def render_trajectory_builder_page():
                     for challenge in trajectory.challenges:
                         safe_markdown(f"- {challenge}")
 
-                    safe_markdown("</div>")
+                    st.markdown("</div>", unsafe_allow_html=True)
 
                 # Recommandations IA
                 st.markdown("---")
