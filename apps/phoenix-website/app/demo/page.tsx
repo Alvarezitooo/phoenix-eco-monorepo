@@ -62,9 +62,7 @@ export default function DemoPage() {
                 <span className="text-white font-bold text-xl">🔍</span>
               </div>
               <CardTitle className="text-blue-800">Phoenix CV</CardTitle>
-              <p className="text-blue-700">
-                Créez un CV optimisé ATS en quelques clics
-              </p>
+              <p className="text-blue-700">Créez un CV optimisé ATS en quelques clics</p>
             </CardHeader>
             <CardContent>
               <div className="space-y-3 mb-6">
@@ -99,9 +97,7 @@ export default function DemoPage() {
                 <span className="text-white font-bold text-xl">🎯</span>
               </div>
               <CardTitle className="text-purple-800">Phoenix Rise</CardTitle>
-              <p className="text-purple-700">
-                Votre coach carrière IA personnel
-              </p>
+              <p className="text-purple-700">Votre coach carrière IA personnel</p>
             </CardHeader>
             <CardContent>
               <div className="space-y-3 mb-6">
@@ -122,9 +118,7 @@ export default function DemoPage() {
                     <ExternalLink className="ml-2 h-4 w-4" />
                   </Button>
                 </a>
-                <p className="text-xs text-gray-500 text-center">
-                  Démo interactive disponible
-                </p>
+                <p className="text-xs text-gray-500 text-center">Démo interactive disponible</p>
               </div>
             </CardContent>
           </Card>
@@ -140,7 +134,10 @@ export default function DemoPage() {
               Débloquez toutes les fonctionnalités et créez autant de contenus que vous voulez
             </p>
             <Link href="/pricing">
-              <Button size="lg" className="bg-gradient-to-r from-orange-500 to-purple-500 hover:from-orange-600 hover:to-purple-600">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-orange-500 to-purple-500 hover:from-orange-600 hover:to-purple-600"
+              >
                 Voir les Tarifs Premium
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
