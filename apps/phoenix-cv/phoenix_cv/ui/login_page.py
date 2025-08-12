@@ -8,6 +8,7 @@ Version: 1.0.0 - Production Ready
 
 import streamlit as st
 from phoenix_cv.services.phoenix_unified_auth import phoenix_cv_auth
+from phoenix_cv.utils.safe_markdown import safe_markdown
 
 
 def render_login_choice_page():
@@ -226,7 +227,7 @@ def render_login_form_page():
                         else:
                             st.error(f"❌ {message}")
         
-        st.markdown("</div>", unsafe_allow_html=True)
+        safe_markdown("</div>")
         
         # Retour à l'accueil
         st.markdown("---")

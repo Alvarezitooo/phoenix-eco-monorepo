@@ -40,6 +40,16 @@ def safe_markdown(content: str, allow_styles: bool = True):
     )
     st.markdown(sanitized_content, unsafe_allow_html=True)
 
+def safe_redirect(url: str, message: str = "🔄 Redirection..."):
+    """Effectue une redirection sécurisée via JavaScript"""
+    st.success(message)
+    st.markdown(f"""
+        <script>
+            window.open('{url}', '_blank');
+        </script>
+        """, unsafe_allow_html=True)
+    st.markdown(f'[👉 Cliquez ici si la redirection ne marche pas]({url})')
+
 
 def configure_page():
     """Configuration de la page Streamlit optimisée mobile"""
@@ -450,10 +460,10 @@ def render_sidebar():
         redirect_url = phoenix_bridge.generate_cross_app_redirect_url(
             PhoenixApp.LETTERS, user_data, "phoenix_cv_sidebar"
         )
-        safe_markdown(f'<meta http-equiv="refresh" content="0;url={redirect_url}">')
+        safe_redirect(redirect_url, "🔄 Redirection vers Phoenix Letters...")
 
     if st.sidebar.button("🌐 Site Phoenix", use_container_width=True):
-        safe_markdown(f'<meta http-equiv="refresh" content="0;url={phoenix_site_url}">')
+        safe_redirect(phoenix_site_url, "🔄 Redirection vers le site Phoenix...")
 
     st.sidebar.markdown("---")
 
@@ -1018,9 +1028,7 @@ def render_analyze_cv_page():
                                     use_container_width=True,
                                     key=f"analysis_rec_{i}",
                                 ):
-                                    safe_markdown(
-                                        f'<meta http-equiv="refresh" content="0;url={rec["url"]}">'
-                                    )
+                                    safe_redirect(rec["url"], f"🔄 Redirection vers {rec.get('title', 'la ressource')}...")
 
             except Exception as e:
                 st.error(f"❌ Erreur lors de l'analyse Mirror Match : {str(e)}")
@@ -1256,9 +1264,7 @@ def render_ecosystem_page():
                         use_container_width=True,
                         key=f"eco_rec_{i}",
                     ):
-                        safe_markdown(
-                            f'<meta http-equiv="refresh" content="0;url={rec["url"]}">'
-                        )
+                        safe_redirect(rec["url"], f"🔄 Redirection vers {rec.get('title', 'la ressource')}...")
 
     st.markdown("---")
 
@@ -1432,9 +1438,7 @@ def render_mirror_match_page():
 
         if st.button("🌟 **Découvrir Phoenix Letters**", use_container_width=True):
             phoenix_letters_url = phoenix_bridge.get_app_url(PhoenixApp.LETTERS)
-            safe_markdown(
-                f'<meta http-equiv="refresh" content="0;url={phoenix_letters_url}">'
-            )
+            safe_redirect(phoenix_letters_url, "🔄 Redirection vers Phoenix Letters...")
 
     st.markdown("---")
 
@@ -1806,7 +1810,7 @@ def render_trajectory_builder_page():
                     for strength in trajectory.strengths:
                         safe_markdown(f"- {strength}")
 
-                    st.markdown("</div>", unsafe_allow_html=True)
+                    safe_markdown("</div>")
 
                 with col2:
                     safe_markdown(
@@ -1819,7 +1823,7 @@ def render_trajectory_builder_page():
                     for challenge in trajectory.challenges:
                         safe_markdown(f"- {challenge}")
 
-                    st.markdown("</div>", unsafe_allow_html=True)
+                    safe_markdown("</div>")
 
                 # Recommandations IA
                 st.markdown("---")
@@ -1901,9 +1905,7 @@ def render_trajectory_builder_page():
                         redirect_url = phoenix_bridge.generate_cross_app_redirect_url(
                             PhoenixApp.LETTERS, user_data, "trajectory_builder"
                         )
-                        safe_markdown(
-                            f'<meta http-equiv="refresh" content="0;url={redirect_url}">'
-                        )
+                        safe_redirect(redirect_url, "🔄 Redirection vers Phoenix Letters...")
 
                 # Sauvegarde données session pour suivi
                 st.session_state["last_trajectory"] = {

@@ -4,11 +4,19 @@ Plans tarifaires avec garanties securite enterprise
 """
 
 import streamlit as st
+from phoenix_cv.utils.safe_markdown import safe_markdown
 
 
-def safe_markdown(content):
-    """Affichage sécurisé de contenu HTML."""
-    st.markdown(content, unsafe_allow_html=True)
+
+def safe_redirect(url: str, message: str = "🔄 Redirection..."):
+    """Effectue une redirection sécurisée via JavaScript"""
+    st.success(message)
+    safe_markdown(f"""
+        <script>
+            window.open('{url}', '_blank');
+        </script>
+        """)
+    st.markdown(f'[👉 Cliquez ici si la redirection ne marche pas]({url})')
 
 
 def render_pricing_page_secure():
@@ -141,8 +149,7 @@ def render_pricing_page_secure():
         """)
         
         if st.button("🚀 S'abonner Letters", key="letters_btn", type="primary"):
-            st.markdown('<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00">', unsafe_allow_html=True)
-            st.markdown('[Redirection vers Stripe...](https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00)')
+            safe_redirect('https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00', "🔄 Redirection vers Stripe...")
 
     # Phoenix CV
     with col3:
@@ -163,8 +170,13 @@ def render_pricing_page_secure():
         """)
         
         if st.button("📄 S'abonner CV", key="cv_btn", type="primary"):
-            st.markdown('<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/00w28r9Br9260gTcss6EU02">', unsafe_allow_html=True)
-            st.markdown('[Redirection vers Stripe...](https://buy.stripe.com/00w28r9Br9260gTcss6EU02)')
+            st.success("🔄 Redirection vers Stripe...")
+            safe_markdown("""
+                <script>
+                    window.open('https://buy.stripe.com/00w28r9Br9260gTcss6EU02', '_blank');
+                </script>
+                """)
+            st.markdown('[👉 Cliquez ici si la redirection ne marche pas](https://buy.stripe.com/00w28r9Br9260gTcss6EU02)')
 
     # Phoenix Bundle
     with col4:
@@ -187,8 +199,13 @@ def render_pricing_page_secure():
         """)
         
         if st.button("🔥 Bundle Deal", key="bundle_btn", type="primary"):
-            st.markdown('<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/cNi14n9Brcei3t5akk6EU01">', unsafe_allow_html=True)
-            st.markdown('[Redirection vers Stripe...](https://buy.stripe.com/cNi14n9Brcei3t5akk6EU01)')
+            st.success("🔄 Redirection vers Stripe...")
+            safe_markdown("""
+                <script>
+                    window.open('https://buy.stripe.com/cNi14n9Brcei3t5akk6EU01', '_blank');
+                </script>
+                """)
+            st.markdown('[👉 Cliquez ici si la redirection ne marche pas](https://buy.stripe.com/cNi14n9Brcei3t5akk6EU01)')
 
     # Message de comparaison
     st.markdown("---")
