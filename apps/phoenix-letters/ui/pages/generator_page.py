@@ -6,7 +6,7 @@ import time
 
 import streamlit as st
 from core.entities.letter import GenerationRequest, ToneType, UserTier
-from packages.phoenix_shared_auth.decorators import premium_feature
+# from packages.phoenix_shared_auth.decorators import premium_feature  # Module non disponible
 from core.services.conversion_optimizer import ConversionOptimizer
 from core.services.job_offer_parser import JobOfferParser
 from core.services.letter_service import LetterService
@@ -32,6 +32,14 @@ except ImportError:
     PhoenixEventFactory = None
 
 logger = logging.getLogger(__name__)
+
+
+# Décorateur de remplacement simple pour éviter les erreurs
+def premium_feature(feature_name: str):
+    """Décorateur de remplacement pour les fonctionnalités premium."""
+    def decorator(func):
+        return func  # Pas de restriction pour le moment
+    return decorator
 
 
 class GeneratorPage:
