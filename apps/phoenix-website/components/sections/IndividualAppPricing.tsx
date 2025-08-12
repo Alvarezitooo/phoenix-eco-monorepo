@@ -11,7 +11,7 @@ const IndividualAppPricing: React.FC = () => {
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800">
         💰 Tarification Honnête : Applications Individuelles
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
         {/* Phoenix Letters */}
         <Card className="border-2 border-purple-200 shadow-lg">
           <CardHeader className="text-center">
@@ -165,6 +165,39 @@ const IndividualAppPricing: React.FC = () => {
               </Button>
             </div>
             <p className="text-center text-sm text-gray-500">vs coaching 50€/h</p>
+          </CardContent>
+        </Card>
+
+        {/* Phoenix Aube */}
+        <Card className="border-2 border-amber-200 shadow-lg">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-amber-700">Phoenix Aube</CardTitle>
+            <p className="text-gray-600 mt-2">Trajectory Builder IA</p>
+            <div className="mt-4">
+              <span className="text-4xl font-bold text-gray-500">Bientôt</span>
+              <span className="text-gray-600"> disponible</span>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <ul className="space-y-2 text-gray-700">
+              <li className="flex items-center">
+                <Check className="h-5 w-5 text-green-500 mr-2" /> Tests psychométriques avancés
+              </li>
+              <li className="flex items-center">
+                <Check className="h-5 w-5 text-green-500 mr-2" /> Matching valeurs & compétences
+              </li>
+              <li className="flex items-center">
+                <Check className="h-5 w-5 text-green-500 mr-2" /> Prédiction impact IA sur métiers
+              </li>
+              <li className="flex items-center">
+                <Check className="h-5 w-5 text-green-500 mr-2" /> Plan de montée en compétences IA
+              </li>
+            </ul>
+            <div className="space-y-2">
+              <Button className="w-full bg-gray-400 text-white" disabled>
+                Bientôt disponible
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
