@@ -19,34 +19,16 @@ from io import BytesIO
 import docx
 import PyPDF2
 import streamlit as st
-from phoenix_cv.services.ai_trajectory_builder import (
-    ai_trajectory_builder,
-)
+from phoenix_cv.services.ai_trajectory_builder import ai_trajectory_builder
 from phoenix_cv.services.enhanced_gemini_client import get_enhanced_gemini_client
 from phoenix_cv.services.mirror_match_engine import mirror_match_engine
 from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
-from phoenix_cv.services.smart_coach import (
-    CoachingContext,
-    smart_coach,
-)
+from phoenix_cv.services.smart_coach import CoachingContext, smart_coach
 from phoenix_cv.utils.html_sanitizer import html_sanitizer
 from phoenix_cv.ui.login_page import handle_authentication_flow
+from packages.phoenix_shared_ui.components.header import render_header as render_shared_header
+from packages.phoenix_shared_ui.components.consent_banner import render_consent_banner
 st.toast("✅ VERSION DU 03/08/2025 - 09:15 AM CEST")
-# FORCE CACHE BUST - IMPORTS RELATIFS CORRECTS
-from phoenix_cv.services.ai_trajectory_builder import (
-    ai_trajectory_builder,
-)
-
-# Import des services enhanced
-from phoenix_cv.services.enhanced_gemini_client import get_enhanced_gemini_client
-from phoenix_cv.services.mirror_match_engine import mirror_match_engine
-from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
-from phoenix_cv.services.smart_coach import (
-    CoachingContext,
-    smart_coach,
-)
-from phoenix_cv.utils.html_sanitizer import html_sanitizer
-from phoenix_cv.ui.login_page import handle_authentication_flow
 
 
 def safe_markdown(content: str, allow_styles: bool = True):
@@ -67,6 +49,7 @@ def configure_page():
         layout="wide",
         initial_sidebar_state="auto",
     )
+    render_consent_banner()
 
     # CSS mobile-first amélioré
     st.markdown(
@@ -393,35 +376,15 @@ def render_smart_coach_widget():
 def render_header():
     """Rendu du header de l'application"""
 
-    # Widget Smart Coach temps réel
+    # Appel du header partagé pour la cohérence visuelle
+    render_shared_header("Phoenix CV", "🚀")
+
+    # Widget Smart Coach temps réel (fonctionnalité spécifique conservée)
     render_smart_coach_widget()
 
-    # Indicateur de mode
-    mode_indicator = ""
+    # Indicateur de mode (fonctionnalité spécifique conservée)
     if is_dev_mode():
-        mode_indicator = '<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0.75rem; border-radius: 5px; margin-bottom: 1rem; border-left: 4px solid #764ba2;"><p style="margin: 0; color: white;"><strong>🚀 PRÊT À VOUS ACCOMPAGNER</strong> - Découvrez la puissance de Phoenix CV avec nos exemples. Votre reconversion professionnelle commence ici !</p></div>'
-
-    st.markdown(
-        f"""
-    {mode_indicator}
-    <div style="text-align: center; padding: 1.5rem 0;">
-        <h1 style="margin-bottom: 0.5rem; font-size: clamp(1.8rem, 4vw, 2.5rem);">🚀 Phoenix CV Perfect</h1>
-        <h3 style="margin-bottom: 0.5rem; font-size: clamp(1rem, 3vw, 1.3rem); font-weight: 600;">
-            Générateur IA avec Prompts Magistraux
-        </h3>
-        <p style="color: #666; margin-bottom: 1rem; font-size: clamp(0.9rem, 2.5vw, 1rem);">
-            Reconversions optimisées par Gemini Pro
-        </p>
-        <div style="margin-top: 1rem;">
-            <div style="background: #e8f5e8; padding: 0.5rem 1rem; border-radius: 25px; color: #2e7d2e; 
-                        font-size: clamp(0.8rem, 2vw, 0.9rem); display: inline-block; max-width: 90%;">
-                ✅ Prompts Magistraux • 🚀 Enhanced IA • 🎯 Perfect CV
-            </div>
-        </div>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
+        st.info("MODE DÉVELOPPEUR ACTIF")
 
 
 def render_sidebar():

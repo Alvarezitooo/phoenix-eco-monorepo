@@ -9,6 +9,7 @@ Version: 1.0.0 - Production Ready
 import streamlit as st
 import logging
 from typing import Dict, Any
+from concurrent.futures import TimeoutError as FuturesTimeout
 
 from core.services.subscription_service import SubscriptionService
 from infrastructure.payment.stripe_service import StripeService
@@ -179,8 +180,15 @@ class PremiumCheckout:
             """, unsafe_allow_html=True)
             
             if st.button("🚀 S'abonner Letters", key="letters_premium", type="primary"):
-                st.markdown('<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00">', unsafe_allow_html=True)
-                st.markdown('[Redirection vers Stripe...](https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00)')
+                # Si services disponibles → checkout dynamique; sinon fallback lien Stripe hébergé
+                if self.subscription_service and self.stripe_service:
+                    if not current_user_id or current_user_id == "guest":
+                        st.warning("🔒 Connectez-vous pour procéder au paiement sécurisé.")
+                    else:
+                        self._handle_checkout(current_user_id, "premium")
+                else:
+                    st.markdown('<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00">', unsafe_allow_html=True)
+                    st.markdown('[Redirection vers Stripe...](https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00)')
         
         # Phoenix CV Premium
         with col3:
@@ -356,13 +364,24 @@ class PremiumCheckout:
         """Lance le processus de checkout Stripe."""
         try:
             with st.spinner("Préparation du paiement..."):
-                payment_session = self.subscription_service.create_subscription_checkout(
-                    user_id=user_id,
-                    plan_id=plan_id,
-                    success_url=self.success_url,
-                    cancel_url=self.cancel_url,
-                    user_email=st.session_state.get('user_email')
-                )
+                # Exécuter l'appel async via AsyncServiceRunner si disponible
+                if "async_service_runner" in st.session_state:
+                    future = st.session_state.async_service_runner.run_coro_in_thread(
+                        self.subscription_service.create_subscription_checkout(
+                            user_id=user_id,
+                            plan_id=plan_id,
+                            success_url=self.success_url,
+                            cancel_url=self.cancel_url,
+                            user_email=st.session_state.get('user_email')
+                        )
+                    )
+                    payment_session = future.result(timeout=20)
+                else:
+                    # Fallback: informer et rediriger vers lien hébergé
+                    st.warning("🧰 Service asynchrone indisponible. Redirection vers page Stripe hébergée.")
+                    st.markdown('<meta http-equiv="refresh" content="0; url=https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00">', unsafe_allow_html=True)
+                    st.markdown('[Procéder au paiement](https://buy.stripe.com/eVqdR9fZP3HM3t5akk6EU00)')
+                    return
                 
                 # Redirection vers Stripe
                 st.markdown(f"""
@@ -374,6 +393,9 @@ class PremiumCheckout:
                 st.info("Redirection vers Stripe... Si la page ne s'ouvre pas, cliquez sur le lien ci-dessous :")
                 st.markdown(f"[Procéder au paiement]({payment_session.session_url})")
                 
+        except FuturesTimeout:
+            logger.error("Timeout lors de la création de la session de paiement")
+            st.error("⏳ Le service de paiement met trop de temps à répondre. Réessayez dans un instant.")
         except Exception as e:
             logger.error(f"Erreur checkout: {e}")
             st.error(f"Erreur lors du checkout: {e}")
@@ -393,12 +415,10 @@ class PremiumCheckout:
     def _handle_downgrade(self, user_id: str):
         """Gère le passage au plan gratuit."""
         try:
-            if st.confirm("Êtes-vous sûr de vouloir annuler votre abonnement ?"):
-                with st.spinner("Annulation en cours..."):
-                    self.subscription_service.cancel_subscription(user_id)
-                    st.success("Abonnement annulé. Vous gardez l'accès jusqu'à la fin de votre période.")
-                    st.rerun()
-                    
+            with st.spinner("Annulation en cours..."):
+                self.subscription_service.cancel_subscription(user_id)
+                st.success("Abonnement annulé. Vous gardez l'accès jusqu'à la fin de votre période.")
+                st.rerun()
         except Exception as e:
             logger.error(f"Erreur downgrade: {e}")
             st.error(f"Erreur lors de l'annulation: {e}")
@@ -406,7 +426,12 @@ class PremiumCheckout:
     def _load_user_subscription(self, user_id: str):
         """Charge l'abonnement utilisateur."""
         try:
-            return self.subscription_service.get_user_subscription(user_id)
+            if "async_service_runner" in st.session_state:
+                future = st.session_state.async_service_runner.run_coro_in_thread(
+                    self.subscription_service.get_user_subscription(user_id)
+                )
+                return future.result(timeout=10)
+            return None
         except Exception as e:
             logger.error(f"Erreur chargement abonnement: {e}")
             return None
@@ -414,7 +439,12 @@ class PremiumCheckout:
     def _load_user_stats(self, user_id: str) -> Dict[str, Any]:
         """Charge les statistiques utilisateur."""
         try:
-            return self.subscription_service.get_user_usage_stats(user_id)
+            if "async_service_runner" in st.session_state:
+                future = st.session_state.async_service_runner.run_coro_in_thread(
+                    self.subscription_service.get_user_usage_stats(user_id)
+                )
+                return future.result(timeout=10) or {}
+            return {}
         except Exception as e:
             logger.error(f"Erreur chargement stats: {e}")
             return {}

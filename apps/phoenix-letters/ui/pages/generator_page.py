@@ -6,6 +6,7 @@ import time
 
 import streamlit as st
 from core.entities.letter import GenerationRequest, ToneType, UserTier
+from packages.phoenix_shared_auth.decorators import premium_feature
 from core.services.conversion_optimizer import ConversionOptimizer
 from core.services.job_offer_parser import JobOfferParser
 from core.services.letter_service import LetterService
@@ -235,21 +236,13 @@ class GeneratorPage:
             # Mettre à jour la valeur dans le state local aussi
             st.session_state.transferable_skills_value = st.session_state.transferable_skills_input
 
+    @premium_feature("Suggestion de compétences")
     def _process_skills_suggestion(self) -> None:
         """
         Traite la suggestion de compétences transférables.
         """
         old_domain = self.session_manager.get("old_domain")
         new_domain = self.session_manager.get("new_domain")
-        # Fix: utiliser st.session_state directement au lieu du session_manager
-        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
-        if isinstance(raw_tier, str):
-            try:
-                user_tier = UserTier(raw_tier)
-            except ValueError:
-                user_tier = UserTier.FREE
-        else:
-            user_tier = raw_tier
 
         if not old_domain or not new_domain:
             st.warning(
@@ -262,7 +255,7 @@ class GeneratorPage:
         ):
             try:
                 suggestions = self.letter_service.suggest_transferable_skills(
-                    old_domain, new_domain, user_tier
+                    old_domain, new_domain, UserTier.PREMIUM
                 )
                 # Mettre à jour avec la nouvelle clé
                 self.session_manager.set("transferable_skills", suggestions)
@@ -278,38 +271,19 @@ class GeneratorPage:
         """Affiche les fonctionnalités avancées (Mirror Match, ATS, Smart Coach, Trajectory Builder)."""
         st.markdown("### 🌟 Fonctionnalités Avancées")
 
-        # Fix: utiliser la même logique que dans les autres méthodes
-        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
-        if isinstance(raw_tier, str):
-            try:
-                user_tier = UserTier(raw_tier)
-            except ValueError:
-                user_tier = UserTier.FREE
-        else:
-            user_tier = raw_tier
-            
-        is_premium = user_tier != UserTier.FREE
-        
-        # Debug temporaire
-        st.sidebar.write(f"🔍 DEBUG Advanced: user_tier = {user_tier}, is_premium = {is_premium}")
-
         # Mirror Match
         with st.expander("🎭 Mirror Match - Adaptez le ton à l'entreprise"):
             st.markdown(
                 "Analysez la culture de l'entreprise pour adapter le ton de votre lettre."
             )
-            if not is_premium:
-                st.info("Cette fonctionnalité est réservée aux utilisateurs Premium.")
             company_culture_info = st.text_area(
                 "Informations sur l'entreprise (site web, valeurs, etc.)",
                 key="company_culture_info",
                 help="Collez ici des informations qui décrivent la culture de l'entreprise.",
-                disabled=not is_premium,
             )
             if st.button(
                 "Analyser la culture",
                 key="analyze_culture_button",
-                disabled=not is_premium,
             ):
                 self._process_mirror_match(company_culture_info)
 
@@ -318,18 +292,14 @@ class GeneratorPage:
             st.markdown(
                 "Évaluez la compatibilité de votre lettre avec les systèmes de tri automatique."
             )
-            if not is_premium:
-                st.info("Cette fonctionnalité est réservée aux utilisateurs Premium.")
             target_sector = st.selectbox(
                 "Secteur cible (pour une analyse plus précise)",
                 options=["Général", "Tech", "Marketing", "Finance", "RH", "Santé"],
                 key="ats_target_sector",
-                disabled=not is_premium,
             )
             if st.button(
                 "Analyser la compatibilité ATS",
                 key="analyze_ats_button",
-                disabled=not is_premium,
             ):
                 self._process_ats_analysis(target_sector)
 
@@ -338,12 +308,9 @@ class GeneratorPage:
             st.markdown(
                 "Obtenez une analyse qualitative de votre lettre et des suggestions d'amélioration."
             )
-            if not is_premium:
-                st.info("Cette fonctionnalité est réservée aux utilisateurs Premium.")
             if st.button(
                 "Obtenir un feedback Smart Coach",
                 key="smart_coach_button",
-                disabled=not is_premium,
             ):
                 self._process_smart_coach()
 
@@ -352,34 +319,15 @@ class GeneratorPage:
             st.markdown(
                 "Générez une feuille de route étape par étape pour votre reconversion."
             )
-            if not is_premium:
-                st.info("Cette fonctionnalité est réservée aux utilisateurs Premium.")
             if st.button(
                 "Générer mon plan de reconversion",
                 key="trajectory_builder_button",
-                disabled=not is_premium,
             ):
                 self._process_trajectory_builder()
 
     def _process_mirror_match(self, company_culture_info: str) -> None:
         """Traite l'analyse Mirror Match."""
-        # Fix: utiliser st.session_state directement au lieu du session_manager
-        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
-        if isinstance(raw_tier, str):
-            try:
-                user_tier = UserTier(raw_tier)
-            except ValueError:
-                user_tier = UserTier.FREE
-        else:
-            user_tier = raw_tier
-
-        # Vérification Premium avec barrière intelligente
-        if user_tier != UserTier.PREMIUM:
-            PremiumBarrier.show_feature_lock(
-                "Mirror Match",
-                "Analysez la culture d'entreprise pour adapter parfaitement votre ton et approche. +89% de taux de réponse positif.",
-            )
-            return
+        
 
         cv_content = self.session_manager.get("cv_content")
         job_offer_content = self.session_manager.get("job_offer_content")
@@ -395,7 +343,7 @@ class GeneratorPage:
                     ),
                     job_offer=job_offer_content,
                     additional_info=company_culture_info,
-                    user_tier=user_tier,
+                    user_tier=UserTier.PREMIUM,
                 )
                 st.success("Analyse de la culture terminée !")
 
@@ -488,19 +436,11 @@ class GeneratorPage:
                     "• Essayez avec une offre provenant directement du site de l'entreprise"
                 )
 
+    @premium_feature("ATS Analyzer")
     def _process_ats_analysis(self, target_sector: str) -> None:
         """Traite l'analyse ATS."""
         letter_content = self.session_manager.get("generated_letter")
         job_offer_content = self.session_manager.get("job_offer_content")
-        # Fix: utiliser st.session_state directement au lieu du session_manager
-        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
-        if isinstance(raw_tier, str):
-            try:
-                user_tier = UserTier(raw_tier)
-            except ValueError:
-                user_tier = UserTier.FREE
-        else:
-            user_tier = raw_tier
         if not letter_content or not job_offer_content:
             st.warning(
                 "Veuillez d'abord générer une lettre et uploader l'offre d'emploi."
@@ -513,7 +453,7 @@ class GeneratorPage:
                     letter_content=letter_content,
                     job_description=job_offer_content,
                     target_sector=target_sector if target_sector != "Général" else None,
-                    user_tier=user_tier,
+                    user_tier=UserTier.PREMIUM,  # Le décorateur garantit que seuls les Premium arrivent ici
                 )
                 st.success("✅ Analyse ATS terminée !")
 
@@ -625,18 +565,10 @@ class GeneratorPage:
                     """
                     )
 
+    @premium_feature("Smart Coach")
     def _process_smart_coach(self) -> None:
         """Traite le feedback Smart Coach."""
         letter_content = self.session_manager.get("generated_letter")
-        # Fix: utiliser st.session_state directement au lieu du session_manager
-        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
-        if isinstance(raw_tier, str):
-            try:
-                user_tier = UserTier(raw_tier)
-            except ValueError:
-                user_tier = UserTier.FREE
-        else:
-            user_tier = raw_tier
         if not letter_content:
             st.warning("Veuillez d'abord générer une lettre.")
             return
@@ -644,7 +576,7 @@ class GeneratorPage:
         with st.spinner("Obtention du feedback Smart Coach..."):
             try:
                 feedback = self.smart_coach_service.analyze_letter_real_time(
-                    letter_content, user_tier=user_tier
+                    letter_content, user_tier=UserTier.PREMIUM
                 )
                 st.success("🎆 Feedback Smart Coach obtenu !")
 
@@ -699,6 +631,7 @@ class GeneratorPage:
                 st.error(f"Erreur lors du feedback Smart Coach : {e}")
                 logger.error(f"Smart Coach error: {e}")
 
+    @premium_feature("Trajectory Builder")
     def _process_trajectory_builder(self) -> None:
         """Traite la génération du plan de reconversion."""
         # Pour simplifier, nous allons utiliser des données de session ou des inputs basiques pour le moment
@@ -708,15 +641,6 @@ class GeneratorPage:
         target_role = st.session_state.get("new_domain", "Nouveau Rôle")
         current_skills = self.session_manager.get("transferable_skills", "").split(",")
         current_skills = [s.strip() for s in current_skills if s.strip()]
-        # Fix: utiliser st.session_state directement au lieu du session_manager
-        raw_tier = st.session_state.get("user_tier", UserTier.FREE)
-        if isinstance(raw_tier, str):
-            try:
-                user_tier = UserTier(raw_tier)
-            except ValueError:
-                user_tier = UserTier.FREE
-        else:
-            user_tier = raw_tier
 
         if not current_role or not target_role or not current_skills:
             st.warning(
@@ -732,7 +656,7 @@ class GeneratorPage:
                         current_role=current_role,
                         target_role=target_role,
                         current_skills=current_skills,
-                        user_tier=user_tier,
+                        user_tier=UserTier.PREMIUM,
                     )
                 )
                 st.success("🎯 Plan de reconversion généré !")

@@ -1,0 +1,23 @@
+{
+  "name": "phoenix-rise",
+  "version": 2,
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "env": {
+    "VITE_DOJO_API_URL": "@phoenix_rise_api_url"
+  },
+  "build": {
+    "env": {
+      "VITE_DOJO_API_URL": "@phoenix_rise_api_url"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

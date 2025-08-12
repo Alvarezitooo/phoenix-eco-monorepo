@@ -78,9 +78,16 @@ class FranceTravailProvider(IJobDataProvider):
         self.logger = logging.getLogger(__name__)
         self._cache: Dict[str, Any] = {}
         self._cache_ttl = timedelta(hours=6)
+        # Mode dégradé si identifiants manquants: pas d'appels réseau, on sert les fallbacks
+        self.disabled: bool = False
 
     async def __aenter__(self):
         self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=self.config.timeout))
+        # Si les identifiants FT sont absents, activer le mode fallback (aucun appel réseau)
+        if not self.config.client_id or not self.config.client_secret:
+            self.disabled = True
+            self.logger.warning("FranceTravail credentials missing; using fallback data only (no network calls)")
+            return self
         await self._authenticate()
         return self
 
@@ -108,6 +115,8 @@ class FranceTravailProvider(IJobDataProvider):
             raise
 
     async def _get_headers(self) -> Dict[str, str]:
+        if self.disabled:
+            return {}
         if not self.access_token or (self.token_expires_at and datetime.now() >= self.token_expires_at):
             await self._authenticate()
         return {"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
@@ -126,6 +135,8 @@ class FranceTravailProvider(IJobDataProvider):
 
         async def fetch_métiers():
             try:
+                if self.disabled:
+                    return self._get_fallback_métiers(secteur)
                 headers = await self._get_headers()
                 secteur_mapping = {
                     "Tech/IT": ["M18", "M17"],
@@ -165,6 +176,8 @@ class FranceTravailProvider(IJobDataProvider):
 
         async def fetch_compétences():
             try:
+                if self.disabled:
+                    return self._get_fallback_compétences(métier)
                 headers = await self._get_headers()
                 search_url = f"{self.config.base_url}/partenaire/rome/v1/metier"
                 params = {"libelle": métier}
@@ -190,6 +203,8 @@ class FranceTravailProvider(IJobDataProvider):
 
     async def search_métiers_by_keywords(self, keywords: List[str]) -> List[Dict[str, Any]]:
         try:
+            if self.disabled:
+                return []
             headers = await self._get_headers()
             métiers_trouvés: List[Dict[str, Any]] = []
             assert self.session is not None
