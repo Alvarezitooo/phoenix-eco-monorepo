@@ -12,12 +12,16 @@ export default function EcosystemSection() {
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Votre Trajectory Builder IA</h2>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
-            Phoenix ne se contente pas de créer des documents. Il construit votre trajectoire complète de reconversion, 
-            de l'exploration de vos aspirations jusqu'à la concrétisation de votre nouveau métier.
+            Phoenix ne se contente pas de créer des documents. Il construit votre trajectoire
+            complète de reconversion, de l'exploration de vos aspirations jusqu'à la concrétisation
+            de votre nouveau métier.
           </p>
           <div className="bg-gradient-to-r from-orange-100 to-purple-100 rounded-xl p-6 max-w-3xl mx-auto">
             <p className="text-lg font-semibold text-gray-800">
-              🎯 <strong>Le seul écosystème qui connecte votre passé, votre présent et votre futur</strong> 
+              🎯{' '}
+              <strong>
+                Le seul écosystème qui connecte votre passé, votre présent et votre futur
+              </strong>{' '}
               pour créer une trajectoire de reconversion cohérente et puissante.
             </p>
           </div>
@@ -109,8 +113,8 @@ export default function EcosystemSection() {
               </div>
               <CardTitle className="text-amber-800">Phoenix Aube</CardTitle>
               <CardDescription className="text-amber-700">
-                Explorez vos aspirations profondes et découvrez les métiers qui vous correspondent vraiment. 
-                L'outil qui révèle votre potentiel caché.
+                Explorez vos aspirations profondes et découvrez les métiers qui vous correspondent
+                vraiment. L'outil qui révèle votre potentiel caché.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -132,7 +136,10 @@ export default function EcosystemSection() {
                   Plan de montée en compétences
                 </li>
               </ul>
-              <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600" disabled>
+              <Button
+                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                disabled
+              >
                 Bientôt disponible
               </Button>
             </CardContent>
@@ -190,7 +197,7 @@ export default function EcosystemSection() {
             </h3>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto">
               Phoenix n'est pas juste une collection d'outils séparés. C'est le premier{' '}
-              <strong>Trajectory Builder IA</strong> qui connecte intelligemment exploration métier, 
+              <strong>Trajectory Builder IA</strong> qui connecte intelligemment exploration métier,
               candidature et accompagnement pour construire votre parcours de reconversion idéal.
             </p>
           </div>
@@ -381,10 +388,12 @@ export default function EcosystemSection() {
 
           {/* Call to Action */}
           <div className="text-center">
-            <h4 className="text-2xl font-bold text-gray-900 mb-4">Construisez Votre Trajectory Dès Maintenant</h4>
+            <h4 className="text-2xl font-bold text-gray-900 mb-4">
+              Construisez Votre Trajectory Dès Maintenant
+            </h4>
             <p className="text-lg text-gray-600 mb-6">
-              Commencez gratuitement avec Phoenix Letters. Chaque étape de votre parcours 
-              enrichit votre trajectory personnalisée.
+              Commencez gratuitement avec Phoenix Letters. Chaque étape de votre parcours enrichit
+              votre trajectory personnalisée.
             </p>
             <Link href="/demo">
               <Button

@@ -69,7 +69,10 @@ const IndividualAppPricing: React.FC = () => {
             </ul>
             <div className="space-y-2">
               <Link href="/demo">
-                <Button variant="outline" className="w-full border-purple-600 text-purple-600 hover:bg-purple-50">
+                <Button
+                  variant="outline"
+                  className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
+                >
                   Tester Gratuitement
                 </Button>
               </Link>
@@ -108,7 +111,10 @@ const IndividualAppPricing: React.FC = () => {
             </ul>
             <div className="space-y-2">
               <Link href="/demo">
-                <Button variant="outline" className="w-full border-purple-600 text-purple-600 hover:bg-purple-50">
+                <Button
+                  variant="outline"
+                  className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
+                >
                   Tester Gratuitement
                 </Button>
               </Link>
@@ -147,7 +153,10 @@ const IndividualAppPricing: React.FC = () => {
             </ul>
             <div className="space-y-2">
               <Link href="/demo">
-                <Button variant="outline" className="w-full border-purple-600 text-purple-600 hover:bg-purple-50">
+                <Button
+                  variant="outline"
+                  className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
+                >
                   Tester la Démo
                 </Button>
               </Link>

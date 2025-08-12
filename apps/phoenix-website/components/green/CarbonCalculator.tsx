@@ -52,14 +52,6 @@ export default function CarbonCalculator({
   const [result, setResult] = useState<CalculatorResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
 
-  // Constantes pour les calculs (basées sur recherche Green AI)
-  const CO2_CONSTANTS = {
-    phoenix_per_letter: 0.08, // grammes CO2 par lettre Phoenix
-    chatgpt_per_letter: 1.2, // grammes CO2 par lettre ChatGPT
-    claude_per_letter: 0.8, // grammes CO2 par lettre Claude
-    tree_co2_absorption: 21000, // grammes CO2 absorbés par arbre/an
-  };
-
   // Multiplicateurs selon le type d'utilisateur
   const USER_MULTIPLIERS = useMemo(
     () => ({
@@ -71,6 +63,13 @@ export default function CarbonCalculator({
   );
 
   const calculateImpact = useCallback(async () => {
+    // Constantes pour les calculs (basées sur recherche Green AI)
+    const CO2_CONSTANTS = {
+      phoenix_per_letter: 0.08, // grammes CO2 par lettre Phoenix
+      chatgpt_per_letter: 1.2, // grammes CO2 par lettre ChatGPT
+      claude_per_letter: 0.8, // grammes CO2 par lettre Claude
+      tree_co2_absorption: 21000, // grammes CO2 absorbés par arbre/an
+    };
     setIsCalculating(true);
 
     // Simulation d'un délai pour l'effet UX
@@ -110,7 +109,7 @@ export default function CarbonCalculator({
     });
 
     setIsCalculating(false);
-  }, [lettersCount, userType, CO2_CONSTANTS, USER_MULTIPLIERS, setResult, setIsCalculating]);
+  }, [lettersCount, userType, USER_MULTIPLIERS]);
 
   // Calcul automatique quand les paramètres changent
   useEffect(() => {
