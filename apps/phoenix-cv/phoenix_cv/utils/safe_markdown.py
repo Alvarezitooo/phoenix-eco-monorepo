@@ -6,8 +6,9 @@ import bleach
 # This is the core of the XSS protection - Configuration sécurisée
 ALLOWED_TAGS = [
     'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'br', 
-    'strong', 'em', 'b', 'i', 'u', 'ul', 'ol', 'li', 'a', 'small'
-    # Removed: 'script', 'button' pour sécurité
+    'strong', 'em', 'b', 'i', 'u', 'ul', 'ol', 'li', 'a', 'small',
+    'button'  # Re-ajouté button pour UI (sans onclick)
+    # Still removed: 'script' pour sécurité
 ]
 
 ALLOWED_ATTRIBUTES = {
@@ -15,18 +16,27 @@ ALLOWED_ATTRIBUTES = {
     'div': ['style'],
     'span': ['style'],
     'p': ['style'],
-    'h1': ['style'], 'h2': ['style'], 'h3': ['style'], 'h4': ['style'],
+    'h1': ['style'], 'h2': ['style'], 'h3': ['style'], 'h4': ['style'], 'h5': ['style'], 'h6': ['style'],
     'a': ['href', 'title', 'target'],
+    'button': ['style', 'type'],  # Button attributes sans onclick
+    'small': ['style'],
+    'strong': ['style'],
+    'ul': ['style'],
+    'li': ['style'],
     # Removed: onclick, script attributes pour sécurité
 }
 
-# CSS properties whitelist for style validation
+# CSS properties whitelist for style validation - Plus permissive pour UI
 ALLOWED_CSS_PROPERTIES = [
     'color', 'background-color', 'background', 'font-weight', 'font-size',
     'text-align', 'margin', 'padding', 'border-radius', 'border',
     'display', 'justify-content', 'align-items', 'flex-direction',
     'height', 'width', 'max-width', 'min-height', 'box-shadow',
-    'grid-template-columns', 'gap', 'position', 'top', 'right'
+    'grid-template-columns', 'gap', 'position', 'top', 'right',
+    'font-style', 'line-height', 'margin-bottom', 'margin-top',
+    'padding-left', 'padding-right', 'padding-top', 'padding-bottom',
+    'border-left', 'border-right', 'border-top', 'border-bottom',
+    'cursor', 'white-space', 'overflow', 'text-decoration'
 ]
 
 def validate_css_style(style_value: str) -> str:
@@ -44,8 +54,13 @@ def validate_css_style(style_value: str) -> str:
             
             # Whitelist de propriétés CSS autorisées
             if prop in ALLOWED_CSS_PROPERTIES:
-                # Basic validation (pas de javascript:, expression:, etc.)
-                if not any(dangerous in value.lower() for dangerous in ['javascript:', 'expression:', 'behavior:', 'data:']):
+                # Validation élargie pour fonctions CSS utiles
+                dangerous_patterns = [
+                    'javascript:', 'expression:', 'behavior:', 'data:',
+                    '@import', 'url(javascript:', 'url(data:'
+                ]
+                if not any(dangerous in value.lower() for dangerous in dangerous_patterns):
+                    # Permettre les fonctions CSS utiles comme clamp, rgba, linear-gradient
                     safe_styles.append(f"{prop}: {value}")
     
     return '; '.join(safe_styles)
@@ -58,27 +73,23 @@ def safe_markdown(content: str):
     Args:
         content: The markdown/HTML content to render.
     """
-    # Custom CSS style validation
-    def validate_attributes(tag, name, value):
-        if name == 'style':
-            return validate_css_style(value)
-        return value
+    # Pre-process CSS validation
+    import re
+    def validate_style_attribute(match):
+        style_content = match.group(1)
+        validated_style = validate_css_style(style_content)
+        return f'style="{validated_style}"'
     
-    # Sanitize the content with CSS validation
+    # Validate CSS before bleach processing
+    pre_validated = re.sub(r'style="([^"]*)"', validate_style_attribute, content)
+    
+    # Sanitize the content with validated CSS
     sanitized_content = bleach.clean(
-        content,
+        pre_validated,
         tags=ALLOWED_TAGS,
         attributes=ALLOWED_ATTRIBUTES,
         strip=False  # Escape disallowed tags instead of removing
     )
-    
-    # Additional CSS validation pass
-    import re
-    def clean_style(match):
-        style_content = match.group(1)
-        return f'style="{validate_css_style(style_content)}"'
-    
-    sanitized_content = re.sub(r'style="([^"]*)"', clean_style, sanitized_content)
     
     # Render the sanitized content
     st.markdown(sanitized_content, unsafe_allow_html=True)
