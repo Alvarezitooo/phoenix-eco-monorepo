@@ -15,7 +15,7 @@ const AppContent: React.FC = () => {
   const sendEventToBridge = async (eventType: string, data: Record<string, unknown>) => {
     try {
       // TODO: Remplacer par l'API Phoenix Event Bridge réelle
-      const response = await fetch('/api/events', {
+      const response = await fetch('/api/v1/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
