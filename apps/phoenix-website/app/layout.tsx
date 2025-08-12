@@ -10,7 +10,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://phoenixcreator.netl
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: 'Phoenix Ecosystem - Outils IA pour votre reconversion professionnelle',
+  title: 'Phoenix - Outils IA gratuits pour réussir votre reconversion professionnelle',
   description:
     "Transformez votre parcours atypique en votre plus grande force avec Phoenix, l'écosystème d'applications IA conçu par un reconverti, pour les reconvertis.",
   keywords: [

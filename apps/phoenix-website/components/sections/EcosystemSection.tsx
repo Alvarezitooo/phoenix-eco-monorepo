@@ -10,15 +10,21 @@ export default function EcosystemSection() {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Notre Écosystème</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Trois applications complémentaires pour vous accompagner à chaque étape de votre
-            reconversion professionnelle.
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Votre Trajectory Builder IA</h2>
+          <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
+            Phoenix ne se contente pas de créer des documents. Il construit votre trajectoire complète de reconversion, 
+            de l'exploration de vos aspirations jusqu'à la concrétisation de votre nouveau métier.
           </p>
+          <div className="bg-gradient-to-r from-orange-100 to-purple-100 rounded-xl p-6 max-w-3xl mx-auto">
+            <p className="text-lg font-semibold text-gray-800">
+              🎯 <strong>Le seul écosystème qui connecte votre passé, votre présent et votre futur</strong> 
+              pour créer une trajectoire de reconversion cohérente et puissante.
+            </p>
+          </div>
         </div>
 
         {/* Applications Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mb-20">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
           {/* Phoenix CV */}
           <Card className="relative overflow-hidden border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
             <CardHeader>
@@ -95,6 +101,43 @@ export default function EcosystemSection() {
             </CardContent>
           </Card>
 
+          {/* Phoenix Aube */}
+          <Card className="relative overflow-hidden border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50">
+            <CardHeader>
+              <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg flex items-center justify-center mb-4">
+                <span className="text-white font-bold text-xl">🌅</span>
+              </div>
+              <CardTitle className="text-amber-800">Phoenix Aube</CardTitle>
+              <CardDescription className="text-amber-700">
+                Explorez vos aspirations profondes et découvrez les métiers qui vous correspondent vraiment. 
+                L'outil qui révèle votre potentiel caché.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center text-sm text-amber-700">
+                  <CheckCircle className="w-4 h-4 mr-2 text-amber-500" />
+                  Tests psychométriques avancés
+                </li>
+                <li className="flex items-center text-sm text-amber-700">
+                  <CheckCircle className="w-4 h-4 mr-2 text-amber-500" />
+                  Matching valeurs/compétences
+                </li>
+                <li className="flex items-center text-sm text-amber-700">
+                  <CheckCircle className="w-4 h-4 mr-2 text-amber-500" />
+                  Score résistance IA des métiers
+                </li>
+                <li className="flex items-center text-sm text-amber-700">
+                  <CheckCircle className="w-4 h-4 mr-2 text-amber-500" />
+                  Plan de montée en compétences
+                </li>
+              </ul>
+              <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600" disabled>
+                Bientôt disponible
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Phoenix Rise */}
           <Card className="relative overflow-hidden border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50">
             <CardHeader>
@@ -126,9 +169,11 @@ export default function EcosystemSection() {
                   Tableau de bord de progression
                 </li>
               </ul>
-              <Button className="w-full bg-purple-500 hover:bg-purple-600" disabled>
-                Bientôt disponible
-              </Button>
+              <Link href="https://phoenix-rise.vercel.app/" target="_blank">
+                <Button className="w-full bg-purple-500 hover:bg-purple-600">
+                  Tester Phoenix Rise
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </div>
@@ -141,18 +186,46 @@ export default function EcosystemSection() {
               Innovation Phoenix
             </Badge>
             <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              Plus Vous Utilisez, Plus C'est Puissant
+              Le Premier Trajectory Builder IA pour Reconversion
             </h3>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-              Phoenix n'est pas juste une collection d'outils séparés. C'est un{' '}
-              <strong>écosystème intelligent</strong> où chaque application nourrit les autres,
-              créant un cercle vertueux qui devient plus performant à chaque utilisation.
+              Phoenix n'est pas juste une collection d'outils séparés. C'est le premier{' '}
+              <strong>Trajectory Builder IA</strong> qui connecte intelligemment exploration métier, 
+              candidature et accompagnement pour construire votre parcours de reconversion idéal.
             </p>
           </div>
 
-          {/* Flywheel Visualization */}
+          {/* Trajectory Builder Visualization */}
           <div className="mb-12">
-            <div className="flex flex-col lg:flex-row items-center justify-center space-y-8 lg:space-y-0 lg:space-x-8">
+            <div className="flex flex-col lg:flex-row items-center justify-center space-y-8 lg:space-y-0 lg:space-x-4">
+              {/* Phoenix Aube */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-24 h-24 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center mb-4 shadow-lg">
+                  <span className="text-white font-bold text-2xl">🌅</span>
+                </div>
+                <h4 className="font-bold text-amber-800 mb-2">Phoenix Aube</h4>
+                <p className="text-sm text-gray-600 max-w-xs">
+                  explore vos <strong>aspirations profondes</strong>
+                </p>
+                <p className="text-xs text-gray-500 mt-1 italic">
+                  Valeurs, compétences cachées, métiers compatibles
+                </p>
+              </div>
+
+              {/* Arrow */}
+              <div className="flex flex-col items-center lg:hidden">
+                <ArrowDown className="w-8 h-8 text-gray-400" />
+                <span className="text-sm font-semibold text-gray-600 mt-2">
+                  Révèle votre potentiel
+                </span>
+              </div>
+              <div className="hidden lg:flex flex-col items-center">
+                <ArrowRight className="w-8 h-8 text-gray-400" />
+                <span className="text-sm font-semibold text-gray-600 mt-2">
+                  Révèle votre potentiel
+                </span>
+              </div>
+
               {/* Phoenix CV */}
               <div className="flex flex-col items-center text-center">
                 <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
@@ -160,10 +233,10 @@ export default function EcosystemSection() {
                 </div>
                 <h4 className="font-bold text-blue-800 mb-2">Phoenix CV</h4>
                 <p className="text-sm text-gray-600 max-w-xs">
-                  capture votre <strong>passé professionnel</strong>
+                  structure votre <strong>parcours professionnel</strong>
                 </p>
                 <p className="text-xs text-gray-500 mt-1 italic">
-                  Compétences, expériences, réalisations concrètes
+                  Expériences, compétences, réalisations valorisées
                 </p>
               </div>
 
@@ -178,6 +251,20 @@ export default function EcosystemSection() {
                 <ArrowRight className="w-8 h-8 text-gray-400" />
                 <span className="text-sm font-semibold text-gray-600 mt-2">
                   Enrichit automatiquement
+                </span>
+              </div>
+
+              {/* Arrow */}
+              <div className="flex flex-col items-center lg:hidden">
+                <ArrowDown className="w-8 h-8 text-gray-400" />
+                <span className="text-sm font-semibold text-gray-600 mt-2">
+                  Construit votre story
+                </span>
+              </div>
+              <div className="hidden lg:flex flex-col items-center">
+                <ArrowRight className="w-8 h-8 text-gray-400" />
+                <span className="text-sm font-semibold text-gray-600 mt-2">
+                  Construit votre story
                 </span>
               </div>
 
@@ -188,24 +275,24 @@ export default function EcosystemSection() {
                 </div>
                 <h4 className="font-bold text-orange-800 mb-2">Phoenix Letters</h4>
                 <p className="text-sm text-gray-600 max-w-xs">
-                  révèle vos <strong>aspirations futures</strong>
+                  concrétise vos <strong>candidatures gagnantes</strong>
                 </p>
                 <p className="text-xs text-gray-500 mt-1 italic">
-                  Postes visés, motivations, entreprises cibles
+                  Lettres personnalisées, storytelling puissant
                 </p>
               </div>
 
-              {/* Arrow down */}
+              {/* Arrow */}
               <div className="flex flex-col items-center lg:hidden">
                 <ArrowDown className="w-8 h-8 text-gray-400" />
                 <span className="text-sm font-semibold text-gray-600 mt-2">
-                  Personnalise en continu
+                  Accompagne au quotidien
                 </span>
               </div>
               <div className="hidden lg:flex flex-col items-center">
                 <ArrowRight className="w-8 h-8 text-gray-400" />
                 <span className="text-sm font-semibold text-gray-600 mt-2">
-                  Personnalise en continu
+                  Accompagne au quotidien
                 </span>
               </div>
 
@@ -216,10 +303,10 @@ export default function EcosystemSection() {
                 </div>
                 <h4 className="font-bold text-purple-800 mb-2">Phoenix Rise</h4>
                 <p className="text-sm text-gray-600 max-w-xs">
-                  comprend votre <strong>contexte émotionnel</strong>
+                  pilote votre <strong>transformation complète</strong>
                 </p>
                 <p className="text-xs text-gray-500 mt-1 italic">
-                  Valeurs, peurs, progression, objectifs personnels
+                  Coach IA, préparation entretiens, suivi motivation
                 </p>
               </div>
             </div>
@@ -228,37 +315,37 @@ export default function EcosystemSection() {
           {/* Results Comparison */}
           <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-8 mb-8">
             <h4 className="text-2xl font-bold text-center text-gray-900 mb-8">
-              Le Résultat : Une IA Qui Vous Connaît Vraiment
+              Le Résultat : Votre Trajectory Personnalisée
             </h4>
 
             <div className="grid md:grid-cols-2 gap-8">
               <div className="text-center">
                 <div className="bg-gray-100 rounded-lg p-6 mb-4">
-                  <h5 className="font-bold text-gray-800 mb-2">Approche traditionnelle</h5>
-                  <p className="text-gray-700 text-sm mb-4">CV générique + lettre standard</p>
-                  <div className="text-2xl font-bold text-gray-600">📄</div>
-                  <p className="text-gray-600 text-sm">Même contenu pour tous</p>
+                  <h5 className="font-bold text-gray-800 mb-2">Approche classique</h5>
+                  <p className="text-gray-700 text-sm mb-4">Outils séparés + démarche fragmentée</p>
+                  <div className="text-2xl font-bold text-gray-600">🔧</div>
+                  <p className="text-gray-600 text-sm">Vous naviguez seul(e)</p>
                 </div>
               </div>
 
               <div className="text-center">
-                <div className="bg-blue-100 rounded-lg p-6 mb-4">
-                  <h5 className="font-bold text-blue-800 mb-2">Approche Phoenix</h5>
-                  <p className="text-blue-700 text-sm mb-4">
-                    Données interconnectées + IA personnalisée
+                <div className="bg-gradient-to-r from-amber-100 to-purple-100 rounded-lg p-6 mb-4">
+                  <h5 className="font-bold text-amber-800 mb-2">Trajectory Builder Phoenix</h5>
+                  <p className="text-amber-700 text-sm mb-4">
+                    Parcours cohérent + IA qui apprend de vous
                   </p>
-                  <div className="text-2xl font-bold text-blue-600">✨</div>
-                  <p className="text-blue-600 text-sm">Personnalisé pour vous</p>
+                  <div className="text-2xl font-bold text-amber-600">🚀</div>
+                  <p className="text-amber-600 text-sm">Votre trajectoire sur-mesure</p>
                 </div>
               </div>
             </div>
 
             <div className="text-center mt-8">
               <p className="text-lg text-gray-700 mb-2">
-                <em>La différence ? Phoenix ne génère pas du contenu standard.</em>
+                <em>La différence ? Phoenix ne se contente pas de créer des documents.</em>
               </p>
               <p className="text-xl font-bold text-gray-900">
-                Phoenix raconte VOTRE histoire unique.
+                Phoenix construit votre trajectoire de reconversion complète.
               </p>
             </div>
           </div>
@@ -294,17 +381,17 @@ export default function EcosystemSection() {
 
           {/* Call to Action */}
           <div className="text-center">
-            <h4 className="text-2xl font-bold text-gray-900 mb-4">Découvrez l'Effet Phoenix</h4>
+            <h4 className="text-2xl font-bold text-gray-900 mb-4">Construisez Votre Trajectory Dès Maintenant</h4>
             <p className="text-lg text-gray-600 mb-6">
-              Commencez gratuitement avec Phoenix CV. Plus vous utilisez l'écosystème, plus il
-              devient puissant.
+              Commencez gratuitement avec Phoenix Letters. Chaque étape de votre parcours 
+              enrichit votre trajectory personnalisée.
             </p>
-            <Link href="https://phoenixcreator.netlify.app/" target="_blank">
+            <Link href="https://phoenix-letters.streamlit.app/" target="_blank">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-3 text-lg"
+                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white px-8 py-3 text-lg"
               >
-                Découvrir l'écosystème →
+                Démarrer ma Trajectory →
               </Button>
             </Link>
           </div>

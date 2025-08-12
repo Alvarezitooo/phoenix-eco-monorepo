@@ -10,6 +10,25 @@ const nextConfig = {
   },
   // 🛡️ Headers de sécurité HTTP obligatoires
   async headers() {
+    const apiOrigins = [];
+    // Autoriser explicitement les API d'origines définies via env
+    if (process.env.NEXT_PUBLIC_IRIS_API_URL) {
+      try {
+        const u = new URL(process.env.NEXT_PUBLIC_IRIS_API_URL);
+        apiOrigins.push(`${u.protocol}//${u.host}`);
+      } catch {}
+    }
+    if (process.env.NEXT_PUBLIC_DOJO_API_URL) {
+      try {
+        const u = new URL(process.env.NEXT_PUBLIC_DOJO_API_URL);
+        apiOrigins.push(`${u.protocol}//${u.host}`);
+      } catch {}
+    }
+    const staticApiOrigins = [
+      'https://phoenix-eco-monorepo-production.up.railway.app',
+      'https://phoenix-aube-production.up.railway.app',
+    ];
+    const connectSrcExtras = Array.from(new Set([...apiOrigins, ...staticApiOrigins])).join(' ');
     return [
       {
         source: '/(.*)',
@@ -36,10 +55,10 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               "script-src 'self'",
-              "style-src 'self' 'unsafe-inline'", // keep temporarily; replace with nonce/hashes later
+              "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https:",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co http://localhost:8000 https://api.stripe.com",
+              `connect-src 'self' https://*.supabase.co http://localhost:8000 https://api.stripe.com ${connectSrcExtras}`.trim(),
               "frame-ancestors 'none'",
             ].join('; '),
           },
