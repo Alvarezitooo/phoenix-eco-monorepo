@@ -1,0 +1,1 @@
+# Phoenix Shared Config - Package centralisé pour toutes les applications Phoenix

@@ -359,7 +359,7 @@ def main():
 
     # Initialize GeminiClient here to pass it to _initialize_app_components
     use_mock = st.sidebar.checkbox(
-        "Utiliser le Mock API (Mode Développeur)", value=True
+        "Utiliser le Mock API (Mode Développeur)", value=False
     )
     if use_mock:
         from infrastructure.ai.mock_gemini_client import MockGeminiClient
