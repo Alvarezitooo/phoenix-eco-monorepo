@@ -5,6 +5,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 export default function ResearchActionSection() {
+  // Feature flag: hide section by default unless explicitly enabled
+  if (process.env.NEXT_PUBLIC_ENABLE_RESEARCH_SECTION !== 'true') {
+    return null;
+  }
   const researchStats = [
     {
       metric: 'Utilisateurs contributeurs',
