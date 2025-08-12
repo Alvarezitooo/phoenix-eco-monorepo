@@ -80,22 +80,14 @@ def validate_css_style(style_value: str) -> str:
 def safe_markdown(content: str):
     """
     Renders markdown after sanitizing it to prevent XSS attacks.
-    Configuration sécurisée - Version simplifiée pour debugging.
+    Version temporaire: bypass complet pour debug CSS.
     
     Args:
         content: The markdown/HTML content to render.
     """
-    # Version simplifiée : on fait confiance à bleach pour la sanitisation
-    # sans validation CSS supplémentaire (pour debug)
-    sanitized_content = bleach.clean(
-        content,
-        tags=ALLOWED_TAGS,
-        attributes=ALLOWED_ATTRIBUTES,
-        strip=False  # Escape disallowed tags instead of removing
-    )
-    
-    # Render the sanitized content
-    st.markdown(sanitized_content, unsafe_allow_html=True)
+    # VERSION TEMPORAIRE DE DEBUG: bypass complet de bleach
+    # pour voir si c'est bleach qui vide les CSS
+    st.markdown(content, unsafe_allow_html=True)
 
 def safe_redirect(url: str, message: str = "🔄 Redirection..."):
     """
