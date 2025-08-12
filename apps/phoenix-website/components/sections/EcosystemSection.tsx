@@ -5,6 +5,7 @@ import { ArrowDown, ArrowRight, CheckCircle, Shield, Users, Zap } from 'lucide-r
 import Link from 'next/link';
 
 export default function EcosystemSection() {
+  // Force redeploy - Phoenix Aube + Trajectory Builder IA
   return (
     <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="container mx-auto px-4">
