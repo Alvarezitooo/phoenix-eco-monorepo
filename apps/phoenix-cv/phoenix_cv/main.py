@@ -308,7 +308,7 @@ def render_smart_coach_widget():
             # Widget en sidebar pour compatibilité mobile
             with st.sidebar:
                 st.markdown("---")
-                st.markdown(
+                safe_markdown(
                     f"""
                 <div style="
                     background: white;
@@ -339,8 +339,7 @@ def render_smart_coach_widget():
                         {"<div style='margin-bottom: 1rem;'><strong style='color: " + urgency_color + "; font-size: 0.8rem;'>⚡ ACTIONS:</strong><br>" + "<br>".join(f"• {action}" for action in insight.quick_wins[:2]) + "</div>" if insight.quick_wins else ""}
                     </div>
                 </div>
-                """,
-                    unsafe_allow_html=True,
+                """
                 )
 
                 # Boutons d'action pour le coach
@@ -1055,7 +1054,7 @@ def render_pricing_page():
             st.success("✅ Niveau Gratuit activé !")
 
     with col2:
-        st.markdown(
+        safe_markdown(
             """
         <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #FFD700; height: 300px; box-shadow: 0 2px 12px rgba(255, 215, 0, 0.3);">
             <h3 style="color: #333; margin-bottom: 0.5rem;">⭐ Premium</h3>
@@ -1071,8 +1070,7 @@ def render_pricing_page():
                 <p>✅ <strong>Génération perfect garantie</strong></p>
             </div>
         </div>
-        """,
-            unsafe_allow_html=True,
+        """
         )
 
         if st.button("⭐ Choisir Premium", type="primary", use_container_width=True):
