@@ -61,8 +61,15 @@ app = FastAPI(
 )
 
 # Middleware de sécurité
-allowed_origins = os.getenv("AUBE_ALLOWED_ORIGINS", "http://localhost:8501").split(",")
-allowed_hosts = os.getenv("AUBE_ALLOWED_HOSTS", "localhost").split(",")
+# Par défaut: autoriser localhost et les sous-domaines Railway pour éviter les 400 Host header
+allowed_origins = os.getenv(
+    "AUBE_ALLOWED_ORIGINS",
+    "http://localhost:8501,https://*.vercel.app",
+).split(",")
+allowed_hosts = os.getenv(
+    "AUBE_ALLOWED_HOSTS",
+    "localhost,*.up.railway.app",
+).split(",")
 
 app.add_middleware(
     CORSMiddleware,
@@ -79,6 +86,45 @@ app.add_middleware(
 
 # Security
 security = HTTPBearer()
+
+# =============================================
+# ENDPOINTS AUTHENTIFICATION (MVP MOCK)
+# =============================================
+
+@app.post("/api/v1/auth/login")
+async def mock_login(credentials: dict):
+    """Mock login pour MVP - accepte n'importe quels identifiants"""
+    try:
+        email = credentials.get("email", "")
+        password = credentials.get("password", "")
+        
+        # Mock authentication - accepte tout sauf vide
+        if not email or not password:
+            raise HTTPException(status_code=400, detail="Email et mot de passe requis")
+        
+        # Génère un token mock
+        mock_token = f"mock_token_{email.split('@')[0]}_123"
+        
+        return {
+            "user": {
+                "id": f"user_{email.split('@')[0]}",
+                "email": email,
+                "name": email.split('@')[0].title(),
+                "subscription": "premium"
+            },
+            "token": mock_token
+        }
+    except Exception as e:
+        logger.error(f"Erreur mock login: {str(e)}")
+        raise HTTPException(status_code=401, detail="Erreur de connexion")
+
+@app.get("/api/v1/auth/verify")
+async def verify_token(current_user: dict = Depends(get_current_user)):
+    """Vérification token mock"""
+    return {
+        "user": current_user,
+        "valid": True
+    }
 
 # =============================================
 # ENDPOINTS VALIDATION IA (CŒUR INNOVATION)
@@ -298,6 +344,17 @@ async def prepare_ecosystem_transition(
 # =============================================
 # ENDPOINTS MONITORING & HEALTH
 # =============================================
+
+@app.get("/")
+async def root() -> Dict[str, str]:
+    """Endpoint racine - Statut API"""
+    return {
+        "service": "phoenix_aube_api",
+        "status": "healthy",
+        "version": "1.0.0",
+        "docs": "/docs",
+        "health": "/health",
+    }
 
 @app.get("/health")
 async def health_check() -> Dict[str, str]:
