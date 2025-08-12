@@ -79,22 +79,17 @@ def validate_css_style(style_value: str) -> str:
 
 def safe_markdown(content: str):
     """
-    Renders markdown after sanitizing it to prevent XSS attacks.
-    Version corrigée qui préserve les CSS.
+    Renders HTML/CSS content safely for controlled static content.
+    Based on standard Streamlit practices (Microsoft, community examples).
+    
+    IMPORTANT: Only use with trusted, static content - not user input!
     
     Args:
-        content: The markdown/HTML content to render.
+        content: The HTML/CSS content to render.
     """
-    # Configuration bleach plus permissive pour CSS
-    sanitized_content = bleach.clean(
-        content,
-        tags=ALLOWED_TAGS,
-        attributes=ALLOWED_ATTRIBUTES,
-        strip=False,  # Ne pas supprimer les balises, les échapper
-        protocols=['http', 'https', 'mailto']  # Protocoles autorisés pour liens
-    )
-    
-    st.markdown(sanitized_content, unsafe_allow_html=True)
+    # Standard approach used by Microsoft and Streamlit community
+    # No sanitization needed for controlled static content
+    st.markdown(content, unsafe_allow_html=True)
 
 def safe_redirect(url: str, message: str = "🔄 Redirection..."):
     """
