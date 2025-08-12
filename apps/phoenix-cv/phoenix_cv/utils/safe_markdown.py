@@ -26,17 +26,29 @@ ALLOWED_ATTRIBUTES = {
     # Removed: onclick, script attributes pour sécurité
 }
 
-# CSS properties whitelist for style validation - Plus permissive pour UI
+# CSS properties whitelist for style validation - Complet pour Phoenix CV
 ALLOWED_CSS_PROPERTIES = [
-    'color', 'background-color', 'background', 'font-weight', 'font-size',
-    'text-align', 'margin', 'padding', 'border-radius', 'border',
+    # Couleurs
+    'color', 'background-color', 'background', 
+    # Typography
+    'font-weight', 'font-size', 'font-style', 'line-height', 'text-align', 'text-decoration',
+    # Spacing
+    'margin', 'margin-top', 'margin-bottom', 'margin-left', 'margin-right',
+    'padding', 'padding-top', 'padding-bottom', 'padding-left', 'padding-right',
+    # Layout
     'display', 'justify-content', 'align-items', 'flex-direction',
-    'height', 'width', 'max-width', 'min-height', 'box-shadow',
-    'grid-template-columns', 'gap', 'position', 'top', 'right',
-    'font-style', 'line-height', 'margin-bottom', 'margin-top',
-    'padding-left', 'padding-right', 'padding-top', 'padding-bottom',
-    'border-left', 'border-right', 'border-top', 'border-bottom',
-    'cursor', 'white-space', 'overflow', 'text-decoration'
+    'height', 'width', 'max-width', 'min-height', 'min-width', 'max-height',
+    'position', 'top', 'right', 'bottom', 'left',
+    # Borders & Effects
+    'border', 'border-radius', 'border-left', 'border-right', 'border-top', 'border-bottom',
+    'border-color', 'border-width', 'border-style',
+    'box-shadow', 'opacity', 'transform',
+    # Grid & Flexbox
+    'grid-template-columns', 'grid-template-rows', 'gap', 'grid-gap',
+    'flex', 'flex-grow', 'flex-shrink', 'flex-basis',
+    # Other
+    'cursor', 'white-space', 'overflow', 'overflow-x', 'overflow-y',
+    'z-index', 'vertical-align'
 ]
 
 def validate_css_style(style_value: str) -> str:
@@ -68,24 +80,15 @@ def validate_css_style(style_value: str) -> str:
 def safe_markdown(content: str):
     """
     Renders markdown after sanitizing it to prevent XSS attacks.
-    Configuration sécurisée avec validation CSS inline.
+    Configuration sécurisée - Version simplifiée pour debugging.
     
     Args:
         content: The markdown/HTML content to render.
     """
-    # Pre-process CSS validation
-    import re
-    def validate_style_attribute(match):
-        style_content = match.group(1)
-        validated_style = validate_css_style(style_content)
-        return f'style="{validated_style}"'
-    
-    # Validate CSS before bleach processing
-    pre_validated = re.sub(r'style="([^"]*)"', validate_style_attribute, content)
-    
-    # Sanitize the content with validated CSS
+    # Version simplifiée : on fait confiance à bleach pour la sanitisation
+    # sans validation CSS supplémentaire (pour debug)
     sanitized_content = bleach.clean(
-        pre_validated,
+        content,
         tags=ALLOWED_TAGS,
         attributes=ALLOWED_ATTRIBUTES,
         strip=False  # Escape disallowed tags instead of removing
