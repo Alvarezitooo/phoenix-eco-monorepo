@@ -6,14 +6,6 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "devCommand": "npm run dev",
-  "env": {
-    "VITE_API_URL": "@phoenix_aube_api_url"
-  },
-  "build": {
-    "env": {
-      "VITE_API_URL": "@phoenix_aube_api_url"
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
