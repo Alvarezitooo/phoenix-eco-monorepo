@@ -25,16 +25,14 @@ from phoenix_cv.services.mirror_match_engine import mirror_match_engine
 from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
 from phoenix_cv.services.smart_coach import CoachingContext, smart_coach
 from phoenix_cv.utils.html_sanitizer import html_sanitizer
-# from phoenix_cv.utils.safe_markdown import safe_markdown  # Commenté pour forcer st.markdown direct
+from phoenix_cv.utils.safe_markdown import safe_markdown
 from phoenix_cv.ui.login_page import handle_authentication_flow
 from packages.phoenix_shared_ui.components.header import render_header as render_shared_header
 from packages.phoenix_shared_ui.components.consent_banner import render_consent_banner
 st.toast("✅ VERSION DU 03/08/2025 - 09:15 AM CEST")
 
 
-def safe_markdown(content: str):
-    """Version locale forcée pour corriger les problèmes d'affichage HTML"""
-    st.markdown(content, unsafe_allow_html=True)
+# Fonction safe_markdown supprimée - utilisation de la version centralisée dans utils/
 
 
 def safe_redirect(url: str, message: str = "🔄 Redirection..."):
