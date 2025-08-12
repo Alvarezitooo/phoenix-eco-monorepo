@@ -1,16 +1,27 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY! as string, {
-  // Utiliser la valeur de type attendue par @types/stripe de ce repo
-  apiVersion: '2025-07-30.basil',
-});
+// Instanciate Stripe client (fail fast if not configured)
+const secretKey = process.env.STRIPE_SECRET_KEY as string | undefined;
+const stripe = secretKey ? new Stripe(secretKey) : null;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { priceId, quantity = 1 } = req.body;
+    if (!stripe) {
+      return res.status(500).json({ message: 'Stripe non configuré: STRIPE_SECRET_KEY manquant.' });
+    }
+
+    const { priceId, quantity = 1 } = req.body as { priceId?: string; quantity?: number };
+
+    if (!priceId) {
+      return res.status(400).json({ message: 'priceId manquant.' });
+    }
 
     try {
+      const origin =
+        (req.headers.origin as string) ||
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        'https://phoenix-eco-monorepo.vercel.app';
       const session = await stripe.checkout.sessions.create({
         line_items: [
           {
@@ -19,12 +30,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
         ],
         mode: 'subscription', // or 'payment' for one-time payments
-        success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.origin}/cancel`,
+        success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/cancel`,
       });
       res.status(200).json({ url: session.url });
     } catch (err: any) {
-      res.status(err.statusCode || 500).json({ message: err.message });
+      console.error('Stripe checkout session error', { error: err?.message || String(err) });
+      res.status(err?.statusCode || 500).json({ message: err?.message || 'Erreur Stripe' });
     }
   } else {
     res.setHeader('Allow', 'POST');

@@ -2,9 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 import { buffer } from 'micro';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY! as string, {
-  apiVersion: '2025-07-30.basil',
-});
+const secretKey = process.env.STRIPE_SECRET_KEY as string | undefined;
+const stripe = secretKey ? new Stripe(secretKey) : null;
 
 // Anti-replay protection
 const processedEvents = new Set<string>();
@@ -53,6 +52,10 @@ function cleanupOldEvents(): void {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (!stripe) {
+    return res.status(500).json({ error: 'Stripe non configuré: STRIPE_SECRET_KEY manquant.' });
+  }
+
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method Not Allowed' });
