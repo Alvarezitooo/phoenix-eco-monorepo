@@ -28,6 +28,7 @@ from phoenix_cv.services.stripe_service import StripeService
 from phoenix_cv.utils.html_sanitizer import html_sanitizer
 # from phoenix_cv.utils.safe_markdown import safe_markdown  # DÉSACTIVÉ - problème de rendu HTML
 from phoenix_cv.ui.login_page import handle_authentication_flow
+from packages.phoenix_shared_auth.services.cross_app_auth import get_cross_app_auth_service
 from phoenix_cv.ui.components.paywall_modal import show_paywall_modal
 from packages.phoenix_shared_ui.components.header import render_header as render_shared_header
 from packages.phoenix_shared_ui.components.consent_banner import render_consent_banner
@@ -1898,6 +1899,31 @@ def main():
 
     # Configuration page
     configure_page()
+    
+    # Vérification cross-app auth en premier
+    try:
+        from packages.phoenix_shared_auth.services.phoenix_auth_service import PhoenixAuthService
+        from packages.phoenix_shared_auth.database.phoenix_db_connection import PhoenixDatabaseConnection
+        
+        # Initialiser services auth (avec gestion d'erreur)
+        try:
+            db_conn = PhoenixDatabaseConnection()
+            auth_service = PhoenixAuthService(db_conn, None)
+            cross_app_service = get_cross_app_auth_service(auth_service)
+            
+            # Vérifier cross-app login
+            cross_app_user = cross_app_service.init_streamlit_auth_check()
+            if cross_app_user:
+                st.session_state['cross_app_authenticated'] = True
+                st.session_state['user_id'] = str(cross_app_user.id)
+                st.session_state['user_email'] = cross_app_user.email
+                st.success(f"✅ Connecté depuis l'écosystème Phoenix : {cross_app_user.email}")
+        except:
+            # Service auth partagé non disponible, fallback normal
+            pass
+    except ImportError:
+        # Module partagé non disponible
+        pass
     
     # Gestion de l'authentification
     is_authenticated = handle_authentication_flow()

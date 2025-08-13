@@ -30,6 +30,16 @@ export default function StripeCheckoutButton({
     setLoading(true);
 
     try {
+      // Vérifier si l'utilisateur est connecté
+      const { getCurrentUser } = await import('@/lib/auth');
+      const user = await getCurrentUser();
+      
+      if (!user) {
+        // Rediriger vers auth modal si non connecté
+        alert('Veuillez vous connecter pour continuer vers le paiement');
+        setLoading(false);
+        return;
+      }
       const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string | undefined;
       if (!publishableKey) {
         throw new Error('Stripe non configuré côté client (clé publique manquante).');
