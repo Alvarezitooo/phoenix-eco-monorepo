@@ -190,17 +190,15 @@ def _show_premium_required_cv(feature_name: str, message: str):
     
     with col1:
         if st.button("🚀 Phoenix CV Premium", type="primary", key=f"upgrade_cv_{feature_name}"):
-            st.success("🔗 Redirection vers Phoenix CV Premium...")
-            # TODO: Intégrer Stripe
+            _redirect_to_cv_premium_checkout()
     
     with col2:
         if st.button("🔥 Pack CV + Letters", key=f"pack_{feature_name}"):
-            st.success("🔗 Redirection vers le Pack Phoenix...")
-            # TODO: Intégrer Stripe Pack
+            _redirect_to_pack_checkout()
     
     with col3:
         if st.button("ℹ️ En savoir plus", key=f"info_{feature_name}"):
-            st.info("📄 Consultez notre page tarifs pour plus d'informations")
+            _show_pricing_details()
 
 
 def _show_limit_reached_cv(limit_type: str, limit: int, current_usage: int):
@@ -355,3 +353,181 @@ def render_cv_subscription_widget():
 # Alias pour compatibilité
 premium_required = require_cv_premium
 monthly_limit = check_cv_monthly_limit
+
+
+# Fonctions de redirection Stripe
+
+def _redirect_to_cv_premium_checkout():
+    """Redirige vers le checkout Stripe CV Premium"""
+    try:
+        user_id = st.session_state.get("user_id")
+        user_email = st.session_state.get("user_email")
+        
+        if not user_id or not user_email:
+            st.error("❌ Informations utilisateur manquantes")
+            return
+        
+        # Afficher informations du checkout
+        with st.spinner("🔄 Création de la session de paiement..."):
+            st.success("🚀 **Redirection vers Phoenix CV Premium**")
+            st.info("💳 **Prix**: 9,99€/mois")
+            st.info("✨ **Includes**: CV illimités + ATS + Mirror Match + Templates Premium")
+            
+            # URL de redirection (en production, générer via Stripe)
+            checkout_url = f"https://phoenix-eco-monorepo.vercel.app/pricing?upgrade=cv&user_id={user_id}"
+            
+            st.markdown(f"""
+                <div style="text-align: center; margin: 2rem 0;">
+                    <a href="{checkout_url}" target="_blank" style="
+                        background: linear-gradient(135deg, #f97316, #ef4444);
+                        color: white;
+                        padding: 1rem 2rem;
+                        border-radius: 25px;
+                        text-decoration: none;
+                        font-weight: bold;
+                        display: inline-block;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                    ">
+                        🚀 Continuer vers le paiement
+                    </a>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            logger.info(f"📊 Redirection checkout CV Premium pour {user_id}")
+            
+    except Exception as e:
+        st.error(f"❌ Erreur redirection checkout: {e}")
+        logger.error(f"❌ Erreur redirection CV Premium: {e}")
+
+
+def _redirect_to_pack_checkout():
+    """Redirige vers le checkout Stripe Pack CV + Letters"""
+    try:
+        user_id = st.session_state.get("user_id")
+        user_email = st.session_state.get("user_email")
+        
+        if not user_id or not user_email:
+            st.error("❌ Informations utilisateur manquantes")
+            return
+        
+        with st.spinner("🔄 Création de la session de paiement Pack..."):
+            st.success("🔥 **Redirection vers Pack Phoenix CV + Letters**")
+            st.info("💳 **Prix**: 14,99€/mois (au lieu de 19,98€)")
+            st.success("💰 **Économie**: 30% par rapport aux abonnements séparés")
+            st.info("🎯 **Includes**: Tout CV Premium + Tout Letters Premium + Sync avancée")
+            
+            # URL de redirection Pack
+            checkout_url = f"https://phoenix-eco-monorepo.vercel.app/pricing?upgrade=pack&user_id={user_id}"
+            
+            st.markdown(f"""
+                <div style="text-align: center; margin: 2rem 0;">
+                    <a href="{checkout_url}" target="_blank" style="
+                        background: linear-gradient(135deg, #f97316, #ef4444);
+                        color: white;
+                        padding: 1rem 2rem;
+                        border-radius: 25px;
+                        text-decoration: none;
+                        font-weight: bold;
+                        display: inline-block;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                        animation: pulse 2s infinite;
+                    ">
+                        🔥 Souscrire au Pack (Économisez 30%)
+                    </a>
+                </div>
+                
+                <style>
+                @keyframes pulse {{
+                    0% {{ transform: scale(1); }}
+                    50% {{ transform: scale(1.05); }}
+                    100% {{ transform: scale(1); }}
+                }}
+                </style>
+            """, unsafe_allow_html=True)
+            
+            logger.info(f"📊 Redirection checkout Pack pour {user_id}")
+            
+    except Exception as e:
+        st.error(f"❌ Erreur redirection checkout Pack: {e}")
+        logger.error(f"❌ Erreur redirection Pack: {e}")
+
+
+def _show_pricing_details():
+    """Affiche les détails de tarification Phoenix"""
+    with st.expander("💰 **Détails des tarifs Phoenix**", expanded=True):
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.markdown("""
+                #### 🆓 Phoenix CV Gratuit
+                **0€/mois**
+                - ✅ 3 CV par mois
+                - ✅ 5 templates de base
+                - ✅ Export PDF
+                - ✅ Support email
+                - ❌ Pas d'optimisation ATS
+                - ❌ Pas de Mirror Match
+            """)
+        
+        with col2:
+            st.markdown("""
+                #### ⭐ Phoenix CV Premium  
+                **9,99€/mois**
+                - 🔥 CV illimités
+                - 🔥 20+ templates premium
+                - 🔥 Optimisation ATS
+                - 🔥 Mirror Match algorithme
+                - 🔥 Trajectory Builder
+                - 🔥 Smart Coach avancé
+                - 🔥 Export multi-formats
+                - 🔥 Support prioritaire
+            """)
+        
+        with col3:
+            st.markdown("""
+                #### 🔥 Pack CV + Letters
+                **14,99€/mois** ~~19,98€~~
+                - 🎯 **Tout CV Premium**
+                - 🎯 **Tout Letters Premium**
+                - 🎯 **Lettres illimitées**
+                - 🎯 **IA Gemini optimisée**
+                - 🎯 **Synchronisation avancée**
+                - 🎯 **Support prioritaire**
+                - 💰 **Économie 30%**
+            """)
+        
+        st.markdown("---")
+        st.markdown("### 🔒 **Garanties Phoenix**")
+        
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.markdown("✅ **Annulation** à tout moment")
+        with col2:
+            st.markdown("🔒 **Données sécurisées** RGPD")
+        with col3:
+            st.markdown("💳 **Paiement sécurisé** Stripe")
+        with col4:
+            st.markdown("🇫🇷 **Support français** 7j/7")
+        
+        st.success("🎯 **Recommandation**: Le Pack CV + Letters est idéal pour une reconversion complète !")
+
+
+def _get_stripe_price_ids() -> Dict[str, str]:
+    """Récupère les Price IDs Stripe pour l'intégration"""
+    try:
+        from packages.phoenix_shared_auth.entities.phoenix_subscription import STRIPE_PRICE_IDS, BUNDLE_PRICE_IDS, PhoenixApp, SubscriptionTier
+        
+        return {
+            "cv_premium": STRIPE_PRICE_IDS[PhoenixApp.CV][SubscriptionTier.PREMIUM],
+            "letters_premium": STRIPE_PRICE_IDS[PhoenixApp.LETTERS][SubscriptionTier.PREMIUM], 
+            "pack_cv_letters": BUNDLE_PRICE_IDS["phoenix_pack_cv_letters"]
+        }
+    except ImportError:
+        # Fallback avec les vrais IDs
+        return {
+            "cv_premium": "price_1RraUoDcM3VIYgvy0NXiKmKV",
+            "letters_premium": "price_1RraAcDcM3VIYgvyEBNFXfbR",
+            "pack_cv_letters": "price_1RraWhDcM3VIYgvyGykPghCc"
+        }

@@ -416,14 +416,14 @@ class PhoenixUserSubscription:
         return user_subscription
 
 
-# Prix Stripe par application (variables d'environnement du website)
+# Prix Stripe par application (IDs de production réels)
 STRIPE_PRICE_IDS = {
     PhoenixApp.CV: {
-        SubscriptionTier.PREMIUM: "NEXT_PUBLIC_STRIPE_CV_PRICE_ID",  # Sera résolu par la config
+        SubscriptionTier.PREMIUM: "price_1RraUoDcM3VIYgvy0NXiKmKV",  # Phoenix CV Premium
         SubscriptionTier.PRO: "price_cv_pro_monthly"
     },
     PhoenixApp.LETTERS: {
-        SubscriptionTier.PREMIUM: "NEXT_PUBLIC_STRIPE_LETTERS_PRICE_ID",  # Sera résolu par la config
+        SubscriptionTier.PREMIUM: "price_1RraAcDcM3VIYgvyEBNFXfbR",  # Phoenix Letters Premium
         SubscriptionTier.PRO: "price_letters_pro_monthly"
     },
     PhoenixApp.RISE: {
@@ -434,9 +434,12 @@ STRIPE_PRICE_IDS = {
 
 # Bundles (abonnements combinés avec réduction)
 BUNDLE_PRICE_IDS = {
-    "phoenix_pack_cv_letters": "NEXT_PUBLIC_STRIPE_PACK_PRICE_ID",  # Pack CV + Letters
+    "phoenix_pack_cv_letters": "price_1RraWhDcM3VIYgvyGykPghCc",  # Pack CV + Letters Premium
     "phoenix_trio_all_apps": "price_bundle_all_apps_monthly"
 }
+
+# Clé publique Stripe (production)
+STRIPE_PUBLISHABLE_KEY = "pk_live_51RrZGNDcM3VIYgvyvNDVGUCRzqBv0gn23jVS82xNTnJxwSO2hOVxzWAazgRp6oaGubVcgE0iYlnw4kfMlJYSdwEK00NWdVHGM8"
 
 class PackageType(Enum):
     """Types de packages disponibles"""
