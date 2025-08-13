@@ -9,9 +9,10 @@ Version: 1.0.0 - Production Ready
 import streamlit as st
 from phoenix_cv.utils.safe_markdown import safe_markdown
 
-# Import avec fallback pour service d'auth
+# Import du service d'authentification unifié
 try:
-    from phoenix_cv.services.phoenix_unified_auth import phoenix_cv_auth
+    from packages.phoenix_shared_auth.client import get_auth_manager
+    auth_manager = get_auth_manager()
     AUTH_SERVICE_AVAILABLE = True
 except ImportError:
     try:
