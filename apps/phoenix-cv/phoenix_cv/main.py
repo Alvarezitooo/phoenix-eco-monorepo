@@ -303,43 +303,18 @@ def render_smart_coach_widget():
 
             tone_icon = tone_icons.get(insight.tone.value, "💡")
 
-            # Widget en sidebar pour compatibilité mobile
+            # Widget en sidebar pour compatibilité mobile - Version Markdown natif
             with st.sidebar:
                 st.markdown("---")
-                st.markdown(
-                    f"""
-                <div style="
-                    background: white;
-                    border: 3px solid {urgency_color};
-                    border-radius: 15px;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                    margin-bottom: 1rem;
-                ">
-                    <div style="
-                        background: {urgency_color}; 
-                        color: white; 
-                        padding: 0.75rem; 
-                        border-radius: 12px 12px 0 0;
-                        font-weight: bold;
-                        text-align: center;
-                    ">
-                        {tone_icon} Smart Coach IA
-                    </div>
-                    
-                    <div style="padding: 1rem;">
-                        <h4 style="margin: 0 0 0.5rem 0; color: #333; font-size: 0.9rem;">
-                            {insight.title}
-                        </h4>
-                        <p style="margin: 0 0 1rem 0; color: #666; font-size: 0.8rem; line-height: 1.4;">
-                            {insight.message}
-                        </p>
-                        
-                        {f"<div style='margin-bottom: 1rem;'><strong style='color: {urgency_color}; font-size: 0.8rem;'>⚡ ACTIONS:</strong><br>{'<br>'.join(f'• {action}' for action in insight.quick_wins[:2])}</div>" if insight.quick_wins else ""}
-                    </div>
-                </div>
-                """,
-                    unsafe_allow_html=True,
-                )
+                st.info(f"**{tone_icon} Smart Coach IA**")
+                
+                st.write(f"**{insight.title}**")
+                st.write(insight.message)
+                
+                if insight.quick_wins:
+                    st.write("⚡ **ACTIONS:**")
+                    for action in insight.quick_wins[:2]:
+                        st.write(f"• {action}")
 
                 # Boutons d'action pour le coach
                 col1, col2 = st.columns(2)
@@ -385,15 +360,9 @@ def render_header():
 def render_sidebar():
     """Rendu de la sidebar de navigation optimisée"""
 
-    st.sidebar.markdown(
-        """
-    <div style="text-align: center; padding: 1rem 0;">
-        <h3>🚀 Phoenix CV</h3>
-        <p style="color: #666; margin: 0;">Perfect Edition</p>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
+    # Header sidebar - Version Markdown natif
+    st.sidebar.markdown("### 🚀 Phoenix CV")
+    st.sidebar.markdown("*Perfect Edition*")
 
     st.sidebar.markdown("---")
 
@@ -415,19 +384,15 @@ def render_sidebar():
         "", list(pages.keys()), label_visibility="collapsed"
     )
 
-    # Indicateur tier actuel
+    # Indicateur tier actuel - Version Markdown natif
     if "user_tier" in st.session_state:
         tier = st.session_state["user_tier"]
         tier_emoji = "🆓" if tier == "gratuit" else "⭐"
-        border_color = "#FFD700" if tier == "premium" else "#28a745"
-        st.sidebar.markdown(
-            f"""
-        <div style="background: #ffffff; padding: 0.75rem; border-radius: 8px; text-align: center; border: 2px solid {border_color}; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-            <p style="margin: 0; font-weight: bold; color: #333333;">{tier_emoji} Niveau {tier.title()}</p>
-        </div>
-        """,
-            unsafe_allow_html=True,
-        )
+        
+        if tier == "premium":
+            st.sidebar.success(f"**{tier_emoji} Niveau {tier.title()}**")
+        else:
+            st.sidebar.info(f"**{tier_emoji} Niveau {tier.title()}**")
 
     st.sidebar.markdown("---")
 
@@ -453,22 +418,11 @@ def render_sidebar():
 
     st.sidebar.markdown("---")
 
-    # Call-to-action dans sidebar
+    # Call-to-action dans sidebar - Version Markdown natif
     if not is_dev_mode():
-        st.sidebar.markdown(
-            """
-        <div style="background: #e8f5e8; padding: 1rem; border-radius: 8px; text-align: center;">
-            <h4 style="margin: 0; color: #2e7d2e;">💡 Support</h4>
-            <p style="margin: 0.5rem 0; font-size: 0.9rem;">Contactez-nous !</p>
-            <a href="mailto:contact.phoenixletters@gmail.com" style="text-decoration: none;">
-                <button style="background: #28a745; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer;">
-                    📧 Contact
-                </button>
-            </a>
-        </div>
-        """,
-            unsafe_allow_html=True,
-        )
+        st.sidebar.success("**💡 Support**")
+        st.sidebar.write("Contactez-nous !")
+        st.sidebar.markdown("[📧 Contact](mailto:contact.phoenixletters@gmail.com)")
 
     return pages[selected_page]
 
@@ -579,19 +533,15 @@ def render_create_cv_page():
     user_tier = st.session_state.get("user_tier", "gratuit")
     tier_emoji = "🆓" if user_tier == "gratuit" else "⭐"
 
-    st.markdown(
-        f"""
-    <div style="background: #ffffff; padding: 1rem; border-radius: 10px; margin-bottom: 1rem; border: 2px solid {'#FFD700' if user_tier == 'premium' else '#28a745'}; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-        <h4 style="margin: 0; color: #333333;">{tier_emoji} Niveau {user_tier.title()} sélectionné</h4>
-        <p style="margin: 0.5rem 0; font-size: 0.9rem; color: #333333; font-weight: 500;">
-            {"Prompt magistral reconversion + optimisation ATS de base (85%)" if user_tier == "gratuit" 
-             else "Prompt executive magistral + optimisation ATS avancée (95%) + Green AI"}
-        </p>
-        <small><a href="#" onclick="delete sessionStorage; location.reload();" style="color: #007bff;">Changer de niveau</a></small>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
+    # Indicateur de niveau - Version Markdown natif
+    if user_tier == "premium":
+        st.success(f"**{tier_emoji} Niveau {user_tier.title()} sélectionné**")
+        st.write("Prompt executive magistral + optimisation ATS avancée (95%) + Green AI")
+    else:
+        st.info(f"**{tier_emoji} Niveau {user_tier.title()} sélectionné**")
+        st.write("Prompt magistral reconversion + optimisation ATS de base (85%)")
+    
+    st.write("*[Changer de niveau en actualisant la page]*")
 
     with st.form("cv_perfect_form"):
         st.markdown("### 👤 Informations Personnelles")
@@ -1459,23 +1409,16 @@ def render_ecosystem_recommendations(user_data: dict = None):
                     else "#ffc107" if rec["confidence"] > 0.5 else "#6c757d"
                 )
 
-                safe_markdown(
-                    f"""
-                <div style="background: white; padding: 1rem; border-radius: 10px; border: 2px solid {confidence_color}; height: 200px; display: flex; flex-direction: column; justify-content: space-between;">
-                    <div>
-                        <h4 style="color: #333; margin-bottom: 0.5rem;">{rec['title']}</h4>
-                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">{rec['description']}</p>
-                    </div>
-                    <div style="text-align: center;">
-                        <a href="{rec['url']}" target="_blank" style="text-decoration: none;">
-                            <button style="background: {confidence_color}; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-weight: bold;">
-                                {rec['cta']}
-                            </button>
-                        </a>
-                    </div>
-                </div>
-                """
-                )
+                # Recommandation écosystème - Version Markdown natif
+                if rec["confidence"] > 0.7:
+                    st.success(f"**{rec['title']}**")
+                elif rec["confidence"] > 0.5:
+                    st.warning(f"**{rec['title']}**")
+                else:
+                    st.info(f"**{rec['title']}**")
+                
+                st.write(rec['description'])
+                st.markdown(f"[{rec['cta']}]({rec['url']})")
 
 
 def render_trajectory_builder_page():
