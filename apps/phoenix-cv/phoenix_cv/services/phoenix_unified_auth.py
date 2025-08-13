@@ -20,6 +20,15 @@ except ImportError:
     session_sync_service = None
     PhoenixApp = None
 
+# Import du service d'abonnements granulaires
+try:
+    from packages.phoenix_shared_auth.services.phoenix_subscription_service import get_phoenix_subscription_service
+    from packages.phoenix_shared_auth.entities.phoenix_subscription import SubscriptionTier, PhoenixApp as SubsPhoenixApp
+    SUBSCRIPTION_SERVICE_AVAILABLE = True
+except ImportError:
+    SUBSCRIPTION_SERVICE_AVAILABLE = False
+    get_phoenix_subscription_service = None
+
 # Import du système d'auth partagé
 try:
     from packages.phoenix_shared_auth.services.phoenix_auth_service import PhoenixAuthService
@@ -44,13 +53,20 @@ class PhoenixCVAuthService:
     def __init__(self):
         self.shared_auth_available = SHARED_AUTH_AVAILABLE
         self.cross_app_sync_available = CROSS_APP_SYNC_AVAILABLE
+        self.subscription_service_available = SUBSCRIPTION_SERVICE_AVAILABLE
         self.auth_service = None
+        self.subscription_service = None
         
         if self.shared_auth_available:
             try:
                 # Initialisation du service d'auth partagé
                 db_connection = get_phoenix_db_connection()
                 self.auth_service = PhoenixAuthService(db_connection)
+                
+                # Initialisation du service d'abonnements
+                if self.subscription_service_available:
+                    self.subscription_service = get_phoenix_subscription_service(db_connection)
+                
                 logger.info("✅ Phoenix Shared Auth initialisé avec succès")
             except Exception as e:
                 logger.error(f"❌ Erreur initialisation Phoenix Shared Auth: {e}")
@@ -379,7 +395,7 @@ class PhoenixCVAuthService:
         """
         Retourne les informations de session actuelles
         """
-        return {
+        session_info = {
             "authenticated": st.session_state.get("authenticated", False),
             "user_id": st.session_state.get("user_id"),
             "user_email": st.session_state.get("user_email"),
@@ -388,8 +404,16 @@ class PhoenixCVAuthService:
             "phoenix_ecosystem": st.session_state.get("phoenix_ecosystem", False),
             "shared_auth_available": self.shared_auth_available,
             "cross_app_sync_available": self.cross_app_sync_available,
+            "subscription_service_available": self.subscription_service_available,
             "phoenix_session_id": st.session_state.get("phoenix_session_id")
         }
+        
+        # Ajouter informations d'abonnement CV spécifiques
+        if session_info["authenticated"] and session_info["user_id"]:
+            cv_features = self.get_cv_features(session_info["user_id"])
+            session_info["cv_features"] = cv_features
+        
+        return session_info
     
     def get_cross_app_recommendations(self) -> List[Dict[str, Any]]:
         """
@@ -460,6 +484,125 @@ class PhoenixCVAuthService:
             logger.info("✅ Activité CV mise à jour dans session cross-app")
         except Exception as e:
             logger.error(f"❌ Erreur mise à jour activité CV: {e}")
+    
+    def get_cv_features(self, user_id: str) -> Dict[str, Any]:
+        """
+        Récupère les fonctionnalités CV disponibles pour un utilisateur
+        
+        Args:
+            user_id: ID utilisateur
+            
+        Returns:
+            Dict contenant les fonctionnalités CV disponibles
+        """
+        if not self.subscription_service_available or not self.subscription_service:
+            # Retour par défaut - fonctionnalités gratuites
+            return {
+                "cv_count_monthly": 3,
+                "templates_count": 5,
+                "ats_optimization": False,
+                "mirror_match": False,
+                "premium_templates": False,
+                "trajectory_builder": False,
+                "smart_coach_advanced": False,
+                "export_formats": ["PDF"],
+                "support_level": "email",
+                "subscription_tier": "free",
+                "is_premium": False
+            }
+        
+        try:
+            features = self.subscription_service.get_app_features(user_id, SubsPhoenixApp.CV)
+            return features
+        except Exception as e:
+            logger.error(f"❌ Erreur récupération fonctionnalités CV: {e}")
+            # Retour par défaut en cas d'erreur
+            return {
+                "cv_count_monthly": 3,
+                "templates_count": 5,
+                "ats_optimization": False,
+                "is_premium": False,
+                "error": str(e)
+            }
+    
+    def check_cv_feature_access(self, user_id: str, feature: str) -> Tuple[bool, str]:
+        """
+        Vérifie l'accès à une fonctionnalité CV spécifique
+        
+        Args:
+            user_id: ID utilisateur
+            feature: Nom de la fonctionnalité (ex: "ats_optimization", "mirror_match")
+            
+        Returns:
+            Tuple[bool, str]: (accès autorisé, message)
+        """
+        if not self.subscription_service_available or not self.subscription_service:
+            return False, "Service d'abonnements non disponible"
+        
+        try:
+            return self.subscription_service.check_feature_access(user_id, SubsPhoenixApp.CV, feature)
+        except Exception as e:
+            logger.error(f"❌ Erreur vérification accès feature {feature}: {e}")
+            return False, f"Erreur: {str(e)}"
+    
+    def get_subscription_info(self, user_id: str) -> Dict[str, Any]:
+        """
+        Récupère les informations d'abonnement détaillées pour l'utilisateur
+        
+        Args:
+            user_id: ID utilisateur
+            
+        Returns:
+            Dict contenant les informations d'abonnement
+        """
+        if not self.subscription_service_available or not self.subscription_service:
+            return {
+                "package_type": "free",
+                "has_pack_cv_letters": False,
+                "subscription_display": {
+                    "title": "Phoenix Gratuit",
+                    "badge": "GRATUIT",
+                    "icon": "🆓"
+                }
+            }
+        
+        try:
+            user_subscription = self.subscription_service.get_user_subscription(user_id)
+            summary = user_subscription.get_subscription_summary()
+            
+            return {
+                "user_id": user_id,
+                "package_type": summary.get("package_type", "single_app"),
+                "has_pack_cv_letters": summary.get("has_pack_cv_letters", False),
+                "premium_apps": summary.get("premium_apps", []),
+                "subscription_display": summary.get("subscription_display", {}),
+                "cv_is_premium": user_subscription.is_app_premium(SubsPhoenixApp.CV),
+                "letters_is_premium": user_subscription.is_app_premium(SubsPhoenixApp.LETTERS),
+                "can_upgrade_to_pack": self._can_upgrade_to_pack(user_subscription)
+            }
+        except Exception as e:
+            logger.error(f"❌ Erreur récupération info abonnement: {e}")
+            return {"error": str(e)}
+    
+    def _can_upgrade_to_pack(self, user_subscription) -> bool:
+        """Détermine si l'utilisateur peut upgrader vers le pack CV + Letters"""
+        try:
+            cv_premium = user_subscription.is_app_premium(SubsPhoenixApp.CV)
+            letters_premium = user_subscription.is_app_premium(SubsPhoenixApp.LETTERS)
+            has_pack = user_subscription.has_pack_cv_letters()
+            
+            # Peut upgrader si :
+            # - Aucun abonnement premium
+            # - Un seul abonnement premium (CV ou Letters) mais pas de pack
+            # - Deux abonnements séparés qu'on peut consolider en pack
+            return not has_pack and (
+                (not cv_premium and not letters_premium) or  # Aucun premium
+                (cv_premium and not letters_premium) or      # Seulement CV
+                (not cv_premium and letters_premium) or      # Seulement Letters
+                (cv_premium and letters_premium and not user_subscription.has_pack_cv_letters())  # Deux séparés
+            )
+        except:
+            return True  # Par défaut, permettre l'upgrade
 
 
 # Instance globale du service d'authentification

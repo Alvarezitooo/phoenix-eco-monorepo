@@ -1,0 +1,100 @@
+{
+  "website_signup": {
+    "status": "success",
+    "message": "Compte créé sur website",
+    "user_data": {
+      "email": "test.phoenix.1755068185@test.com",
+      "source": "website",
+      "phoenix_ecosystem": true,
+      "created_at": "2025-08-13T08:56:25.950941"
+    },
+    "next_step": "Navigation vers applications"
+  },
+  "website_to_cv": {
+    "status": "success",
+    "redirect_url": "https://phoenix-cv.streamlit.app/?phoenix_token=eyJ1c2VySWQiOiAidGVzdF91c2VyXzEyMyIsICJlbWFpbCI6ICJ0ZXN0LnBob2VuaXguMTc1NTA2ODE4NUB0ZXN0LmNvbSIsICJ0YXJnZXRBcHAiOiAiY3YiLCAidGltZXN0YW1wIjogMTc1NTA2ODE4NjMzNiwgInNpZ25hdHVyZSI6ICJ0ZXN0X3NpZ25hdHVyZSJ9&source=website",
+    "token_valid": true,
+    "cv_session_created": true,
+    "user_recognized": true,
+    "message": "Navigation website → CV réussie"
+  },
+  "website_to_letters": {
+    "status": "success",
+    "redirect_url": "https://phoenix-letters.streamlit.app/?phoenix_token=eyJ1c2VySWQiOiAidGVzdF91c2VyXzEyMyIsICJlbWFpbCI6ICJ0ZXN0LnBob2VuaXguMTc1NTA2ODE4NUB0ZXN0LmNvbSIsICJ0YXJnZXRBcHAiOiAibGV0dGVycyIsICJ0aW1lc3RhbXAiOiAxNzU1MDY4MTg2MzM3LCAic2lnbmF0dXJlIjogInRlc3Rfc2lnbmF0dXJlIn0=&source=website",
+    "token_valid": true,
+    "letters_session_created": true,
+    "user_recognized": true,
+    "message": "Navigation website → Letters réussie"
+  },
+  "direct_cv_signup": {
+    "status": "success",
+    "user_data": {
+      "email": "direct.cv.1755068186@test.com",
+      "first_name": "Test",
+      "last_name": "CV Direct",
+      "tier": "free",
+      "source_app": "phoenix_cv"
+    },
+    "synced_to_phoenix": true,
+    "phoenix_user_id": "phoenix_user_1755068186",
+    "can_access_other_apps": true,
+    "message": "Compte CV direct créé et synchronisé"
+  },
+  "direct_letters_signup": {
+    "status": "success",
+    "user_data": {
+      "email": "direct.letters.1755068186@test.com",
+      "username": "Test Letters Direct",
+      "tier": "free",
+      "source_app": "phoenix_letters"
+    },
+    "synced_to_phoenix": true,
+    "phoenix_user_id": "phoenix_user_1755068186",
+    "can_access_other_apps": true,
+    "message": "Compte Letters direct créé et synchronisé"
+  },
+  "profile_sync": {
+    "status": "success",
+    "profile_updates": {
+      "first_name": "Jean",
+      "last_name": "Dupont Updated",
+      "preferences": {
+        "theme": "dark",
+        "language": "fr",
+        "notifications": true
+      }
+    },
+    "sync_results": {
+      "cv": true,
+      "letters": true,
+      "website": true
+    },
+    "all_apps_synced": true,
+    "message": "Profil synchronisé sur toutes les apps"
+  },
+  "subscription_sync": {
+    "status": "success",
+    "subscription_change": {
+      "old_tier": "free",
+      "new_tier": "premium",
+      "subscription_id": "sub_test_123",
+      "source": "website_stripe"
+    },
+    "sync_results": {
+      "cv": {
+        "success": true,
+        "premium_features_unlocked": true
+      },
+      "letters": {
+        "success": true,
+        "premium_features_unlocked": true
+      },
+      "rise": {
+        "success": true,
+        "premium_features_unlocked": true
+      }
+    },
+    "premium_active_all_apps": true,
+    "message": "Abonnement Premium synchronisé partout"
+  }
+}
