@@ -12,7 +12,7 @@ from typing import Dict, Any
 from concurrent.futures import TimeoutError as FuturesTimeout
 
 from core.services.subscription_service import SubscriptionService
-from infrastructure.payment.stripe_service import StripeService
+from phoenix_shared_auth.stripe_manager import StripeManager
 from core.entities.user import UserTier
 
 logger = logging.getLogger(__name__)

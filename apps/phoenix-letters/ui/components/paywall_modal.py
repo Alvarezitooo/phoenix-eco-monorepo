@@ -1,6 +1,6 @@
 import streamlit as st
 from core.services.subscription_service import SubscriptionService # Pour appeler create_subscription_checkout
-from infrastructure.payment.stripe_service import StripeService # Pour appeler create_subscription_checkout
+from phoenix_shared_auth.stripe_manager import StripeManager # Pour appeler create_subscription_checkout
 
 def show_paywall_modal(title: str, message: str, cta_label: str = "Passer Premium pour 9,99€/mois", plan_id: str = "premium"):
     """
@@ -96,7 +96,7 @@ def show_paywall_modal(title: str, message: str, cta_label: str = "Passer Premiu
         
         # Importations locales pour éviter les dépendances circulaires si show_paywall_modal
         # est appelé depuis des fichiers qui importent ces services.
-        from infrastructure.payment.stripe_service import StripeService
+        # Import déjà fait en haut du fichier - StripeManager
         from core.services.subscription_service import SubscriptionService
         from config.settings import Settings
         from infrastructure.security.input_validator import InputValidator
@@ -104,7 +104,7 @@ def show_paywall_modal(title: str, message: str, cta_label: str = "Passer Premiu
 
         settings = Settings()
         input_validator = InputValidator()
-        stripe_service = StripeService(settings, input_validator)
+        stripe_service = StripeManager()  # Service partagé selon Principe #4
         db_connection = DatabaseConnection(settings)
         subscription_service = SubscriptionService(settings, stripe_service, db_connection, input_validator)
 

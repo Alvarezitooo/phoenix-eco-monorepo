@@ -12,7 +12,7 @@ import logging
 
 from core.entities.user import UserTier
 from core.services.subscription_service import SubscriptionService
-from infrastructure.payment.stripe_service import StripeService
+from phoenix_shared_auth.stripe_manager import StripeManager
 from ui.components.premium_checkout import PremiumCheckout
 
 logger = logging.getLogger(__name__)

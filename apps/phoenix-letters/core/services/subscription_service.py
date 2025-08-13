@@ -14,7 +14,8 @@ from enum import Enum
 
 from config.settings import Settings
 from core.entities.user import UserTier
-from infrastructure.payment.stripe_service import StripeService, PaymentSession
+from phoenix_shared_auth.stripe_manager import StripeManager
+# PaymentSession sera défini dans StripeManager ou créé localement si nécessaire
 from infrastructure.database.db_connection import DatabaseConnection
 from shared.exceptions.specific_exceptions import SubscriptionError, DatabaseError
 from infrastructure.security.input_validator import InputValidator

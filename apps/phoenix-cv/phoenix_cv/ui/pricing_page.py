@@ -5,7 +5,14 @@ Plans tarifaires avec garanties securite enterprise
 
 import streamlit as st
 from phoenix_cv.utils.safe_markdown import safe_markdown, safe_redirect
-from phoenix_cv.services.stripe_service import StripeService
+# Conformément au Principe #4 - Services partagés
+import sys
+from pathlib import Path
+PACKAGES_PATH = Path(__file__).resolve().parent.parent.parent.parent.parent / "packages"
+if str(PACKAGES_PATH) not in sys.path:
+    sys.path.insert(0, str(PACKAGES_PATH))
+
+from phoenix_shared_auth.stripe_manager import StripeManager
 
 
 

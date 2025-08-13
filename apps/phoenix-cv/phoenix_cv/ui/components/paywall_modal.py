@@ -1,5 +1,12 @@
 import streamlit as st
-from phoenix_cv.services.stripe_service import StripeService
+# Conformément au Principe #4 - Services partagés
+import sys
+from pathlib import Path
+PACKAGES_PATH = Path(__file__).resolve().parent.parent.parent.parent.parent / "packages"
+if str(PACKAGES_PATH) not in sys.path:
+    sys.path.insert(0, str(PACKAGES_PATH))
+
+from phoenix_shared_auth.stripe_manager import StripeManager
 
 def show_paywall_modal(title: str, message: str, cta_label: str = "Passer Premium pour 9,99€/mois", plan_id: str = "premium"):
     """

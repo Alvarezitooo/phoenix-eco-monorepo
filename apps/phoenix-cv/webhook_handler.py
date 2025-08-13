@@ -8,7 +8,14 @@ Version: 1.0.0 - Production Ready
 
 import streamlit as st
 import logging
-from phoenix_cv.services.stripe_service import stripe_service
+# Conformément au Principe #4 - Services partagés
+import sys
+from pathlib import Path
+PACKAGES_PATH = Path(__file__).resolve().parent.parent.parent / "packages"
+if str(PACKAGES_PATH) not in sys.path:
+    sys.path.insert(0, str(PACKAGES_PATH))
+
+from phoenix_shared_auth.stripe_manager import StripeManager
 
 logger = logging.getLogger(__name__)
 

@@ -39,7 +39,7 @@ from ui.components.progress_bar import ProgressIndicator
 from ui.pages.about_page import AboutPage
 from ui.pages.generator_page import GeneratorPage
 from ui.pages.premium_page import PremiumPage
-from infrastructure.payment.stripe_service import StripeService
+from phoenix_shared_auth.stripe_manager import StripeManager
 from core.services.subscription_service import SubscriptionService
 from ui.pages.settings_page import SettingsPage
 from utils.async_runner import AsyncServiceRunner

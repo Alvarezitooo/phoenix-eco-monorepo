@@ -24,7 +24,14 @@ from phoenix_cv.services.enhanced_gemini_client import get_enhanced_gemini_clien
 from phoenix_cv.services.mirror_match_engine import mirror_match_engine
 from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
 from phoenix_cv.services.smart_coach import CoachingContext, smart_coach
-from phoenix_cv.services.stripe_service import StripeService
+# Conformément au Principe #4 - Services partagés
+import sys
+from pathlib import Path
+PACKAGES_PATH = Path(__file__).resolve().parent.parent.parent.parent / "packages"
+if str(PACKAGES_PATH) not in sys.path:
+    sys.path.insert(0, str(PACKAGES_PATH))
+
+from phoenix_shared_auth.stripe_manager import StripeManager
 from phoenix_cv.utils.html_sanitizer import html_sanitizer
 # from phoenix_cv.utils.safe_markdown import safe_markdown  # DÉSACTIVÉ - problème de rendu HTML
 from phoenix_cv.ui.login_page import handle_authentication_flow

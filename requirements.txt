@@ -71,9 +71,9 @@ redis>=6.4.0
 asyncpg>=0.29.0
 typing-extensions>=4.0.0
 
-# 🛠️ Build dependencies for Streamlit Cloud
+# 🛠️ Build dependencies for Streamlit Cloud - Versions fixes pour éviter résolution
 wheel>=0.40.0
-setuptools>=68.0.0
+setuptools==69.5.1
 
 # 📦 Phoenix Packages Locaux (Monorepo)
 -e packages/phoenix_shared_auth
