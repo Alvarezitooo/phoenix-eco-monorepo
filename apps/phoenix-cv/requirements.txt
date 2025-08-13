@@ -1,0 +1,50 @@
+# 🎯 Phoenix CV - Requirements Minimalistes
+# Dépendances strictement nécessaires pour Phoenix CV
+
+# Core Streamlit
+streamlit>=1.30.0
+
+# IA Gemini pour génération CV
+google-generativeai>=0.3.2
+
+# Traitement documents
+PyPDF2>=3.0.0
+PyMuPDF>=1.24.1
+python-docx>=1.1.0
+Pillow>=10.3.0
+
+# Validation et sécurité
+bleach>=6.0.0
+marshmallow>=3.20.0
+cryptography>=41.0.0
+bcrypt>=4.0.0
+
+# HTTP et multipart
+requests>=2.31.0
+python-multipart>=0.0.9
+
+# Data validation
+pydantic>=2.5.0
+
+# Dates et utils
+python-dateutil>=2.8.2
+python-dotenv>=1.0.0
+tenacity>=8.0.0
+
+# Supabase pour BDD
+supabase>=2.0.0
+
+# Stripe paiements
+stripe>=8.0.0
+
+# Async support
+asyncpg>=0.29.0
+typing-extensions>=4.0.0
+
+# Build tools - versions fixes
+wheel==0.45.1
+setuptools==69.5.1
+
+# 📦 Phoenix Packages Partagés (Monorepo)
+-e ../../packages/phoenix_shared_auth
+-e ../../packages/phoenix_shared_ui
