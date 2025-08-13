@@ -1,0 +1,9 @@
+# Dépendances pour le service consommateur d'événements
+# Core
+supabase
+python-dotenv
+
+# Note: Ce service dépend aussi des packages locaux
+# - phoenix_event_bridge
+# - phoenix_shared_db (ou équivalent pour la connexion BDD)
+# L'environnement d'exécution doit être configuré pour les trouver.

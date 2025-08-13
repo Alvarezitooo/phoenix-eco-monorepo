@@ -60,7 +60,7 @@ jobs:
       - name: 🧪 Run Tests
         run: |
           echo "🚀 Running pytest..."
-          poetry run pytest -v --tb=short || echo "⚠️ Some tests may be missing - this is expected during development"
+          poetry run pytest -v --tb=short
           
       - name: ✅ Quality Gate Summary
         run: |

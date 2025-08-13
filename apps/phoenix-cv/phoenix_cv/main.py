@@ -1912,7 +1912,7 @@ def main():
         # Essayer d'importer les packages partagés
         from packages.phoenix_shared_auth.services.phoenix_auth_service import PhoenixAuthService
         from packages.phoenix_shared_auth.database.phoenix_db_connection import PhoenixDatabaseConnection
-        from packages.phoenix_shared_auth.services.cross_app_auth import get_cross_app_auth_service
+        from phoenix_shared_auth.services.cross_app_auth import get_cross_app_auth_service
         
         # Si ça marche, on est en mode monorepo
         try:

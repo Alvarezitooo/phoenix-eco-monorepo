@@ -242,3 +242,5 @@ docker-compose.override.yml
 *.key
 *.crt
 *.cert
+# macOS specific
+.DS_Store

@@ -517,7 +517,7 @@ def _show_pricing_details():
 def _get_stripe_price_ids() -> Dict[str, str]:
     """Récupère les Price IDs Stripe pour l'intégration"""
     try:
-        from packages.phoenix_shared_auth.entities.phoenix_subscription import STRIPE_PRICE_IDS, BUNDLE_PRICE_IDS, PhoenixApp, SubscriptionTier
+        from phoenix_shared_auth.entities.phoenix_subscription import STRIPE_PRICE_IDS, BUNDLE_PRICE_IDS, PhoenixApp, SubscriptionTier
         
         return {
             "cv_premium": STRIPE_PRICE_IDS[PhoenixApp.CV][SubscriptionTier.PREMIUM],

@@ -11,7 +11,7 @@ from phoenix_cv.utils.safe_markdown import safe_markdown
 
 # Import du service d'authentification unifié
 try:
-    from packages.phoenix_shared_auth.client import get_auth_manager
+    from phoenix_shared_auth.client import get_auth_manager
     auth_manager = get_auth_manager()
     AUTH_SERVICE_AVAILABLE = True
 except ImportError:

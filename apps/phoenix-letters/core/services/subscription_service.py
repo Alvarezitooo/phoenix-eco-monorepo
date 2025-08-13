@@ -20,11 +20,10 @@ from infrastructure.database.db_connection import DatabaseConnection
 from shared.exceptions.specific_exceptions import SubscriptionError, DatabaseError
 from infrastructure.security.input_validator import InputValidator
 
-# Import Event Bridge pour data pipeline
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../..')) # Ajustez le chemin si nécessaire
-from phoenix_event_bridge import PhoenixEventBridge, PhoenixEventData, PhoenixEventType
+# Imports pour l'architecture événementielle Phoenix
+import uuid
+from phoenix_event_bridge.phoenix_event_bridge import PhoenixEventBridge
+from phoenix_event_bridge.phoenix_event_types import PhoenixEventFactory, PhoenixEventType, PhoenixEventData
 
 logger = logging.getLogger(__name__)
 
@@ -227,75 +226,42 @@ class SubscriptionService:
         customer_id: Optional[str] = None
     ) -> bool:
         """
-        Met à niveau le tier d'un utilisateur.
-        
-        Args:
-            user_id: ID utilisateur
-            new_tier: Nouveau tier
-            subscription_id: ID abonnement Stripe (optionnel)
-            customer_id: ID customer Stripe (optionnel)
-            
-        Returns:
-            True si succès
+        Déclenche la mise à niveau du tier d'un utilisateur en publiant un événement.
+        Toute modification de la base de données sera gérée par les services d'écoute.
         """
         try:
             # Récupérer l'ancien tier avant la mise à jour
             old_subscription = await self.get_user_subscription(user_id)
             old_tier = old_subscription.current_tier if old_subscription else UserTier.FREE
 
-            client = self.db.get_client()
-            
-            subscription_data = {
-                "current_tier": new_tier.value,
-                "updated_at": datetime.now(timezone.utc).isoformat()
-            }
-            
-            if new_tier != UserTier.FREE:
-                subscription_data["subscription_start"] = datetime.now(timezone.utc).isoformat()
-                subscription_data["subscription_end"] = (
-                    datetime.now(timezone.utc) + timedelta(days=30)
-                ).isoformat()
-                subscription_data["auto_renewal"] = True
-                
-            if subscription_id:
-                subscription_data["subscription_id"] = subscription_id
-                
-            if customer_id:
-                subscription_data["stripe_customer_id"] = customer_id
-                
-            # Upsert dans user_subscriptions
-            response = client.table("user_subscriptions").upsert(
-                {**subscription_data, "user_id": user_id}
-            ).execute()
-            
-            # Mise à jour des stats utilisateur
-            await self._update_user_stats_on_tier_change(user_id, new_tier)
-            
-            # Publier l'événement UserTierUpdated
-            try:
-                event_data = PhoenixEventData(
-                    event_type=PhoenixEventType.USER_TIER_UPDATED,
-                    user_id=user_id,
-                    app_source="phoenix-letters", # Ou "phoenix-auth" si c'est le service qui gère l'auth
-                    payload={
-                        "old_tier": old_tier.value,
-                        "new_tier": new_tier.value,
-                        "subscription_id": subscription_id,
-                        "customer_id": customer_id
-                    }
-                )
-                event_bridge = PhoenixEventBridge()
-                await event_bridge.publish_event(event_data)
-                logger.info(f"✅ Event USER_TIER_UPDATED published for user {user_id}")
-            except Exception as e:
-                logger.warning(f"⚠️ Failed to publish USER_TIER_UPDATED event: {e}")
+            if old_tier == new_tier:
+                logger.info(f"Le tier pour l'utilisateur {user_id} est déjà {new_tier.value}. Aucun événement publié.")
+                return True
 
-            logger.info(f"Tier utilisateur {user_id} mis à jour vers {new_tier.value}")
+            # Publier l'événement UserTierUpdated. Le data pipeline se chargera de la mise à jour.
+            logger.info(f"Publication de l'événement USER_TIER_UPDATED pour {user_id}...")
+            event_to_publish = PhoenixEventData(
+                event_type=PhoenixEventType.USER_TIER_UPDATED,
+                stream_id=user_id,
+                app_source="phoenix-letters",
+                payload={
+                    "old_tier": old_tier.value,
+                    "new_tier": new_tier.value,
+                    "subscription_id": subscription_id,
+                    "customer_id": customer_id,
+                    "change_reason": "upgrade_tier_call"
+                }
+            )
+            
+            event_bridge = PhoenixEventBridge()
+            await event_bridge.publish_event(event_to_publish)
+
+            logger.info(f"✅ Événement USER_TIER_UPDATED publié pour {user_id} (de {old_tier.value} à {new_tier.value})")
             return True
             
         except Exception as e:
-            logger.error(f"Erreur upgrade tier user {user_id}: {e}")
-            raise DatabaseError(f"Impossible de mettre à jour le tier: {e}")
+            logger.error(f"Erreur lors de la publication de l'événement USER_TIER_UPDATED pour {user_id}: {e}")
+            return False
 
     async def cancel_subscription(self, user_id: str) -> bool:
         """
@@ -316,13 +282,23 @@ class SubscriptionService:
             if subscription.subscription_id:
                 self.stripe_service.cancel_subscription(subscription.subscription_id)
                 
-            # Mise à jour en base
-            client = self.db.get_client()
-            client.table("user_subscriptions").update({
-                "auto_renewal": False,
-                "status": SubscriptionStatus.CANCELLED.value,
-                "updated_at": datetime.now(timezone.utc).isoformat()
-            }).eq("user_id", user_id).execute()
+            # Publier l'événement d'annulation pour traitement par le data pipeline
+            try:
+                # Utilisation de la factory pour garantir un événement standardisé
+                event_to_publish = PhoenixEventFactory.create_subscription_cancelled(
+                    user_id=user_id,
+                    subscription_tier=subscription.current_tier.value,
+                    stripe_subscription_id=subscription.subscription_id,
+                    cancellation_reason="user_request_from_app"
+                )
+                
+                # Instanciation correcte du pont d'événements
+                event_bridge = PhoenixEventFactory.create_bridge()
+                await event_bridge.publish_event(event_to_publish)
+                
+                logger.info(f"✅ Event SUBSCRIPTION_CANCELLED published for user {user_id}")
+            except Exception as e:
+                logger.warning(f"⚠️ Failed to publish SUBSCRIPTION_CANCELLED event: {e}")
             
             logger.info(f"Abonnement utilisateur {user_id} annulé")
             return True
@@ -425,16 +401,33 @@ class SubscriptionService:
         pass
 
     async def _handle_subscription_updated(self, webhook_data: Dict[str, Any]):
-        """Traite la mise à jour d'un abonnement."""
+        """Traite la mise à jour d'un abonnement en appelant la logique de changement de tier."""
+        user_id = webhook_data.get("phoenix_user_id")
+        new_plan_id = webhook_data.get("new_plan_id")  # ex: "premium", "free"
         subscription_id = webhook_data.get("subscription_id")
-        status_stripe = webhook_data.get("status_stripe")
+        customer_id = webhook_data.get("customer_id")
+
+        if not user_id or not new_plan_id:
+            logger.warning(f"⚠️ Webhook 'subscription_updated' incomplet pour sub {subscription_id}. Ignoré.")
+            return
+
+        # Mapper l'ID du plan vers notre Enum UserTier
+        tier_mapping = {
+            "premium": UserTier.PREMIUM,
+            "free": UserTier.FREE
+            # Ajoutez d'autres plans si nécessaire
+        }
+        new_tier = tier_mapping.get(new_plan_id.lower(), UserTier.FREE)
+
+        logger.info(f"Traitement de 'subscription_updated' pour user {user_id}. Nouveau tier: {new_tier.value}")
         
-        # Mise à jour du statut en base
-        client = self.db.get_client()
-        client.table("user_subscriptions").update({
-            "status": status_stripe,
-            "updated_at": datetime.now(timezone.utc).isoformat()
-        }).eq("subscription_id", subscription_id).execute()
+        # Appelle la méthode refactorisée qui publiera l'événement
+        await self.upgrade_user_tier(
+            user_id=user_id,
+            new_tier=new_tier,
+            subscription_id=subscription_id,
+            customer_id=customer_id
+        )
 
     async def _handle_subscription_deleted(self, webhook_data: Dict[str, Any]):
         """Traite la suppression d'un abonnement."""
@@ -451,23 +444,57 @@ class SubscriptionService:
             await self.upgrade_user_tier(user_id, UserTier.FREE)
 
     async def _handle_payment_succeeded(self, webhook_data: Dict[str, Any]):
-        """Traite un paiement réussi."""
+        """Traite un paiement réussi en publiant un événement."""
         subscription_id = webhook_data.get("subscription_id")
-        
-        client = self.db.get_client()
-        client.table("user_subscriptions").update({
-            "last_payment_date": datetime.now(timezone.utc).isoformat(),
-            "status": SubscriptionStatus.ACTIVE.value
-        }).eq("subscription_id", subscription_id).execute()
+        user_id = webhook_data.get("phoenix_user_id")
+        amount_paid = webhook_data.get("amount_paid", 0) # Montant en centimes
+        currency = webhook_data.get("currency", "eur")
+        stripe_invoice_id = webhook_data.get("invoice_id")
+
+        if not user_id:
+            logger.warning("⚠️ PAYMENT_SUCCEEDED webhook sans phoenix_user_id, ignoré")
+            return
+
+        try:
+            event_to_publish = PhoenixEventFactory.create_payment_succeeded(
+                user_id=user_id,
+                amount_paid=amount_paid / 100.0, # Conversion en unité monétaire
+                currency=currency,
+                stripe_invoice_id=stripe_invoice_id
+            )
+            
+            event_bridge = PhoenixEventBridge()
+            await event_bridge.publish_event(event_to_publish)
+            
+            logger.info(f"✅ Event PAYMENT_SUCCEEDED published for user {user_id}")
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to publish PAYMENT_SUCCEEDED event: {e}")
 
     async def _handle_payment_failed(self, webhook_data: Dict[str, Any]):
-        """Traite un paiement échoué."""
-        subscription_id = webhook_data.get("subscription_id")
-        
-        client = self.db.get_client()
-        client.table("user_subscriptions").update({
-            "status": SubscriptionStatus.PAST_DUE.value
-        }).eq("subscription_id", subscription_id).execute()
+        """Traite un paiement échoué en publiant un événement."""
+        user_id = webhook_data.get("phoenix_user_id")
+        failure_reason = webhook_data.get("failure_reason", "unknown_from_app")
+        amount_due = webhook_data.get("amount_due", 0)  # Montant en centimes
+        currency = webhook_data.get("currency", "eur")
+
+        if not user_id:
+            logger.warning("⚠️ PAYMENT_FAILED webhook sans phoenix_user_id, ignoré")
+            return
+
+        try:
+            event_to_publish = PhoenixEventFactory.create_payment_failed(
+                user_id=user_id,
+                failure_reason=failure_reason,
+                amount_due=amount_due / 100.0,  # Conversion en unité monétaire
+                currency=currency
+            )
+
+            event_bridge = PhoenixEventBridge()
+            await event_bridge.publish_event(event_to_publish)
+
+            logger.info(f"✅ Event PAYMENT_FAILED published for user {user_id}")
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to publish PAYMENT_FAILED event: {e}")
 
     async def _check_letters_limit(self, user_id: str, tier: UserTier) -> bool:
         """Vérifie la limite de lettres pour un utilisateur."""
