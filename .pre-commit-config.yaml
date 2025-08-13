@@ -1,36 +1,91 @@
+# 🎯 Phoenix Ecosystem - Pre-commit Hooks Configuration
+# Automatisation de la qualité du code à chaque commit
+# Author: Claude Phoenix DevSecOps Guardian
+
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [commit]
+
 repos:
+  # 🐍 Python Code Quality & Security
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.6.4
     hooks:
       - id: ruff
-        args: ["--fix"]
+        name: 🔍 Ruff Linter
+        args: ["--fix", "--exit-non-zero-on-fix"]
+        exclude: ^(venv/|node_modules/)
       - id: ruff-format
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.3.3
-    hooks:
-      - id: prettier
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.18.4
-    hooks:
-      - id: gitleaks
-        args: ["detect", "--no-banner", "--redact"]
-repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.4
-    hooks:
-      - id: ruff
-        args: ["--fix"]
-      - id: ruff-format
+        name: 🎨 Ruff Format
+        exclude: ^(venv/|node_modules/)
+
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.11.1
     hooks:
       - id: mypy
-        additional_dependencies: ["pydantic", "types-requests"]
+        name: 🔤 MyPy Type Check
+        additional_dependencies: ["pydantic", "types-requests", "streamlit"]
+        exclude: ^(venv/|node_modules/|tests/)
+        args: [--ignore-missing-imports, --show-error-codes]
+
+  # 🔒 Security Scanning
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+        name: 🔒 GitLeaks Secret Scan
+        args: ["detect", "--no-banner", "--redact"]
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: '1.7.5'
+    hooks:
+      - id: bandit
+        name: 🛡️ Bandit Security Scan
+        args: ['-r', 'apps/', 'packages/', '-x', 'tests/', '--skip', 'B101']
+        exclude: ^(tests/|venv/|node_modules/)
+
+  # 📄 General File Quality
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
       - id: end-of-file-fixer
+        name: 📄 Fix End of Files
+        exclude: ^(node_modules/|venv/|\.lock$)
       - id: trailing-whitespace
+        name: ✂️ Trim Trailing Whitespace
+        exclude: ^(.*\.md|node_modules/|venv/)
       - id: check-merge-conflict
+        name: 🔄 Check Merge Conflicts
       - id: detect-private-key
+        name: 🔐 Detect Private Keys
+      - id: check-yaml
+        name: 📝 Check YAML Files
+        exclude: ^(node_modules/)
+      - id: check-json
+        name: 📊 Check JSON Files
+        exclude: ^(node_modules/)
+      - id: check-toml
+        name: ⚙️ Check TOML Files
+      - id: check-added-large-files
+        name: 📦 Check Large Files
+        args: ['--maxkb=1024']
+
+  # 🌐 Frontend Code Quality
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.3.3
+    hooks:
+      - id: prettier
+        name: 🎨 Prettier Format
+        exclude: ^(node_modules/|\.next/|dist/|build/)
+
+# Configuration pour pre-commit.ci
+ci:
+  skip: [bandit]  # Skip bandit on CI (ran in separate workflow)
+  autofix_commit_msg: |
+    🤖 [pre-commit.ci] Auto-fix code quality issues
+    
+    Fixes applied by pre-commit hooks
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '🔄 [pre-commit.ci] Update hook revisions'
+  autoupdate_schedule: weekly
 

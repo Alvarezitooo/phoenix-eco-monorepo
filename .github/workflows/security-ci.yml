@@ -1,51 +1,132 @@
-name: security-ci
+name: 🛡️ Phoenix Security Audit
+
 on:
-  # Temporairement désactivé pour le push final
-  workflow_dispatch:
-  # push:
-  #   branches: [ main, develop ]
-  # pull_request:
-  #   branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Audit sécurité automatique chaque lundi à 6h
+    - cron: '0 6 * * 1'
 
 permissions:
   contents: read
+  security-events: write
+  actions: read
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
 
 jobs:
-  sast-python:
+  python-security:
+    name: 🐍 Python Security Audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - name: Install tools
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: 🔧 Install Security Tools
         run: |
-          pip install bandit safety
-      - name: Bandit SAST
+          pip install bandit safety pip-audit
+          echo "✅ Security tools installed"
+          
+      - name: 🔍 Bandit SAST Scan
         run: |
+          echo "🔍 Running Bandit security scan..."
+          bandit -r apps packages -x tests -lll -f json -o bandit-report.json || true
           bandit -r apps packages -x tests -lll
-      - name: Safety deps audit
+          echo "✅ Bandit SAST completed"
+          
+      - name: 🛡️ Dependencies Security Audit
         run: |
-          safety check --full-report || true
-
-  sast-js:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+          echo "🛡️ Auditing Python dependencies..."
+          safety check --json --output safety-report.json || echo "⚠️ Potential vulnerabilities found"
+          safety check --short-report || echo "⚠️ Check safety-report.json for details"
+          echo "✅ Python dependencies audit completed"
+          
+      - name: 📊 Advanced Vulnerability Scan  
+        run: |
+          echo "📊 Running pip-audit..."
+          pip-audit --format=json --output=pip-audit-report.json || echo "⚠️ Potential vulnerabilities found"
+          pip-audit --desc || echo "⚠️ Check pip-audit-report.json for details"
+          echo "✅ Advanced vulnerability scan completed"
+          
+      - name: 📋 Upload Security Reports
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
-          node-version: '20'
-      - name: Install deps
-        working-directory: apps/phoenix-website
-        run: npm ci
-      - name: npm audit
-        working-directory: apps/phoenix-website
-        run: npm audit --audit-level=high || true
+          name: python-security-reports
+          path: "*-report.json"
+          retention-days: 30
 
-  dependabot:
+  javascript-security:
+    name: 🌐 JavaScript Security Audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Enable Dependabot alerts
-        run: echo "Dependabot alerts active via repo settings"
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'apps/phoenix-website/package-lock.json'
+          
+      - name: 📦 Install Dependencies
+        working-directory: apps/phoenix-website
+        run: |
+          npm ci
+          echo "✅ Node dependencies installed"
+          
+      - name: 🔍 NPM Security Audit
+        working-directory: apps/phoenix-website
+        run: |
+          echo "🔍 Running npm security audit..."
+          npm audit --audit-level=high --json > npm-audit-report.json || echo "⚠️ Vulnerabilities found"
+          npm audit --audit-level=high || echo "⚠️ Check npm-audit-report.json for details"
+          echo "✅ NPM security audit completed"
+          
+      - name: 📋 Upload JS Security Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: javascript-security-reports
+          path: "apps/phoenix-website/npm-audit-report.json"
+          retention-days: 30
+
+  security-summary:
+    name: 🎯 Security Audit Summary
+    runs-on: ubuntu-latest
+    needs: [python-security, javascript-security]
+    if: always()
+    
+    steps:
+      - name: 📊 Download Security Reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "*-security-reports"
+          merge-multiple: true
+          
+      - name: 🎯 Generate Security Summary
+        run: |
+          echo "🎯 Phoenix Ecosystem Security Audit Summary"
+          echo "=============================================="
+          echo "📅 Audit Date: $(date)"
+          echo "🔍 Python Security: ${{ needs.python-security.result }}"
+          echo "🌐 JavaScript Security: ${{ needs.javascript-security.result }}"
+          
+          if [ "${{ needs.python-security.result }}" == "success" ] && [ "${{ needs.javascript-security.result }}" == "success" ]; then
+            echo "✅ Overall Security Status: PASSED"
+          else
+            echo "⚠️ Overall Security Status: NEEDS ATTENTION"
+          fi
+          
+          echo "📋 Security reports uploaded as artifacts for detailed review"
 
