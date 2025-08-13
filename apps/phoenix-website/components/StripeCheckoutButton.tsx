@@ -33,7 +33,7 @@ export default function StripeCheckoutButton({
       // Vérifier si l'utilisateur est connecté
       const { getCurrentUser } = await import('@/lib/auth');
       const user = await getCurrentUser();
-      
+
       if (!user) {
         // Rediriger vers auth modal si non connecté
         alert('Veuillez vous connecter pour continuer vers le paiement');

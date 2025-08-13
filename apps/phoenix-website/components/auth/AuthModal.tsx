@@ -1,98 +1,96 @@
-'use client'
+'use client';
 
 /**
  * 🔐 Modal d'Authentification Phoenix Website
  * Interface moderne pour connexion/inscription
  */
 
-import { useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Checkbox } from '@/components/ui/checkbox'
-import { usePhoenixAuth } from '@/lib/auth'
-import { Loader2, Mail, Lock, User, ArrowRight } from 'lucide-react'
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
+import { usePhoenixAuth } from '@/lib/auth';
+import { Loader2, Mail, Lock, User, ArrowRight } from 'lucide-react';
 
 interface AuthModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSuccess?: (user: any) => void
-  defaultTab?: 'signin' | 'signup'
-  redirectApp?: 'letters' | 'cv' | 'rise'
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess?: (user: any) => void;
+  defaultTab?: 'signin' | 'signup';
+  redirectApp?: 'letters' | 'cv' | 'rise';
 }
 
-export default function AuthModal({ 
-  isOpen, 
-  onClose, 
-  onSuccess, 
+export default function AuthModal({
+  isOpen,
+  onClose,
+  onSuccess,
   defaultTab = 'signin',
-  redirectApp 
+  redirectApp,
 }: AuthModalProps) {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     fullName: '',
-    newsletter: false
-  })
+    newsletter: false,
+  });
 
-  const { signIn, signUp, signInWithGoogle, redirectToApp } = usePhoenixAuth()
+  const { signIn, signUp, signInWithGoogle, redirectToApp } = usePhoenixAuth();
 
   const handleSubmit = async (mode: 'signin' | 'signup') => {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError('');
 
     try {
-      let user
-      
+      let user;
+
       if (mode === 'signup') {
         user = await signUp(formData.email, formData.password, {
           fullName: formData.fullName,
           newsletter: formData.newsletter,
-          utmSource: 'website'
-        })
+          utmSource: 'website',
+        });
       } else {
-        user = await signIn(formData.email, formData.password)
+        user = await signIn(formData.email, formData.password);
       }
 
       if (user) {
-        onSuccess?.(user)
-        
+        onSuccess?.(user);
+
         // Redirection automatique vers app cible
         if (redirectApp) {
-          await redirectToApp(redirectApp, { source: 'website_auth' })
+          await redirectToApp(redirectApp, { source: 'website_auth' });
         } else {
-          onClose()
+          onClose();
         }
       }
     } catch (err: any) {
-      setError(err.message || 'Erreur d\'authentification')
+      setError(err.message || "Erreur d'authentification");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleGoogleAuth = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const { url } = await signInWithGoogle()
-      window.location.href = url
+      const { url } = await signInWithGoogle();
+      window.location.href = url;
     } catch (err: any) {
-      setError(err.message || 'Erreur Google Auth')
-      setLoading(false)
+      setError(err.message || 'Erreur Google Auth');
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-center">
-            🔥 Accédez à l'écosystème Phoenix
-          </DialogTitle>
+          <DialogTitle className="text-center">🔥 Accédez à l'écosystème Phoenix</DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue={defaultTab} className="w-full">
@@ -114,11 +112,11 @@ export default function AuthModal({
                     placeholder="votre@email.com"
                     className="pl-10"
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="signin-password">Mot de passe</Label>
                 <div className="relative">
@@ -129,19 +127,17 @@ export default function AuthModal({
                     placeholder="••••••••"
                     className="pl-10"
                     value={formData.password}
-                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   />
                 </div>
               </div>
 
               {error && (
-                <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
-                  {error}
-                </div>
+                <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">{error}</div>
               )}
 
-              <Button 
-                className="w-full" 
+              <Button
+                className="w-full"
                 onClick={() => handleSubmit('signin')}
                 disabled={loading || !formData.email || !formData.password}
               >
@@ -167,7 +163,7 @@ export default function AuthModal({
                     placeholder="Jean Dupont"
                     className="pl-10"
                     value={formData.fullName}
-                    onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   />
                 </div>
               </div>
@@ -182,11 +178,11 @@ export default function AuthModal({
                     placeholder="votre@email.com"
                     className="pl-10"
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="signup-password">Mot de passe</Label>
                 <div className="relative">
@@ -197,16 +193,18 @@ export default function AuthModal({
                     placeholder="••••••••"
                     className="pl-10"
                     value={formData.password}
-                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   />
                 </div>
               </div>
 
               <div className="flex items-center space-x-2">
-                <Checkbox 
+                <Checkbox
                   id="newsletter"
                   checked={formData.newsletter}
-                  onCheckedChange={(checked) => setFormData({...formData, newsletter: checked as boolean})}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, newsletter: checked as boolean })
+                  }
                 />
                 <Label htmlFor="newsletter" className="text-sm">
                   Recevoir les actualités Phoenix (optionnel)
@@ -214,13 +212,11 @@ export default function AuthModal({
               </div>
 
               {error && (
-                <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
-                  {error}
-                </div>
+                <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">{error}</div>
               )}
 
-              <Button 
-                className="w-full" 
+              <Button
+                className="w-full"
                 onClick={() => handleSubmit('signup')}
                 disabled={loading || !formData.email || !formData.password}
               >
@@ -246,12 +242,7 @@ export default function AuthModal({
         </div>
 
         {/* Google Auth */}
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={handleGoogleAuth}
-          disabled={loading}
-        >
+        <Button variant="outline" className="w-full" onClick={handleGoogleAuth} disabled={loading}>
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
             <path
               fill="currentColor"
@@ -275,10 +266,11 @@ export default function AuthModal({
 
         {redirectApp && (
           <div className="text-center text-xs text-gray-500">
-            Vous serez redirigé vers Phoenix {redirectApp.charAt(0).toUpperCase() + redirectApp.slice(1)} après connexion
+            Vous serez redirigé vers Phoenix{' '}
+            {redirectApp.charAt(0).toUpperCase() + redirectApp.slice(1)} après connexion
           </div>
         )}
       </DialogContent>
     </Dialog>
-  )
+  );
 }

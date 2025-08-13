@@ -13,8 +13,9 @@ export default function SuccessPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Paiement réussi ! 🎉</h1>
 
         <p className="text-gray-600 mb-6">
-          Félicitations et bienvenue ! Votre paiement a été accepté. Votre accès Premium est en cours d'activation.
-          Vous allez recevoir un email de confirmation avec vos accès premium dans quelques minutes.
+          Félicitations et bienvenue ! Votre paiement a été accepté. Votre accès Premium est en
+          cours d'activation. Vous allez recevoir un email de confirmation avec vos accès premium
+          dans quelques minutes.
         </p>
 
         <div className="space-y-4">
