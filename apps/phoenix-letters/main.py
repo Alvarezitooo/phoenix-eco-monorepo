@@ -19,9 +19,10 @@ from core.services.letter_service import LetterService
 from core.services.prompt_service import PromptService
 from core.services.renaissance_integration_service import PhoenixLettersRenaissanceService
 from infrastructure.ai.gemini_client import GeminiClient
-# from phoenix_shared_auth.services.jwt_manager import JWTManager  # Module non trouvé
-from infrastructure.auth.streamlit_auth_middleware import StreamlitAuthMiddleware
-from infrastructure.auth.user_auth_service import UserAuthService
+# Authentification unifiée Phoenix
+import sys
+sys.path.append('../../packages')
+from phoenix_shared_auth.client import AuthManager
 from infrastructure.database.db_connection import DatabaseConnection
 from infrastructure.security.input_validator import InputValidator
 from infrastructure.storage.session_manager import SecureSessionManager
@@ -296,10 +297,24 @@ def main():
         return DatabaseConnection(settings)
 
     db_connection = get_db_connection(settings)
-    # jwt_manager = JWTManager(settings.jwt_secret_key, settings.jwt_algorithm) # Module non disponible
-    auth_service = UserAuthService(settings, db_connection)  # Utiliser settings directement
-    auth_middleware = StreamlitAuthMiddleware(auth_service, settings)
-
+    
+    # 🔐 Authentification Phoenix unifiée
+    auth_manager = AuthManager()
+    
+    # Pour compatibilité avec le code existant, création d'un wrapper simple
+    class SimpleAuthWrapper:
+        def __init__(self, auth_manager):
+            self.auth_manager = auth_manager
+            
+        def get_current_user(self):
+            # Retourne None pour guest, ou user_data si connecté
+            return None  # Mode guest pour l'instant
+            
+        def login_form(self):
+            # Formulaire de connexion simple
+            st.info("🚀 Authentification Phoenix en cours de migration...")
+            
+    auth_middleware = SimpleAuthWrapper(auth_manager)
     current_user = auth_middleware.get_current_user()
     
     # 🔬 BANNIÈRE RECHERCHE-ACTION PHOENIX (désactivable via ENV)
