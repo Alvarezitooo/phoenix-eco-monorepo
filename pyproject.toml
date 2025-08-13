@@ -19,6 +19,8 @@ tenacity = "^9.1.2"
 streamlit = {version = "^1.48.0", markers = "python_version >= '3.9' and python_version < '4.0' and python_version != '3.9.7'"}
 supabase = "^2.18.0"
 phoenix-shared-db = { path = "packages/phoenix-shared-db", develop = true }
+phoenix-shared-auth = { path = "packages/phoenix-shared-auth", develop = true }
+phoenix-shared-ui = { path = "packages/phoenix_shared_ui", develop = true }
 
  
 

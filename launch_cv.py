@@ -1,41 +1,89 @@
+"""
+🚀 Phoenix CV - Point d'Entrée Monorepo
+Implémentation de la vision stratégique avec AuthManager unifié
+et imports propres selon l'architecture définie
+
+Author: Claude Phoenix DevSecOps Guardian
+Version: 1.0.0 - Strategic Vision Implementation
+"""
+
 import sys
+import os
 from pathlib import Path
 
-# 1. On détermine la racine du monorepo.
+# Configuration PYTHONPATH pour monorepo Poetry
 ROOT_DIR = Path(__file__).resolve().parent
 
-# 2. On ajoute le dossier de l'application 'phoenix-cv' au chemin Python.
-#    Ceci permet des imports absolus cohérents comme 'from phoenix_cv.services...'.
+# Ajouter racine monorepo pour imports packages partagés
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+# Ajouter dossier app phoenix-cv
 APP_ROOT = ROOT_DIR / "apps" / "phoenix-cv"
 if str(APP_ROOT) not in sys.path:
     sys.path.insert(0, str(APP_ROOT))
 
-# 3. Ajout explicite du répertoire racine pour éviter les erreurs d'import
-MONOREPO_ROOT = ROOT_DIR
-if str(MONOREPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(MONOREPO_ROOT))
+# Configuration environnement pour Supabase et Stripe
+os.environ.setdefault("SUPABASE_URL", os.getenv("SUPABASE_URL", ""))
+os.environ.setdefault("SUPABASE_ANON_KEY", os.getenv("SUPABASE_ANON_KEY", ""))
+os.environ.setdefault("STRIPE_SECRET_KEY", os.getenv("STRIPE_SECRET_KEY", ""))
+os.environ.setdefault("STRIPE_PUBLISHABLE_KEY", os.getenv("STRIPE_PUBLISHABLE_KEY", ""))
 
-# 4. Debug pour Streamlit Cloud - Vérifier les chemins
-import os
-print(f"DEBUG - Current working directory: {os.getcwd()}")
-print(f"DEBUG - ROOT_DIR: {ROOT_DIR}")
-print(f"DEBUG - APP_ROOT: {APP_ROOT}")
-print(f"DEBUG - sys.path premiers éléments: {sys.path[:3]}")
-print(f"DEBUG - Phoenix CV existe: {os.path.exists(APP_ROOT)}")
-print(f"DEBUG - Models existe: {os.path.exists(APP_ROOT / 'phoenix_cv' / 'models')}")
-print(f"DEBUG - user_profile.py existe: {os.path.exists(APP_ROOT / 'phoenix_cv' / 'models' / 'user_profile.py')}")
-print(f"DEBUG - Contenu du répertoire phoenix_cv: {os.listdir(APP_ROOT / 'phoenix_cv') if os.path.exists(APP_ROOT / 'phoenix_cv') else 'N/A'}")
-print(f"DEBUG - Contenu models: {os.listdir(APP_ROOT / 'phoenix_cv' / 'models') if os.path.exists(APP_ROOT / 'phoenix_cv' / 'models') else 'N/A'}")
+print("✅ Phoenix CV - Environnement monorepo configuré")
+print(f"📂 Racine: {ROOT_DIR}")
+print(f"📱 App: {APP_ROOT}")
 
-# 3. On importe et on exécute l'application.
 try:
-    # 🔥 SYMMETRY PERFECT - LAUNCH_CV.PY 03/08/2025 11:00
+    # Import du service d'authentification unifié selon vision stratégique
+    from packages.phoenix_shared_auth.client import get_auth_manager
+    auth_manager = get_auth_manager()
+    print("✅ AuthManager unifié initialisé")
+    
+    # Import de la fonction main de Phoenix CV
     from phoenix_cv.main import main
+    print("✅ Module Phoenix CV importé")
     
     if __name__ == "__main__":
+        print("🚀 Lancement de Phoenix CV avec authentification unifiée...")
         main()
 
+except ImportError as e:
+    print(f"❌ Erreur d'import: {e}")
+    print("🔄 Fallback vers mode standalone...")
+    
+    # Fallback: essayer sans packages partagés
+    try:
+        import streamlit as st
+        from phoenix_cv.main import main
+        
+        st.warning("⚠️ Mode standalone - Services partagés non disponibles")
+        print("🔄 Phoenix CV en mode standalone")
+        
+        if __name__ == "__main__":
+            main()
+            
+    except Exception as fallback_error:
+        import streamlit as st
+        st.error("❌ Erreur critique lors du chargement de Phoenix CV")
+        st.code(f"Erreur: {str(fallback_error)}")
+        st.info("💡 Vérifiez la configuration des secrets Streamlit")
+        print(f"❌ Erreur fallback: {fallback_error}")
+
 except Exception as e:
-    import streamlit as st
-    st.error("Une erreur est survenue lors du chargement de Phoenix CV.")
-    st.exception(e)
+    print(f"❌ Erreur inattendue: {e}")
+    
+    try:
+        import streamlit as st
+        st.error("❌ Une erreur est survenue lors du chargement de Phoenix CV")
+        st.exception(e)
+        
+        with st.expander("🔍 Informations de débogage"):
+            st.code(f"""
+            Racine monorepo: {ROOT_DIR}
+            App Phoenix CV: {APP_ROOT}
+            Erreur: {str(e)}
+            PYTHONPATH: {sys.path[:5]}
+            """)
+    except:
+        print("❌ Impossible d'afficher l'interface Streamlit")
+        raise e
