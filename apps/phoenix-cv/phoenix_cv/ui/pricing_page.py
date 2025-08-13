@@ -5,7 +5,7 @@ Plans tarifaires avec garanties securite enterprise
 
 import streamlit as st
 from phoenix_cv.utils.safe_markdown import safe_markdown, safe_redirect
-from phoenix_cv.main import initiate_stripe_checkout
+from phoenix_cv.services.stripe_service import StripeService
 
 
 
@@ -138,7 +138,8 @@ def render_pricing_page_secure():
             if st.button("🚀 S'abonner Letters", key="letters_btn", type="primary"):
                 user_id = st.session_state.get("user_id", "guest_user")
                 user_email = st.session_state.get("user_email", None)
-                initiate_stripe_checkout(user_id, "letters_premium", user_email)
+                stripe_service = StripeService()
+                stripe_service.initiate_stripe_checkout(user_id, "letters_premium", user_email)
 
     # Phoenix CV
     with col3:
@@ -158,7 +159,8 @@ def render_pricing_page_secure():
             if st.button("📄 S'abonner CV", key="cv_btn", type="primary"):
                 user_id = st.session_state.get("user_id", "guest_user")
                 user_email = st.session_state.get("user_email", None)
-                initiate_stripe_checkout(user_id, "premium", user_email)
+                stripe_service = StripeService()
+                stripe_service.initiate_stripe_checkout(user_id, "premium", user_email)
 
     # Phoenix Bundle  
     with col4:
@@ -179,7 +181,8 @@ def render_pricing_page_secure():
             if st.button("🔥 Bundle Deal", key="bundle_btn", type="primary"):
                 user_id = st.session_state.get("user_id", "guest_user")
                 user_email = st.session_state.get("user_email", None)
-                initiate_stripe_checkout(user_id, "bundle_premium", user_email)
+                stripe_service = StripeService()
+                stripe_service.initiate_stripe_checkout(user_id, "bundle_premium", user_email)
 
     # Message de comparaison
     st.markdown("---")

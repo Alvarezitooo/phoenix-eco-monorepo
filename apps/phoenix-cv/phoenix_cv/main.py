@@ -24,6 +24,7 @@ from phoenix_cv.services.enhanced_gemini_client import get_enhanced_gemini_clien
 from phoenix_cv.services.mirror_match_engine import mirror_match_engine
 from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
 from phoenix_cv.services.smart_coach import CoachingContext, smart_coach
+from phoenix_cv.services.stripe_service import StripeService
 from phoenix_cv.utils.html_sanitizer import html_sanitizer
 # from phoenix_cv.utils.safe_markdown import safe_markdown  # DÉSACTIVÉ - problème de rendu HTML
 from phoenix_cv.ui.login_page import handle_authentication_flow
@@ -32,28 +33,6 @@ from packages.phoenix_shared_ui.components.header import render_header as render
 from packages.phoenix_shared_ui.components.consent_banner import render_consent_banner
 st.toast("✅ VERSION DU 03/08/2025 - 09:15 AM CEST")
 
-
-def initiate_stripe_checkout(user_id: str, plan_id: str, user_email: str = None):
-    """
-    Initialise une session Stripe Checkout et redirige l'utilisateur.
-    """
-    success_url = st.secrets.get("BASE_URL") + "/?payment_status=success"
-    cancel_url = st.secrets.get("BASE_URL") + "/?payment_status=cancelled"
-
-    checkout_url = stripe_service.create_subscription_checkout(
-        user_id=user_id,
-        plan_id=plan_id,
-        success_url=success_url,
-        cancel_url=cancel_url,
-        user_email=user_email
-    )
-
-    if checkout_url:
-        st.info("Redirection vers la page de paiement Stripe...")
-        st.markdown(f"<meta http-equiv='refresh' content='0; url={checkout_url}'>", unsafe_allow_html=True)
-        st.stop() # Arrête l'exécution de l'application Streamlit
-    else:
-        st.error("Impossible de créer la session de paiement. Veuillez réessayer.")
 
 
 def safe_markdown(content: str):
@@ -1085,7 +1064,8 @@ def render_pricing_page():
         if st.button("⭐ Choisir Premium", type="primary", use_container_width=True):
             user_id = st.session_state.get("user_id", "guest_user")
             user_email = st.session_state.get("user_email", None)
-            initiate_stripe_checkout(user_id, "premium", user_email)
+            stripe_service = StripeService()
+            stripe_service.initiate_stripe_checkout(user_id, "premium", user_email)
 
     st.markdown("---")
     st.markdown(

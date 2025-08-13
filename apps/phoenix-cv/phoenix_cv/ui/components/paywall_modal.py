@@ -1,5 +1,5 @@
 import streamlit as st
-from phoenix_cv.main import initiate_stripe_checkout # Assurez-vous que initiate_stripe_checkout est importable
+from phoenix_cv.services.stripe_service import StripeService
 
 def show_paywall_modal(title: str, message: str, cta_label: str = "Passer Premium pour 9,99€/mois", plan_id: str = "premium"):
     """
@@ -90,6 +90,7 @@ def show_paywall_modal(title: str, message: str, cta_label: str = "Passer Premiu
     if st.button(cta_label, key="paywall_cta", type="primary"):
         user_id = st.session_state.get("user_id", "guest_user")
         user_email = st.session_state.get("user_email", None)
-        initiate_stripe_checkout(user_id, plan_id, user_email)
+        stripe_service = StripeService()
+        stripe_service.initiate_stripe_checkout(user_id, plan_id, user_email)
 
     st.stop() # Arrête l'exécution du reste de la page

@@ -61,6 +61,28 @@ class StripeService:
         }
         
         logger.info("Service Stripe Phoenix CV initialisé")
+    
+    def initiate_stripe_checkout(self, user_id: str, plan_id: str, user_email: str = None):
+        """
+        Initialise une session Stripe Checkout et redirige l'utilisateur.
+        """
+        success_url = st.secrets.get("BASE_URL", "https://phoenix-cv.streamlit.app") + "/?payment_status=success"
+        cancel_url = st.secrets.get("BASE_URL", "https://phoenix-cv.streamlit.app") + "/?payment_status=cancelled"
+
+        checkout_url = self.create_subscription_checkout(
+            user_id=user_id,
+            plan_id=plan_id,
+            success_url=success_url,
+            cancel_url=cancel_url,
+            user_email=user_email
+        )
+
+        if checkout_url:
+            st.info("Redirection vers la page de paiement Stripe...")
+            st.markdown(f"<meta http-equiv='refresh' content='0; url={checkout_url}'>", unsafe_allow_html=True)
+            st.stop() # Arrête l'exécution de l'application Streamlit
+        else:
+            st.error("Impossible de créer la session de paiement. Veuillez réessayer.")
 
     def create_subscription_checkout(
         self, 
