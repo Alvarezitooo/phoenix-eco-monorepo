@@ -19,9 +19,16 @@ from core.services.letter_service import LetterService
 from core.services.prompt_service import PromptService
 from core.services.renaissance_integration_service import PhoenixLettersRenaissanceService
 from infrastructure.ai.gemini_client import GeminiClient
-# Authentification unifiée Phoenix
+# Authentification unifiée Phoenix - Path monorepo compatible Streamlit Cloud
 import sys
-sys.path.append('../../packages')
+from pathlib import Path
+
+# Path absolu vers packages depuis le monorepo
+MONOREPO_ROOT = Path(__file__).resolve().parent.parent.parent
+PACKAGES_PATH = MONOREPO_ROOT / "packages"
+if str(PACKAGES_PATH) not in sys.path:
+    sys.path.insert(0, str(PACKAGES_PATH))
+
 from phoenix_shared_auth.client import AuthManager
 from infrastructure.database.db_connection import DatabaseConnection
 from infrastructure.security.input_validator import InputValidator

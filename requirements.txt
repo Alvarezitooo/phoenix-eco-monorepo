@@ -65,7 +65,7 @@ pyjwt[cryptography]>=2.8.0
 sentry-sdk[fastapi]>=2.34.0
 pyyaml>=6.0.0
 redis>=6.4.0
-# openai>=1.99.0  # Temporairement retiré - à rajouter pour Phoenix Aube si nécessaire
+# openai supprimé - sera réintégré spécifiquement pour Phoenix Aube si nécessaire
 
 # 📧 Phoenix Letters - Authentication & Async
 asyncpg>=0.29.0
