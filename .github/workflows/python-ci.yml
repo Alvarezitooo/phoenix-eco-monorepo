@@ -23,15 +23,24 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
         
-      - name: 🐍 Setup Python & Poetry
+      - name: 🐍 Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'poetry'
           
-      - name: 📦 Install Poetry & Dependencies
+      - name: 📦 Install Poetry
         run: |
           pip install poetry
+          echo "✅ Poetry installed"
+          
+      - name: 🗂️ Cache Poetry Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry
+          key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          
+      - name: 📦 Install Dependencies
+        run: |
           poetry install --with dev
           echo "✅ Dependencies installed"
           
