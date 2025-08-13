@@ -7,8 +7,18 @@ Version: 1.0.0 - Production Ready
 """
 
 import streamlit as st
-from phoenix_cv.services.phoenix_unified_auth import phoenix_cv_auth
 from phoenix_cv.utils.safe_markdown import safe_markdown
+
+# Import avec fallback pour service d'auth
+try:
+    from phoenix_cv.services.phoenix_unified_auth import phoenix_cv_auth
+    AUTH_SERVICE_AVAILABLE = True
+except ImportError:
+    try:
+        from phoenix_cv.services.standalone_auth import phoenix_cv_auth
+        AUTH_SERVICE_AVAILABLE = True
+    except ImportError:
+        AUTH_SERVICE_AVAILABLE = False
 
 
 def render_login_choice_page():

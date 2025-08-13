@@ -74,3 +74,7 @@ typing-extensions>=4.0.0
 # 🛠️ Build dependencies for Streamlit Cloud
 wheel>=0.40.0
 setuptools>=68.0.0
+
+# 📦 Phoenix Packages Locaux (Monorepo)
+-e packages/phoenix_shared_auth
+-e packages/phoenix_shared_ui

@@ -7,6 +7,7 @@ Version: 1.0.0 - Production Ready
 """
 
 import logging
+import os
 from typing import Dict, Any, Optional, Tuple
 from datetime import datetime
 import json
@@ -32,15 +33,22 @@ class PhoenixStripeIntegrationService:
     Gère les checkouts, webhooks et synchronisation des abonnements
     """
     
-    def __init__(self, stripe_secret_key: str = None):
+    def __init__(self, stripe_secret_key: str = None, webhook_secret: str = None):
         self.stripe_available = STRIPE_AVAILABLE
         self.publishable_key = STRIPE_PUBLISHABLE_KEY
+        self.webhook_secret = webhook_secret or os.getenv("STRIPE_WEBHOOK_SECRET")
         
-        if self.stripe_available and stripe_secret_key:
-            stripe.api_key = stripe_secret_key
-            logger.info("✅ Stripe initialisé avec clé de production")
+        if self.stripe_available:
+            if stripe_secret_key:
+                stripe.api_key = stripe_secret_key
+                logger.info("✅ Stripe initialisé avec clé de production")
+            elif os.getenv("STRIPE_SECRET_KEY"):
+                stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+                logger.info("✅ Stripe initialisé depuis variables d'environnement")
+            else:
+                logger.warning("⚠️ Clé secrète Stripe manquante")
         else:
-            logger.warning("⚠️ Stripe non disponible ou clé manquante")
+            logger.warning("⚠️ Stripe non disponible")
         
         # Service d'abonnements Phoenix
         self.subscription_service = get_phoenix_subscription_service()

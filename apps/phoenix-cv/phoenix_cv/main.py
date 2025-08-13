@@ -28,10 +28,10 @@ from phoenix_cv.services.stripe_service import StripeService
 from phoenix_cv.utils.html_sanitizer import html_sanitizer
 # from phoenix_cv.utils.safe_markdown import safe_markdown  # DÉSACTIVÉ - problème de rendu HTML
 from phoenix_cv.ui.login_page import handle_authentication_flow
-from packages.phoenix_shared_auth.services.cross_app_auth import get_cross_app_auth_service
+# Détection des packages partagés (imports différés)
+SHARED_PACKAGES_AVAILABLE = False
+
 from phoenix_cv.ui.components.paywall_modal import show_paywall_modal
-from packages.phoenix_shared_ui.components.header import render_header as render_shared_header
-from packages.phoenix_shared_ui.components.consent_banner import render_consent_banner
 st.toast("✅ VERSION DU 03/08/2025 - 09:15 AM CEST")
 
 
@@ -1900,12 +1900,14 @@ def main():
     # Configuration page
     configure_page()
     
-    # Vérification cross-app auth en premier
+    # Vérification authentification avec imports dynamiques
     try:
+        # Essayer d'importer les packages partagés
         from packages.phoenix_shared_auth.services.phoenix_auth_service import PhoenixAuthService
         from packages.phoenix_shared_auth.database.phoenix_db_connection import PhoenixDatabaseConnection
+        from packages.phoenix_shared_auth.services.cross_app_auth import get_cross_app_auth_service
         
-        # Initialiser services auth (avec gestion d'erreur)
+        # Si ça marche, on est en mode monorepo
         try:
             db_conn = PhoenixDatabaseConnection()
             auth_service = PhoenixAuthService(db_conn, None)
@@ -1919,11 +1921,24 @@ def main():
                 st.session_state['user_email'] = cross_app_user.email
                 st.success(f"✅ Connecté depuis l'écosystème Phoenix : {cross_app_user.email}")
         except:
-            # Service auth partagé non disponible, fallback normal
+            # Service auth partagé non disponible, continuer normal
             pass
+            
     except ImportError:
-        # Module partagé non disponible
-        pass
+        # Packages partagés non disponibles, mode standalone
+        try:
+            from phoenix_cv.services.standalone_auth import phoenix_cv_auth
+            
+            # Vérifier auth direct
+            is_auth, user_data = phoenix_cv_auth.check_authentication()
+            if is_auth and user_data:
+                st.session_state['user_id'] = user_data['user_id']
+                st.session_state['user_email'] = user_data.get('email', '')
+                st.session_state['user_name'] = user_data.get('name', '')
+                st.session_state['subscription_tier'] = user_data.get('subscription_tier', 'free')
+        except ImportError:
+            # Même le service standalone n'est pas dispo
+            st.error("❌ Services d'authentification non disponibles")
     
     # Gestion de l'authentification
     is_authenticated = handle_authentication_flow()
