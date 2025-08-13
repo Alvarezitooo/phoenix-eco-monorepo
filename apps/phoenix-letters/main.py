@@ -43,29 +43,23 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# DISABLED: Phoenix Shared UI style supprimé - utilisation styles intégrés  
-# Style CSS intégré Phoenix Letters
-st.markdown("""
-<style>
-/* Phoenix Letters - Style intégré */
-.main-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 15px;
-    text-align: center;
-    margin-bottom: 2rem;
-}
-.feature-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    margin-bottom: 1rem;
-    border-left: 4px solid #667eea;
-}
-</style>
-""", unsafe_allow_html=True)
+# Import du style global du Design System
+import os
+current_dir = os.path.dirname(os.path.abspath(__file__))
+style_path = os.path.join(current_dir, "../packages/phoenix_shared_ui/phoenix_shared_ui/style.css")
+try:
+    if os.path.exists(style_path):
+        with open(style_path) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    else:
+        # Fallback pour Streamlit Cloud - essayer chemin alternatif
+        alt_style_path = os.path.join(current_dir, "../../packages/phoenix_shared_ui/phoenix_shared_ui/style.css")
+        if os.path.exists(alt_style_path):
+            with open(alt_style_path) as f:
+                st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+except Exception as e:
+    # Gestion silencieuse pour ne pas casser l'app
+    pass
 
 # --- Fonctions de Rendu des Pages ---
 
@@ -265,7 +259,7 @@ def render_research_action_banner():
     st.markdown(
         """
         <div style="
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
             color: white;
             padding: 1rem;
             border-radius: 10px;
@@ -384,7 +378,7 @@ def main():
                 </p>
                 <div style="margin-top: 0.5rem;">
                     <a href="/premium" target="_self" style="text-decoration: none;">
-                        <button style="background: #764ba2; color: white; border: none; padding: 0.4rem 1rem; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85rem;">
+                        <button style="background: #f97316; color: white; border: none; padding: 0.4rem 1rem; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85rem;">
                             Voir les offres
                         </button>
                     </a>

@@ -7,7 +7,7 @@ import streamlit as st
 import uuid
 from phoenix_cv.models.user_profile import UserProfile
 from phoenix_cv.models.phoenix_user import UserTier
-from phoenix_cv.utils.secure_session_manager import secure_session
+from phoenix_cv.services.secure_session_manager import secure_session
 from phoenix_cv.ui.components.paywall_modal import show_paywall_modal
 from phoenix_cv.utils.exceptions import SecurityException, ValidationException
 from phoenix_cv.utils.safe_markdown import safe_markdown

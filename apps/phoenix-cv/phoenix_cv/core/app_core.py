@@ -28,8 +28,19 @@ from phoenix_cv.utils.secure_logging import secure_logger
 from phoenix_cv.utils.secure_validator import SecureValidator
 
 # Import du style global du Design System
-with open("../../packages/phoenix-shared-ui/style.css") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+import os
+current_dir = os.path.dirname(os.path.abspath(__file__))
+style_path = os.path.join(current_dir, "../../../packages/phoenix_shared_ui/phoenix_shared_ui/style.css")
+try:
+    if os.path.exists(style_path):
+        with open(style_path) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    else:
+        # Fallback pour Streamlit Cloud
+        pass
+except Exception as e:
+    # Gestion silencieuse pour ne pas casser l'app
+    pass
 
 
 class SecurePhoenixCVApp:
@@ -49,7 +60,7 @@ class SecurePhoenixCVApp:
         """Configuration sécurisée de Streamlit"""
         st.set_page_config(
             page_title="Phoenix CV - Sécurisé",
-            page_icon="🛡️",
+            page_icon="🔍",
             layout="wide",
             initial_sidebar_state="expanded",
         )
