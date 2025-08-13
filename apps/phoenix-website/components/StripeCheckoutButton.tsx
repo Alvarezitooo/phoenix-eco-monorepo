@@ -31,8 +31,9 @@ export default function StripeCheckoutButton({
 
     try {
       // Vérifier si l'utilisateur est connecté
-      const { getCurrentUser } = await import('@/lib/auth');
-      const user = await getCurrentUser();
+      const { PhoenixWebsiteAuth } = await import('@/lib/auth');
+      const auth = PhoenixWebsiteAuth.getInstance();
+      const user = await auth.getCurrentUser();
 
       if (!user) {
         // Rediriger vers auth modal si non connecté
