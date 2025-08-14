@@ -4,6 +4,7 @@ Plans tarifaires avec garanties securite enterprise
 """
 
 import streamlit as st
+import os
 from phoenix_cv.utils.safe_markdown import safe_markdown, safe_redirect
 # Conformément au Principe #4 - Services partagés
 import sys
@@ -163,11 +164,8 @@ def render_pricing_page_secure():
             - 📋 Analytics avancées
             """)
             
-            if st.button("📄 S'abonner CV", key="cv_btn", type="primary"):
-                user_id = st.session_state.get("user_id", "guest_user")
-                user_email = st.session_state.get("user_email", None)
-                stripe_service = StripeService()
-                stripe_service.initiate_stripe_checkout(user_id, "premium", user_email)
+            # Redirection vers la page de tarification du site web principal
+            st.link_button("S'abonner CV Premium", url=f"{os.environ.get('PHOENIX_WEBSITE_URL', 'https://phoenix-ecosystem.com')}/pricing#cv", type="primary")
 
     # Phoenix Bundle  
     with col4:
@@ -185,11 +183,7 @@ def render_pricing_page_secure():
             - 🎁 Accès bêta features
             """)
             
-            if st.button("🔥 Bundle Deal", key="bundle_btn", type="primary"):
-                user_id = st.session_state.get("user_id", "guest_user")
-                user_email = st.session_state.get("user_email", None)
-                stripe_service = StripeService()
-                stripe_service.initiate_stripe_checkout(user_id, "bundle_premium", user_email)
+            st.link_button("🔥 Bundle Deal", f"{os.environ.get('PHOENIX_WEBSITE_URL', 'https://phoenix-ecosystem.com')}/pricing#bundle", key="bundle_btn", type="primary")
 
     # Message de comparaison
     st.markdown("---")

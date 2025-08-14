@@ -1,6 +1,4 @@
 import streamlit as st
-from core.services.subscription_service import SubscriptionService # Pour appeler create_subscription_checkout
-from phoenix_shared_auth.stripe_manager import StripeManager # Pour appeler create_subscription_checkout
 
 def show_paywall_modal(title: str, message: str, cta_label: str = "Passer Premium pour 9,99€/mois", plan_id: str = "premium"):
     """
@@ -85,46 +83,9 @@ def show_paywall_modal(title: str, message: str, cta_label: str = "Passer Premiu
     st.markdown(f"## {title}")
     st.markdown(f"### {message}")
 
-    if st.button(cta_label, key="paywall_cta", type="primary"):
-        user_id = st.session_state.get("user_id", "guest_user")
-        user_email = st.session_state.get("user_email", None)
-        
-        # Ici, nous devons appeler la fonction de création de session Checkout
-        # qui est dans PremiumCheckout ou SubscriptionService.
-        # Pour simplifier, je vais instancier les services ici, mais idéalement
-        # ils devraient être passés en paramètre ou accessibles via un singleton.
-        
-        # Importations locales pour éviter les dépendances circulaires si show_paywall_modal
-        # est appelé depuis des fichiers qui importent ces services.
-        # Import déjà fait en haut du fichier - StripeManager
-        from core.services.subscription_service import SubscriptionService
-        from config.settings import Settings
-        from infrastructure.security.input_validator import InputValidator
-        from infrastructure.database.db_connection import DatabaseConnection
-
-        settings = Settings()
-        input_validator = InputValidator()
-        stripe_service = StripeManager()  # Service partagé selon Principe #4
-        db_connection = DatabaseConnection(settings)
-        subscription_service = SubscriptionService(settings, stripe_service, db_connection, input_validator)
-
-        # Appel à la création de session Checkout
-        success_url = st.secrets.get("BASE_URL") + "/success?session_id={CHECKOUT_SESSION_ID}"
-        cancel_url = st.secrets.get("BASE_URL") + "/cancel"
-
-        payment_session = subscription_service.create_subscription_checkout(
-            user_id=user_id,
-            plan_id=plan_id,
-            success_url=success_url,
-            cancel_url=cancel_url,
-            user_email=user_email
-        )
-        
-        if payment_session and payment_session.session_url:
-            st.info("Redirection vers la page de paiement Stripe...")
-            st.markdown(f"<meta http-equiv='refresh' content='0; url={payment_session.session_url}'>", unsafe_allow_html=True)
-            st.stop()
-        else:
-            st.error("Impossible de créer la session de paiement. Veuillez réessayer.")
+    # Le bouton redirige maintenant directement vers la page de paiement du site web
+    import os
+    website_url = os.environ.get("PHOENIX_WEBSITE_URL", "https://phoenix-ecosystem.com")
+    st.link_button(cta_label, f"{website_url}/pricing#{plan_id}", key="paywall_cta", type="primary")
 
     st.stop() # Arrête l'exécution du reste de la page

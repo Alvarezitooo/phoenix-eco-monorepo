@@ -206,7 +206,17 @@ def render_tier_selector():
 
     with col1:
         if st.button("🆓 **GRATUIT**", use_container_width=True, key="tier_gratuit"):
-            st.session_state["user_tier"] = "gratuit"
+            # Compatibilité legacy: synchronisation subscription_tier -> user_tier
+            subscription_tier = st.session_state.get("subscription_tier", "free")
+            if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
+                # Compatibilité legacy: synchronisation subscription_tier -> user_tier
+            subscription_tier = st.session_state.get("subscription_tier", "free")
+            if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
+                st.session_state["user_tier"] = "premium"
+            else:
+                st.session_state["user_tier"] = "gratuit"
+            else:
+                st.session_state["user_tier"] = "gratuit"
             st.session_state["tier_selected"] = True
 
         with st.container():
@@ -225,7 +235,12 @@ def render_tier_selector():
             key="tier_premium",
             type="primary",
         ):
-            st.session_state["user_tier"] = "premium"
+            # Compatibilité legacy: synchronisation subscription_tier -> user_tier
+            subscription_tier = st.session_state.get("subscription_tier", "free")
+            if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
+                st.session_state["user_tier"] = "premium"
+            else:
+                st.session_state["user_tier"] = "gratuit"
             st.session_state["tier_selected"] = True
 
         with st.container():
@@ -994,7 +1009,17 @@ def render_pricing_page():
         if st.button(
             "🆓 Commencer Gratuit", type="secondary", use_container_width=True
         ):
-            st.session_state["user_tier"] = "gratuit"
+            # Compatibilité legacy: synchronisation subscription_tier -> user_tier
+            subscription_tier = st.session_state.get("subscription_tier", "free")
+            if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
+                # Compatibilité legacy: synchronisation subscription_tier -> user_tier
+            subscription_tier = st.session_state.get("subscription_tier", "free")
+            if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
+                st.session_state["user_tier"] = "premium"
+            else:
+                st.session_state["user_tier"] = "gratuit"
+            else:
+                st.session_state["user_tier"] = "gratuit"
             st.session_state["tier_selected"] = True
             st.success("✅ Niveau Gratuit activé !")
 
@@ -1019,11 +1044,8 @@ def render_pricing_page():
             unsafe_allow_html=True,
         )
 
-        if st.button("⭐ Choisir Premium", type="primary", use_container_width=True):
-            user_id = st.session_state.get("user_id", "guest_user")
-            user_email = st.session_state.get("user_email", None)
-            stripe_service = StripeService()
-            stripe_service.initiate_stripe_checkout(user_id, "premium", user_email)
+        # Le bouton redirige maintenant directement vers la page de paiement du site web
+        st.link_button("⭐ Choisir Premium", f"{os.environ.get('PHOENIX_WEBSITE_URL', 'https://phoenix-ecosystem.com')}/pricing#cv", type="primary", use_container_width=True)
 
     st.markdown("---")
     st.markdown(
@@ -1278,7 +1300,17 @@ def render_mirror_match_page():
             use_container_width=True,
         ):
             st.session_state["current_page"] = "analyze"
-            st.session_state["user_tier"] = "gratuit"
+            # Compatibilité legacy: synchronisation subscription_tier -> user_tier
+            subscription_tier = st.session_state.get("subscription_tier", "free")
+            if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
+                # Compatibilité legacy: synchronisation subscription_tier -> user_tier
+            subscription_tier = st.session_state.get("subscription_tier", "free")
+            if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
+                st.session_state["user_tier"] = "premium"
+            else:
+                st.session_state["user_tier"] = "gratuit"
+            else:
+                st.session_state["user_tier"] = "gratuit"
             st.rerun()
 
     with tab2:
@@ -1303,7 +1335,12 @@ def render_mirror_match_page():
             "⭐ **Lancer l'Analyse Premium**", type="primary", use_container_width=True
         ):
             st.session_state["current_page"] = "analyze"
-            st.session_state["user_tier"] = "premium"
+            # Compatibilité legacy: synchronisation subscription_tier -> user_tier
+            subscription_tier = st.session_state.get("subscription_tier", "free")
+            if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
+                st.session_state["user_tier"] = "premium"
+            else:
+                st.session_state["user_tier"] = "gratuit"
             st.rerun()
 
     with tab3:
@@ -1933,19 +1970,9 @@ def main():
             
     except ImportError:
         # Packages partagés non disponibles, mode standalone
-        try:
-            from phoenix_cv.services.standalone_auth import phoenix_cv_auth
-            
-            # Vérifier auth direct
-            is_auth, user_data = phoenix_cv_auth.check_authentication()
-            if is_auth and user_data:
-                st.session_state['user_id'] = user_data['user_id']
-                st.session_state['user_email'] = user_data.get('email', '')
-                st.session_state['user_name'] = user_data.get('name', '')
-                st.session_state['subscription_tier'] = user_data.get('subscription_tier', 'free')
-        except ImportError:
-            # Même le service standalone n'est pas dispo
-            st.error("❌ Services d'authentification non disponibles")
+        # Fallback: vérification de session existante
+        if "user_id" not in st.session_state:
+            st.warning("⚠️ Service d'authentification partagé recommandé pour une expérience optimale")
     
     # Gestion de l'authentification
     is_authenticated = handle_authentication_flow()

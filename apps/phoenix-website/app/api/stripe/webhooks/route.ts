@@ -27,6 +27,21 @@ async function buffer(readable: Readable): Promise<Buffer> {
 // Le secret du webhook
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
 
+// Helper pour trouver l'user_id à partir du customer_id Stripe
+const getUserIdFromCustomerId = async (customerId: string): Promise<string | null> => {
+  const { data, error } = await supabaseAdmin
+    .from('user_subscriptions')
+    .select('user_id')
+    .eq('stripe_customer_id', customerId)
+    .single();
+  
+  if (error || !data) {
+    console.error(`Aucun utilisateur trouvé pour le customer_id Stripe: ${customerId}`);
+    return null;
+  }
+  return data.user_id;
+};
+
 export async function POST(req: NextRequest) {
   try {
     const buf = await buffer(req.body as any);
@@ -34,7 +49,7 @@ export async function POST(req: NextRequest) {
 
     let event: Stripe.Event;
 
-    // 1. VÉRIFICATION DE LA SIGNATURE (ÉTAPE DE SÉCURITÉ CRITIQUE)
+    // 1. VÉRIFICATION DE LA SIGNATURE
     try {
       event = stripe.webhooks.constructEvent(buf, sig, webhookSecret);
     } catch (err: any) {
@@ -42,7 +57,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
     }
 
-    // 2. PUBLICATION DE L'ÉVÉNEMENT PHOENIX DANS LA BDD
+    // 2. PUBLICATION DE L'ÉVÉNEMENT PHOENIX
     const eventType = event.type;
     const eventObject = event.data.object as any;
     let phoenixEvent = null;
@@ -51,35 +66,74 @@ export async function POST(req: NextRequest) {
 
     switch (eventType) {
       case 'checkout.session.completed':
-        const userId = eventObject.client_reference_id;
-        if (!userId) {
+        const userIdFromCheckout = eventObject.client_reference_id;
+        if (!userIdFromCheckout) {
           console.error('CRITICAL: checkout.session.completed sans client_reference_id!');
           break;
         }
         phoenixEvent = {
-          stream_id: userId,
-          event_type: 'billing.subscription_activated', // Type d'événement Phoenix
+          stream_id: userIdFromCheckout,
+          event_type: 'billing.subscription_activated',
           app_source: 'billing',
           payload: {
             stripe_customer_id: eventObject.customer,
             stripe_subscription_id: eventObject.subscription,
             subscription_tier: eventObject.metadata?.plan_id || 'premium',
-            activated_at: new Date().toISOString(),
           },
         };
         break;
 
-      // Ajoutez d'autres cas ici si nécessaire
-      // case 'customer.subscription.deleted':
-      //   // ... logique pour l'événement d'annulation
-      //   break;
+      case 'customer.subscription.deleted':
+        const userIdFromCancel = await getUserIdFromCustomerId(eventObject.customer);
+        if (!userIdFromCancel) break;
+        phoenixEvent = {
+          stream_id: userIdFromCancel,
+          event_type: 'billing.subscription_cancelled',
+          app_source: 'billing',
+          payload: {
+            stripe_subscription_id: eventObject.id,
+            cancellation_reason: eventObject.cancellation_details?.reason || 'user_request_from_stripe_dashboard',
+          },
+        };
+        break;
+
+      case 'invoice.payment_failed':
+        const userIdFromFail = await getUserIdFromCustomerId(eventObject.customer);
+        if (!userIdFromFail) break;
+        phoenixEvent = {
+          stream_id: userIdFromFail,
+          event_type: 'billing.payment_failed',
+          app_source: 'billing',
+          payload: {
+            amount_due: eventObject.amount_due,
+            currency: eventObject.currency,
+            failure_reason: eventObject.last_payment_error?.message || 'unknown',
+            stripe_invoice_id: eventObject.id,
+          },
+        };
+        break;
+
+      case 'customer.subscription.updated':
+        const userIdFromUpdate = await getUserIdFromCustomerId(eventObject.customer);
+        if (!userIdFromUpdate) break;
+        phoenixEvent = {
+          stream_id: userIdFromUpdate,
+          event_type: 'user.tier_updated',
+          app_source: 'billing',
+          payload: {
+            new_tier: eventObject.items.data[0]?.price.lookup_key || 'premium',
+            old_tier: eventObject.previous_attributes?.items ? (eventObject.previous_attributes.items.data[0]?.price.lookup_key || 'free') : 'unknown',
+            stripe_subscription_id: eventObject.id,
+            stripe_customer_id: eventObject.customer,
+          },
+        };
+        break;
 
       default:
         console.log(`-> Événement non traité: ${eventType}`);
         break;
     }
 
-    // Si un événement Phoenix a été créé, on l'insère dans la table 'events'
     if (phoenixEvent) {
       const { error } = await supabaseAdmin.from('events').insert(phoenixEvent);
       if (error) {

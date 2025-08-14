@@ -113,7 +113,7 @@ def render_choice_page():
             st.rerun()
 
 
-def render_login_page(auth_middleware):
+def render_login_page(auth_manager, subscription_service, async_runner):
     """Affiche le formulaire de connexion/inscription esthétique."""
     st.markdown("### 🔑 Connexion Phoenix Letters")
     st.markdown("**Accédez à vos lettres sauvegardées et fonctionnalités Premium**")
@@ -129,164 +129,81 @@ def render_login_page(auth_middleware):
                 unsafe_allow_html=True,
             )
             
-            auth_middleware.login_form()
+            st.subheader("Se connecter")
+            email = st.text_input("Email", key="login_email")
+            password = st.text_input("Mot de passe", type="password", key="login_password")
             
+            if st.button("Se connecter", key="login_btn", type="primary"):
+                if not email or not password:
+                    st.error("Veuillez entrer votre email et mot de passe.")
+                else:
+                    try:
+                        success, message, user_id, access_token = auth_manager.sign_in(email, password)
+                        if success:
+                            st.session_state.user_id = user_id
+                            st.session_state.user_email = email
+                            st.session_state.access_token = access_token
+                            st.session_state.is_authenticated = True
+                            
+                            # Récupérer le statut d'abonnement
+                            if async_runner:
+                                future = async_runner.run_coro_in_thread(subscription_service.get_user_subscription(user_id))
+                                subscription = future.result(timeout=10)
+                                if subscription:
+                                    st.session_state.user_tier = subscription.current_tier
+                                else:
+                                    st.session_state.user_tier = UserTier.FREE
+                            else:
+                                st.session_state.user_tier = UserTier.FREE # Fallback
+                            
+                            st.success(f"Bienvenue, {email} !")
+                            st.rerun()
+                        else:
+                            st.error(f"Erreur de connexion : {message}")
+                    except Exception as e:
+                        st.error(f"Une erreur inattendue est survenue : {e}")
+            
+            st.markdown("--- ")
+            st.subheader("Créer un compte")
+            new_email = st.text_input("Email", key="signup_email")
+            new_password = st.text_input("Mot de passe", type="password", key="signup_password")
+            
+            if st.button("Créer un compte", key="signup_btn"):
+                if not new_email or not new_password:
+                    st.error("Veuillez entrer un email et un mot de passe.")
+                else:
+                    try:
+                        success, message, user_id = auth_manager.sign_up(new_email, new_password)
+                        if success:
+                            st.session_state.user_id = user_id
+                            st.session_state.user_email = new_email
+                            st.session_state.is_authenticated = True
+                            st.session_state.user_tier = UserTier.FREE # Nouveau compte est Free par défaut
+                            st.success(f"Compte créé avec succès pour {new_email} ! Vous êtes maintenant connecté.")
+                            st.rerun()
+                        else:
+                            st.error(f"Erreur d'inscription : {message}")
+                    except Exception as e:
+                        st.error(f"Une erreur inattendue est survenue : {e}")
+
             st.markdown("</div>", unsafe_allow_html=True)
         
-        st.info(
-            "🔒 **Sécurité garantie** : Vos données sont chiffrées et protégées selon les standards RGPD. "
-            "Création de compte gratuite et sans engagement."
-        )
+        st.info("🔒 **Sécurité garantie** : Vos données sont chiffrées et protégées selon les standards RGPD. "
+                "Création de compte gratuite et sans engagement.")
 
-
-def _initialize_app_components(settings, db_connection, gemini_client):
-    """Initialise tous les services et composants UI de l'application."""
-    session_manager = SecureSessionManager(settings)
-    input_validator = InputValidator()
-    prompt_service = PromptService(settings)
-    from core.services.ats_analyzer_service import ATSAnalyzerService
-    from core.services.mirror_match_service import MirrorMatchService
-    from core.services.smart_coach_service import SmartCoachService
-    from core.services.trajectory_builder_service import TrajectoryBuilderService
-
-    mirror_match_service = MirrorMatchService(gemini_client, input_validator)
-    ats_analyzer_service = ATSAnalyzerService(gemini_client, input_validator)
-    smart_coach_service = SmartCoachService(gemini_client, input_validator)
-    trajectory_builder_service = TrajectoryBuilderService(
-        gemini_client, input_validator
-    )
-    letter_service = LetterService(
-        gemini_client, input_validator, prompt_service, session_manager
-    )
-    job_offer_parser = JobOfferParser()
-    file_uploader = SecureFileUploader(input_validator, settings)
-    progress_indicator = ProgressIndicator()
-    letter_editor = LetterEditor()
-
-    generator_page = GeneratorPage(
-        letter_service=letter_service,
-        file_uploader=file_uploader,
-        session_manager=session_manager,
-        progress_indicator=progress_indicator,
-        letter_editor=letter_editor,
-        mirror_match_service=mirror_match_service,
-        ats_analyzer_service=ats_analyzer_service,
-        smart_coach_service=smart_coach_service,
-        trajectory_builder_service=trajectory_builder_service,
-        job_offer_parser=job_offer_parser,
-    )
-    about_page = AboutPage()
-    # Initialisation des services de paiement (safe mode)
-    try:
-        stripe_service = StripeService(settings, input_validator)
-        subscription_service = SubscriptionService(
-            settings=settings,
-            stripe_service=stripe_service,
-            db_connection=db_connection,
-            input_validator=input_validator
-        )
-        premium_page = PremiumPage(
-            stripe_service=stripe_service,
-            subscription_service=subscription_service
-        )
-    except Exception as e:
-        logger.warning(f"Services de paiement non disponibles: {e}")
-        premium_page = PremiumPage()  # Mode dégradé
-    settings_page = SettingsPage()
-
-    return {
-        "generator_page": generator_page,
-        "premium_page": premium_page,
-        "settings_page": settings_page,
-        "about_page": about_page,
-        "session_manager": session_manager,
-        "input_validator": input_validator,
-        "prompt_service": prompt_service,
-        "letter_service": letter_service,
-        "job_offer_parser": job_offer_parser,
-        "file_uploader": file_uploader,
-        "progress_indicator": progress_indicator,
-        "letter_editor": letter_editor,
-        "mirror_match_service": mirror_match_service,
-        "ats_analyzer_service": ats_analyzer_service,
-        "smart_coach_service": smart_coach_service,
-        "trajectory_builder_service": trajectory_builder_service,
-        "stripe_service": stripe_service,
-        "subscription_service": subscription_service,
-    }
-
-
-def render_main_app(current_user, auth_middleware, settings, db_connection, initialized_components):
-    """Affiche l'application principale."""
-    # Navigation sidebar
-    st.sidebar.title("🚀 Phoenix Letters")
-    
-    # Pages disponibles
-    if "page" not in st.session_state:
-        st.session_state.page = "generator"
-    
-    page = st.sidebar.selectbox(
-        "Navigation",
-        ["generator", "premium", "settings", "about"],
-        format_func=lambda x: {
-            "generator": "📝 Générateur",
-            "premium": "⭐ Premium", 
-            "settings": "⚙️ Paramètres",
-            "about": "ℹ️ À propos"
-        }[x]
-    )
-    
-    st.session_state.page = page
-    
-    # Affichage de la page sélectionnée
-    if page == "generator":
-        initialized_components["generator_page"].render()
-    elif page == "premium":
-        initialized_components["premium_page"].render()
-    elif page == "settings":
-        initialized_components["settings_page"].render()
-    elif page == "about":
-        initialized_components["about_page"].render()
-
-def _route_app_pages(current_user, auth_middleware, settings, db_connection, initialized_components):
+def _route_app_pages(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, async_runner):
     """Gère l'aiguillage des pages de l'application."""
     if "auth_flow_choice" not in st.session_state:
         st.session_state.auth_flow_choice = None
 
     # Aiguillage
-    if current_user is None and st.session_state.auth_flow_choice is None:
-        render_choice_page()
-    elif current_user is None and st.session_state.auth_flow_choice == "login":
-        render_login_page(auth_middleware)
-    else:  # L'utilisateur est soit connecté, soit en mode invité
-        render_main_app(current_user, auth_middleware, settings, db_connection, initialized_components)
-
-
-def render_research_action_banner():
-    """🔬 Bannière de sensibilisation à la recherche-action Phoenix"""
-    st.markdown(
-        """
-        <div style="
-            background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
-            color: white;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        ">
-            <p style="margin: 0; font-size: 0.95rem; font-weight: 500;">
-                🎓 <strong>Participez à une recherche-action sur l'impact de l'IA dans la reconversion professionnelle.</strong>
-            </p>
-            <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; opacity: 0.9; line-height: 1.4;">
-                En utilisant Phoenix, vous contribuez anonymement à une étude sur l'IA éthique et la réinvention de soi. 
-                Vos données (jamais nominatives) aideront à construire des outils plus justes et plus humains.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
+    if not st.session_state.get("is_authenticated", False):
+        if st.session_state.auth_flow_choice == "login":
+            render_login_page(auth_manager, subscription_service, async_runner)
+        else: # guest mode
+            render_choice_page()
+    else:  # L'utilisateur est connecté
+        render_main_app(current_user, auth_manager, settings, db_connection, initialized_components)
 
 def main():
     """Point d'entrée et aiguilleur principal de l'application."""
@@ -305,25 +222,36 @@ def main():
 
     db_connection = get_db_connection(settings)
     
-    # 🔐 Authentification Phoenix unifiée
-    auth_manager = AuthManager()
-    
-    # Pour compatibilité avec le code existant, création d'un wrapper simple
-    class SimpleAuthWrapper:
-        def __init__(self, auth_manager):
-            self.auth_manager = auth_manager
-            
-        def get_current_user(self):
-            # Retourne None pour guest, ou user_data si connecté
-            return None  # Mode guest pour l'instant
-            
-        def login_form(self):
-            # Formulaire de connexion simple
-            st.info("🚀 Authentification Phoenix en cours de migration...")
-            
-    auth_middleware = SimpleAuthWrapper(auth_manager)
-    current_user = auth_middleware.get_current_user()
-    
+    # Initialisation des services nécessaires
+    session_manager = SecureSessionManager(settings)
+    input_validator = InputValidator()
+    auth_manager = AuthManager(db_connection, session_manager, input_validator)
+
+    # Initialisation des services de paiement (safe mode)
+    try:
+        stripe_service = StripeService(settings, input_validator)
+        subscription_service = SubscriptionService(
+            settings=settings,
+            stripe_service=stripe_service,
+            db_connection=db_connection,
+            input_validator=input_validator
+        )
+    except Exception as e:
+        logger.warning(f"Services de paiement non disponibles: {e}")
+        stripe_service = None
+        subscription_service = None
+
+    # Récupération de l'utilisateur courant (si déjà authentifié dans la session)
+    current_user = None
+    if st.session_state.get("is_authenticated", False):
+        # Ici, on pourrait rafraîchir les données utilisateur si nécessaire
+        # Pour l'instant, on se base sur ce qui est en session
+        current_user = {
+            "id": st.session_state.user_id,
+            "email": st.session_state.user_email,
+            "user_tier": st.session_state.user_tier
+        }
+
     # 🔬 BANNIÈRE RECHERCHE-ACTION PHOENIX (désactivable via ENV)
     try:
         import os
@@ -337,7 +265,7 @@ def main():
     if current_user and hasattr(current_user, 'id'):
         renaissance_service = PhoenixLettersRenaissanceService(db_connection)
         
-        if renaissance_service.should_show_renaissance_banner_letters(current_user.id):
+        if renaissance_service.should_show_renaissance_banner_letters(current_user["id"]):
             st.markdown(
                 """
                 <div style="
@@ -369,7 +297,7 @@ def main():
             )
             
             # Affichage des recommandations Renaissance pour les lettres
-            recommendations = renaissance_service.get_renaissance_letter_recommendations(current_user.id)
+            recommendations = renaissance_service.get_renaissance_letter_recommendations(current_user["id"])
             if recommendations:
                 st.markdown("### 🎯 Recommandations Renaissance - Lettres")
                 for rec in recommendations:
@@ -391,7 +319,7 @@ def main():
     initialized_components = _initialize_app_components(settings, db_connection, gemini_client)
 
     # Bannière de mise à niveau pour les utilisateurs Free
-    if current_user and current_user.user_tier == UserTier.FREE:
+    if current_user and current_user["user_tier"] == UserTier.FREE:
         st.markdown(
             """
             <div style="background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%); padding: 0.8rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
@@ -410,7 +338,7 @@ def main():
             unsafe_allow_html=True
         )
 
-    _route_app_pages(current_user, auth_middleware, settings, db_connection, initialized_components)
+    _route_app_pages(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, st.session_state.async_service_runner)
 
 if __name__ == "__main__":
     main()

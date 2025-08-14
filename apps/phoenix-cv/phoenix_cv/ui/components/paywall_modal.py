@@ -94,10 +94,9 @@ def show_paywall_modal(title: str, message: str, cta_label: str = "Passer Premiu
     st.markdown(f"## {title}")
     st.markdown(f"### {message}")
 
-    if st.button(cta_label, key="paywall_cta", type="primary"):
-        user_id = st.session_state.get("user_id", "guest_user")
-        user_email = st.session_state.get("user_email", None)
-        stripe_service = StripeService()
-        stripe_service.initiate_stripe_checkout(user_id, plan_id, user_email)
+    # Le bouton redirige maintenant directement vers la page de paiement du site web
+    import os
+    website_url = os.environ.get("PHOENIX_WEBSITE_URL", "https://phoenix-ecosystem.com")
+    st.link_button(cta_label, f"{website_url}/pricing#{plan_id}", key="paywall_cta", type="primary")
 
     st.stop() # Arrête l'exécution du reste de la page
