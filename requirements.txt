@@ -24,9 +24,9 @@ python-docx>=1.1.0
 pytesseract>=0.3.10
 Pillow>=10.3.0
 
-# 📡 HTTP & Multipart
+# 📡 HTTP & Multipart - Sécurisé
 requests>=2.31.0
-python-multipart>=0.0.9
+python-multipart>=0.0.12  # Correction vulnérabilité DoS CVE-2024-53891
 flask>=2.3.0
 tenacity>=8.0.0
 
@@ -71,9 +71,9 @@ redis>=6.4.0
 asyncpg>=0.29.0
 typing-extensions>=4.0.0
 
-# 🛠️ Build dependencies for Streamlit Cloud - Versions fixes pour éviter résolution
+# 🛠️ Build dependencies for Streamlit Cloud - Versions sécurisées
 wheel>=0.40.0
-setuptools==69.5.1
+setuptools>=75.0.0  # Correction vulnérabilités CVE-2024-6345 & CVE-2024-7079
 
 # 📦 Phoenix Packages Locaux (Monorepo)
 -e packages/phoenix_shared_auth
