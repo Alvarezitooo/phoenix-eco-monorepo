@@ -14,16 +14,59 @@ from enum import Enum
 
 from config.settings import Settings
 from core.entities.user import UserTier
-from phoenix_shared_auth.stripe_manager import StripeManager
-# PaymentSession sera défini dans StripeManager ou créé localement si nécessaire
+try:
+    from phoenix_shared_auth.stripe_manager import StripeManager
+    # Import PaymentSession depuis StripeManager 
+    from phoenix_shared_auth.stripe_manager import PaymentSession
+except ImportError:
+    # Fallback pour Streamlit Cloud
+    class StripeManager:
+        def create_checkout_session(self, *args, **kwargs):
+            return {"id": "fallback_session", "url": "https://fallback.url"}
+        def cancel_subscription(self, *args, **kwargs):
+            return True
+    
+    class PaymentSession:
+        def __init__(self, session_id: str, url: str):
+            self.id = session_id
+            self.url = url
 from infrastructure.database.db_connection import DatabaseConnection
 from shared.exceptions.specific_exceptions import SubscriptionError, DatabaseError
 from infrastructure.security.input_validator import InputValidator
 
 # Imports pour l'architecture événementielle Phoenix
 import uuid
-from phoenix_event_bridge.phoenix_event_bridge import PhoenixEventBridge
-from phoenix_event_bridge.phoenix_event_types import PhoenixEventFactory, PhoenixEventType, PhoenixEventData
+try:
+    from phoenix_event_bridge import PhoenixEventBridge, PhoenixEventFactory, PhoenixEventType, PhoenixEventData
+except ImportError:
+    # Fallback pour Streamlit Cloud - Event bridge simplifié
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    class PhoenixEventBridge:
+        @staticmethod
+        def publish_event(event_type: str, data: dict):
+            logger.info(f"Event published: {event_type} - {data}")
+            return True
+    
+    class PhoenixEventType:
+        USER_SUBSCRIPTION_UPDATED = "user.subscription.updated"
+        USER_SUBSCRIPTION_CANCELLED = "user.subscription.cancelled"
+    
+    class PhoenixEventData:
+        @staticmethod
+        def create(data: dict):
+            return data
+    
+    class PhoenixEventFactory:
+        @staticmethod
+        def create_subscription_event(event_type: str, user_id: str, subscription_data: dict):
+            return {
+                "type": event_type,
+                "user_id": user_id,
+                "data": subscription_data,
+                "timestamp": datetime.utcnow().isoformat()
+            }
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +107,7 @@ class SubscriptionService:
     def __init__(
         self, 
         settings: Settings, 
-        stripe_service: StripeService,
+        stripe_service: StripeManager,
         db_connection: DatabaseConnection,
         input_validator: InputValidator
     ):

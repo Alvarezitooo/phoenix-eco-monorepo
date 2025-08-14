@@ -43,7 +43,16 @@ from phoenix_shared_auth.stripe_manager import StripeManager
 from core.services.subscription_service import SubscriptionService
 from ui.pages.settings_page import SettingsPage
 from utils.async_runner import AsyncServiceRunner
-# from phoenix_shared_ui.components import render_primary_button, render_info_card, render_section_header, render_alert, render_ariadne_thread  # Module non trouvé
+# Phoenix shared UI components - import avec fallback
+try:
+    from phoenix_shared_ui.components import render_primary_button, render_info_card, render_section_header, render_alert, render_ariadne_thread
+except ImportError:
+    # Fallback pour déploiement Streamlit Cloud
+    def render_primary_button(*args, **kwargs): return st.button(*args, **kwargs)
+    def render_info_card(*args, **kwargs): return st.info(*args, **kwargs)
+    def render_section_header(*args, **kwargs): return st.header(*args, **kwargs)
+    def render_alert(*args, **kwargs): return st.warning(*args, **kwargs)
+    def render_ariadne_thread(*args, **kwargs): return st.text(*args, **kwargs)
 
 # Configuration du logger
 logging.basicConfig(

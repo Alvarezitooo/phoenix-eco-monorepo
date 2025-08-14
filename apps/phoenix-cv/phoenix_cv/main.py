@@ -206,17 +206,7 @@ def render_tier_selector():
 
     with col1:
         if st.button("🆓 **GRATUIT**", use_container_width=True, key="tier_gratuit"):
-            # Compatibilité legacy: synchronisation subscription_tier -> user_tier
-            subscription_tier = st.session_state.get("subscription_tier", "free")
-            if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
-                # Compatibilité legacy: synchronisation subscription_tier -> user_tier
-            subscription_tier = st.session_state.get("subscription_tier", "free")
-            if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
-                st.session_state["user_tier"] = "premium"
-            else:
-                st.session_state["user_tier"] = "gratuit"
-            else:
-                st.session_state["user_tier"] = "gratuit"
+            st.session_state["user_tier"] = "gratuit"
             st.session_state["tier_selected"] = True
 
         with st.container():
@@ -1010,14 +1000,10 @@ def render_pricing_page():
             "🆓 Commencer Gratuit", type="secondary", use_container_width=True
         ):
             # Compatibilité legacy: synchronisation subscription_tier -> user_tier
-            subscription_tier = st.session_state.get("subscription_tier", "free")
-            if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
-                # Compatibilité legacy: synchronisation subscription_tier -> user_tier
+            # Compatibilité legacy: synchronisation subscription_tier -> user_tier
             subscription_tier = st.session_state.get("subscription_tier", "free")
             if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
                 st.session_state["user_tier"] = "premium"
-            else:
-                st.session_state["user_tier"] = "gratuit"
             else:
                 st.session_state["user_tier"] = "gratuit"
             st.session_state["tier_selected"] = True
@@ -1301,14 +1287,10 @@ def render_mirror_match_page():
         ):
             st.session_state["current_page"] = "analyze"
             # Compatibilité legacy: synchronisation subscription_tier -> user_tier
-            subscription_tier = st.session_state.get("subscription_tier", "free")
-            if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
-                # Compatibilité legacy: synchronisation subscription_tier -> user_tier
+            # Compatibilité legacy: synchronisation subscription_tier -> user_tier
             subscription_tier = st.session_state.get("subscription_tier", "free")
             if subscription_tier in ["premium", "cv_premium", "pack_premium"]:
                 st.session_state["user_tier"] = "premium"
-            else:
-                st.session_state["user_tier"] = "gratuit"
             else:
                 st.session_state["user_tier"] = "gratuit"
             st.rerun()
@@ -1947,8 +1929,13 @@ def main():
     # Vérification authentification avec imports dynamiques
     try:
         # Essayer d'importer les packages partagés
-        from packages.phoenix_shared_auth.services.phoenix_auth_service import PhoenixAuthService
-        from packages.phoenix_shared_auth.database.phoenix_db_connection import PhoenixDatabaseConnection
+        try:
+            from phoenix_shared_auth.services.phoenix_auth_service import PhoenixAuthService
+            from phoenix_shared_auth.database.phoenix_db_connection import PhoenixDatabaseConnection
+        except ImportError:
+            # Fallback pour Streamlit Cloud
+            PhoenixAuthService = None
+            PhoenixDatabaseConnection = None
         from phoenix_shared_auth.services.cross_app_auth import get_cross_app_auth_service
         
         # Si ça marche, on est en mode monorepo

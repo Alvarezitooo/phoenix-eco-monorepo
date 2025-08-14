@@ -8,7 +8,7 @@ import os
 import time
 from datetime import datetime
 
-from packages.phoenix_event_bridge.phoenix_event_bridge import PhoenixEventFactory
+from packages.phoenix_event_bridge import PhoenixEventFactory
 
 
 async def test_event_bridge():

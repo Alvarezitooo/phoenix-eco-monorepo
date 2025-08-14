@@ -24,7 +24,7 @@ class PremiumCheckout:
     Interface moderne et conversion optimizada.
     """
     
-    def __init__(self, subscription_service: SubscriptionService, stripe_service: StripeService):
+    def __init__(self, subscription_service: SubscriptionService, stripe_service: StripeManager):
         self.subscription_service = subscription_service
         self.stripe_service = stripe_service
         

@@ -13,8 +13,7 @@ from supabase import Client, create_client
 # Assumer que les packages locaux sont dans le PYTHONPATH
 # Dans un vrai déploiement, cela serait géré par Poetry ou un Dockerfile.
 try:
-    from phoenix_event_bridge.phoenix_event_bridge import PhoenixEventBridge
-    from phoenix_event_bridge.phoenix_event_types import PhoenixEventType
+    from phoenix_event_bridge import PhoenixEventBridge, PhoenixEventType
 except ImportError:
     print("Erreur: Assurez-vous que les packages locaux (phoenix_event_bridge) sont dans le PYTHONPATH.")
     exit(1)

@@ -11,8 +11,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 
 // Initialiser le client Supabase admin pour l'écriture en BDD
 const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy.supabase.co',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || 'dummy-key',
 );
 
 // Fonction pour buffer la requête
@@ -34,7 +34,7 @@ const getUserIdFromCustomerId = async (customerId: string): Promise<string | nul
     .select('user_id')
     .eq('stripe_customer_id', customerId)
     .single();
-  
+
   if (error || !data) {
     console.error(`Aucun utilisateur trouvé pour le customer_id Stripe: ${customerId}`);
     return null;
@@ -92,7 +92,8 @@ export async function POST(req: NextRequest) {
           app_source: 'billing',
           payload: {
             stripe_subscription_id: eventObject.id,
-            cancellation_reason: eventObject.cancellation_details?.reason || 'user_request_from_stripe_dashboard',
+            cancellation_reason:
+              eventObject.cancellation_details?.reason || 'user_request_from_stripe_dashboard',
           },
         };
         break;
@@ -122,7 +123,9 @@ export async function POST(req: NextRequest) {
           app_source: 'billing',
           payload: {
             new_tier: eventObject.items.data[0]?.price.lookup_key || 'premium',
-            old_tier: eventObject.previous_attributes?.items ? (eventObject.previous_attributes.items.data[0]?.price.lookup_key || 'free') : 'unknown',
+            old_tier: eventObject.previous_attributes?.items
+              ? eventObject.previous_attributes.items.data[0]?.price.lookup_key || 'free'
+              : 'unknown',
             stripe_subscription_id: eventObject.id,
             stripe_customer_id: eventObject.customer,
           },
@@ -140,11 +143,12 @@ export async function POST(req: NextRequest) {
         console.error('Erreur insertion événement Phoenix:', error);
         return NextResponse.json({ error: 'Failed to record Phoenix event' }, { status: 500 });
       }
-      console.log(`✅ Événement Phoenix [${phoenixEvent.event_type}] publié pour l'utilisateur ${phoenixEvent.stream_id}`);
+      console.log(
+        `✅ Événement Phoenix [${phoenixEvent.event_type}] publié pour l'utilisateur ${phoenixEvent.stream_id}`,
+      );
     }
 
     return NextResponse.json({ received: true });
-
   } catch (error: any) {
     console.error('Erreur inattendue dans le handler de webhook:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

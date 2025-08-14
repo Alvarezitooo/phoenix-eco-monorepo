@@ -1,29 +1,157 @@
 [tool.poetry]
 name = "phoenix-ecosystem"
-version = "0.1.0"
-package-mode = false # Indique que ce n'est pas un package installable en soi
+version = "3.0.0"
+description = "Phoenix Ecosystem - Monorepo unifié pour applications IA de reconversion professionnelle"
+authors = ["Phoenix Team <hello@phoenix-ecosystem.com>"]
+readme = "README.md"
+package-mode = false # Monorepo workspace
+
+# ======================================================
+# DÉPENDANCES CORE - PARTAGÉES PAR TOUT L'ÉCOSYSTÈME
+# ======================================================
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.9.7 || >3.9.7,<4.0"
+python = ">=3.9,<3.12"
+
+# 🛡️ Sécurité Core (OBLIGATOIRE Contrat V5)
+cryptography = ">=41.0.0"
+bcrypt = ">=4.0.0"
+passlib = {extras = ["bcrypt"], version = ">=1.7.4"}
+bleach = ">=6.0.0"
+marshmallow = ">=3.20.0"
+
+# 📡 HTTP & Validation
+requests = ">=2.31.0"
+python-multipart = ">=0.0.12"  # CVE-2024-53891 fix
+pydantic = ">=2.5.0"
+
+# ⚙️ Configuration
+python-dotenv = ">=1.0.0"
+python-dateutil = ">=2.8.2"
+
+# 🗄️ Base de données (Services partagés V5)
+supabase = ">=2.0.0"
+
+# 💳 Paiement (Contrat V5)
+stripe = ">=8.0.0"
+
+# 🔧 Build & Security (CVE fixes)
+setuptools = ">=75.0.0"  # CVE-2024-6345 & CVE-2024-7079
+wheel = ">=0.40.0"
+
+# 📦 Phoenix Packages Partagés (Contrat V5)
+phoenix-shared-auth = { path = "packages/phoenix-shared-auth", develop = true }
+phoenix-shared-db = { path = "packages/phoenix-shared-db", develop = true }
+phoenix_event_bridge = { path = "packages/phoenix_event_bridge", develop = true }
+phoenix-shared-models = { path = "packages/phoenix-shared-models", develop = true }
+phoenix_shared_auth = { path = "packages/phoenix_shared_auth", develop = true }
+
+# ======================================================
+# GROUPES DE DÉPENDANCES PAR APPLICATION
+# ======================================================
+
+[tool.poetry.group.letters]
+optional = true
+
+[tool.poetry.group.letters.dependencies]
+streamlit = ">=1.30.0"
+google-generativeai = ">=0.3.2"
+tenacity = ">=8.2.0"
+plotly = ">=5.0.0"
+pandas = ">=1.5.0"
+PyJWT = ">=2.8.0"
+structlog = ">=23.2.0"
+cachetools = ">=5.3.0"
+
+[tool.poetry.group.cv]
+optional = true
+
+[tool.poetry.group.cv.dependencies] 
+streamlit = ">=1.30.0"
+google-generativeai = ">=0.3.2"
+PyPDF2 = ">=3.0.0"
+PyMuPDF = ">=1.24.1"
+python-docx = ">=1.1.0"
+pytesseract = ">=0.3.10"
+Pillow = ">=10.3.0"
+structlog = ">=23.2.0"
+cachetools = ">=5.3.0"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.6.4"
-mypy = "^1.11.1"
-pytest = "^8.3.3"
-pre-commit = "^3.8.0"
-pytz = "^2024.1"
-python-dotenv = "^1.1.1"
-google-generativeai = "^0.8.5"
-pytest-mock = "^3.14.1"
-tenacity = "^9.1.2"
-streamlit = "^1.48.0"
-supabase = "^2.18.0"
-phoenix-shared-db = { path = "packages/phoenix-shared-db", develop = true }
-phoenix-shared-auth = { path = "packages/phoenix-shared-auth", develop = true }
-# phoenix-shared-ui = { path = "packages/phoenix_shared_ui", develop = true } # Temporairement désactivé pour compatibilité Python 3.9
+# 🔍 Linting & Formatting (Contrat V5)
+ruff = ">=0.1.8"
+black = ">=23.11.0"
+isort = ">=5.12.0"
 
- 
+# 🧪 Testing (Contrat V5)
+pytest = ">=7.4.0"
+pytest-asyncio = ">=0.21.0"
+pytest-cov = ">=4.1.0"
+pytest-mock = ">=3.12.0"
+
+# 🔧 Pre-commit & Git hooks
+pre-commit = ">=3.6.0"
+
+# 📊 Monitoring & Debugging
+mypy = ">=1.11.0"
+pytz = ">=2024.1"
+
+# ======================================================
+# CONFIGURATION BUILD & QUALITÉ (Contrat V5)
+# ======================================================
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # Directories
+  \.git
+  | \.pytest_cache
+  | \.ruff_cache
+  | \.venv
+  | venv
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = [
+    "apps/phoenix-letters/tests",
+    "apps/phoenix-cv/tests",
+    "packages/*/tests",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]

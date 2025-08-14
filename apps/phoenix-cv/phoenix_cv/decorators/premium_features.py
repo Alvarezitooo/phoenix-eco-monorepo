@@ -16,7 +16,7 @@ from phoenix_cv.services.phoenix_unified_auth import phoenix_cv_auth
 
 # Import du contrôleur d'accès
 try:
-    from packages.phoenix_shared_auth.middleware.feature_access_control import (
+    from phoenix_shared_auth.middleware.feature_access_control import (
         get_cv_access_control, AccessLevel
     )
     ACCESS_CONTROL_AVAILABLE = True
@@ -514,7 +514,7 @@ def _show_pricing_details():
         st.success("🎯 **Recommandation**: Le Pack CV + Letters est idéal pour une reconversion complète !")
 
 
-def _get_stripe_price_ids() -> Dict[str, str]:
+def _get_stripe_price_ids():
     """Récupère les Price IDs Stripe pour l'intégration"""
     try:
         from phoenix_shared_auth.entities.phoenix_subscription import STRIPE_PRICE_IDS, BUNDLE_PRICE_IDS, PhoenixApp, SubscriptionTier
