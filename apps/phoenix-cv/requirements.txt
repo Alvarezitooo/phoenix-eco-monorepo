@@ -1,5 +1,6 @@
-# 🚀 Phoenix CV - Dépendances Streamlit Cloud Optimisées
-# Version allégée pour déploiement rapide
+# 🚀 Phoenix CV - Requirements.txt optimisé pour Streamlit Cloud
+# Conforme au Contrat d'Exécution V5 - OPTIMISATION_PLATEFORME
+# Généré par Phoenix Builder
 
 # 🎨 Interface utilisateur
 streamlit>=1.30.0
@@ -7,50 +8,47 @@ streamlit>=1.30.0
 # 🤖 Intelligence Artificielle  
 google-generativeai>=0.3.2
 
-# 🛡️ Sécurité & Validation
-bleach>=6.0.0
-marshmallow>=3.20.0
+# 🛡️ Sécurité Core (OBLIGATOIRE Contrat V5)
 cryptography>=41.0.0
 bcrypt>=4.0.0
 passlib[bcrypt]>=1.7.4
+bleach>=6.0.0
+marshmallow>=3.20.0
 
 # 📄 Traitement documents & PDF
 PyPDF2>=3.0.0
+PyMuPDF>=1.24.1
 python-docx>=1.1.0
 
 # 🖼️ OCR & Traitement d'image
 pytesseract>=0.3.10
 Pillow>=10.3.0
 
-# 📡 HTTP & Requests
+# 📡 HTTP & Validation
 requests>=2.31.0
 python-multipart>=0.0.12
-
-# ✅ Validation de données
 pydantic>=2.5.0
 
-# 📝 Logging structuré
-structlog>=23.2.0
-
-# ⚡ Performance & Cache
-cachetools>=5.3.0
-
-# 📅 Date & Time
+# ⚙️ Configuration
+python-dotenv>=1.0.0
 python-dateutil>=2.8.2
 
-# ⚙️ Configuration environnement
-python-dotenv>=1.0.0
-
-# 💳 Paiement Stripe
-stripe>=8.0.0
-
-# 🗄️ Base de données Supabase
+# 🗄️ Base de données (Services partagés V5)
 supabase>=2.0.0
 
-# 🛠️ Build dependencies - Versions sécurisées
-wheel>=0.40.0
-setuptools>=75.0.0  # Correction vulnérabilités CVE-2024-6345 & CVE-2024-7079
+# 💳 Paiement (Contrat V5)
+stripe>=8.0.0
 
-# 📦 Phoenix Packages Locaux - Path local pour monorepo
-# CONFORMITÉ CONTRAT V5 - Services partagés obligatoires
--e ../../packages/phoenix-shared-auth
+# 🔧 Build & Security (CVE fixes)
+setuptools>=75.0.0
+wheel>=0.40.0
+
+# 📊 Analytics & Monitoring
+structlog>=23.2.0
+cachetools>=5.3.0
+
+# 📦 Phoenix Packages Partagés (Contrat V5)
+-e ../../packages/phoenix_shared_auth
+-e ../../packages/phoenix_event_bridge
+-e ../../packages/phoenix-shared-models
+-e ../../packages/phoenix-shared-db

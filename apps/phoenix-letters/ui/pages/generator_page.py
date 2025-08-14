@@ -27,18 +27,17 @@ from ui.components.paywall_modal import show_paywall_modal
 # Event-Sourcing (import conditionnel)
 try:
     from phoenix_event_bridge import PhoenixEventFactory
-except ImportError:
-        # Fallback pour Streamlit Cloud
-        class PhoenixEventFactory:
-            @staticmethod
-            def create_letter_event(event_type: str, user_id: str, data: dict):
-                import logging
-                logging.info(f"Letter event: {event_type} for user {user_id}")
-                return {"type": event_type, "user_id": user_id, "data": data}
     PHOENIX_EVENT_AVAILABLE = True
 except ImportError:
+    # Fallback pour Streamlit Cloud
     PHOENIX_EVENT_AVAILABLE = False
-    PhoenixEventFactory = None
+    
+    class PhoenixEventFactory:
+        @staticmethod
+        def create_letter_event(event_type: str, user_id: str, data: dict):
+            import logging
+            logging.info(f"Letter event: {event_type} for user {user_id}")
+            return {"type": event_type, "user_id": user_id, "data": data}
 
 logger = logging.getLogger(__name__)
 

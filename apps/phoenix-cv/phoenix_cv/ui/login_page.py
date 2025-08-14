@@ -21,12 +21,22 @@ if str(PACKAGES_PATH) not in sys.path:
 
 try:
     from phoenix_shared_auth.client import AuthManager
-
-    auth_manager = AuthManager()
     AUTH_SERVICE_AVAILABLE = True
+    auth_manager = None  # Lazy loading
 except ImportError as e:
-    st.error(f"❌ Service d'authentification non disponible: {e}")
     AUTH_SERVICE_AVAILABLE = False
+    auth_manager = None
+
+def get_auth_manager():
+    """Lazy loading de AuthManager pour éviter erreurs au niveau module."""
+    global auth_manager
+    if auth_manager is None and AUTH_SERVICE_AVAILABLE:
+        try:
+            auth_manager = AuthManager()
+        except Exception as e:
+            st.error(f"❌ Erreur initialisation AuthManager: {e}")
+            return None
+    return auth_manager
 
 
 def render_login_choice_page():
@@ -159,7 +169,7 @@ def render_login_form_page():
                             return
 
                         # Authentification via AuthManager partagé
-                        success, user_data = auth_manager.authenticate_user(
+                        success, user_data = get_auth_manager().authenticate_user(
                             email, password
                         )
 
@@ -262,7 +272,7 @@ def render_login_form_page():
                             return
 
                         # Inscription via AuthManager partagé
-                        success, user_data = auth_manager.register_user(
+                        success, user_data = get_auth_manager().register_user(
                             email_reg,
                             password_reg,
                             {
@@ -372,7 +382,7 @@ def handle_authentication_flow():
     if AUTH_SERVICE_AVAILABLE and "user_id" not in st.session_state:
         # Tentative de restauration de session existante
         try:
-            user_data = auth_manager.get_current_user()
+            user_data = get_auth_manager().get_current_user()
             if user_data:
                 st.session_state.user_id = user_data.get("user_id")
                 st.session_state.user_email = user_data.get("email")
