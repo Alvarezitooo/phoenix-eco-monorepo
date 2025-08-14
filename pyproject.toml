@@ -4,7 +4,7 @@ version = "0.1.0"
 package-mode = false # Indique que ce n'est pas un package installable en soi
 
 [tool.poetry.dependencies]
-python = ">=3.9, <4.0"
+python = ">=3.9,<3.9.7 || >3.9.7,<4.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.6.4"
@@ -16,11 +16,11 @@ python-dotenv = "^1.1.1"
 google-generativeai = "^0.8.5"
 pytest-mock = "^3.14.1"
 tenacity = "^9.1.2"
-streamlit = {version = "^1.48.0", markers = "python_version >= '3.9' and python_version < '4.0' and python_version != '3.9.7'"}
+streamlit = "^1.48.0"
 supabase = "^2.18.0"
 phoenix-shared-db = { path = "packages/phoenix-shared-db", develop = true }
 phoenix-shared-auth = { path = "packages/phoenix-shared-auth", develop = true }
-phoenix-shared-ui = { path = "packages/phoenix_shared_ui", develop = true }
+# phoenix-shared-ui = { path = "packages/phoenix_shared_ui", develop = true } # Temporairement désactivé pour compatibilité Python 3.9
 
  
 
