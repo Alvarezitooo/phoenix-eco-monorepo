@@ -116,6 +116,17 @@ class SubscriptionService:
         self.db = db_connection
         self.validator = input_validator
         
+        # 🔧 CLIENT ADMIN pour bypasser RLS selon Oracle
+        import os
+        from supabase import create_client
+        service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+        if service_role_key:
+            self.admin_client = create_client(settings.supabase_url, service_role_key)
+            logger.info("SubscriptionService: Client admin SERVICE_ROLE initialisé")
+        else:
+            self.admin_client = None
+            logger.warning("SubscriptionService: SERVICE_ROLE_KEY manquante - utilisation client standard")
+        
         # Limites par tier
         self.tier_limits = {
             UserTier.FREE: {
@@ -234,7 +245,8 @@ class SubscriptionService:
             UserSubscription (jamais None grâce à l'auto-création)
         """
         try:
-            client = self.db.get_client()
+            # 🔧 UTILISER CLIENT ADMIN pour bypasser RLS
+            client = self.admin_client if self.admin_client else self.db.get_client()
             
             response = client.table("user_subscriptions").select("*").eq("user_id", user_id).execute()
             
@@ -251,6 +263,7 @@ class SubscriptionService:
                 }
                 
                 try:
+                    # 🔧 UTILISER CLIENT ADMIN pour création aussi
                     client.table("user_subscriptions").insert(default_subscription).execute()
                     logger.info(f"✅ Subscription FREE créée pour user {user_id}")
                 except Exception as create_error:
@@ -420,7 +433,8 @@ class SubscriptionService:
             Dict avec statistiques d'usage
         """
         try:
-            client = self.db.get_client()
+            # 🔧 UTILISER CLIENT ADMIN pour bypasser RLS sur user_usage_stats
+            client = self.admin_client if self.admin_client else self.db.get_client()
             
             response = client.table("user_usage_stats").select("*").eq("user_id", user_id).execute()
             
@@ -509,8 +523,8 @@ class SubscriptionService:
         """Traite la suppression d'un abonnement."""
         subscription_id = webhook_data.get("subscription_id")
         
-        # Downgrade vers FREE
-        client = self.db.get_client()
+        # 🔧 UTILISER CLIENT ADMIN pour bypasser RLS sur user_subscriptions
+        client = self.admin_client if self.admin_client else self.db.get_client()
         response = client.table("user_subscriptions").select("user_id").eq(
             "subscription_id", subscription_id
         ).execute()
@@ -586,7 +600,8 @@ class SubscriptionService:
 
     async def _update_user_stats_on_tier_change(self, user_id: str, new_tier: UserTier):
         """Met à jour les stats utilisateur lors d'un changement de tier."""
-        client = self.db.get_client()
+        # 🔧 UTILISER CLIENT ADMIN pour bypasser RLS sur user_usage_stats
+        client = self.admin_client if self.admin_client else self.db.get_client()
         
         client.table("user_usage_stats").upsert({
             "user_id": user_id,
