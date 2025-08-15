@@ -262,22 +262,38 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
     st.markdown("## ✨ Bienvenue dans Phoenix Letters")
     st.markdown(f"**Connecté en tant que** : {current_user.get('email', 'Utilisateur')} | **Plan** : {current_user.get('user_tier', 'FREE').value.title()}")
     
-    try:
-        from ui.pages.generator_page import GeneratorPage
-        
-        # Initialiser la page de génération avec les services
-        generator = GeneratorPage(
-            gemini_client=initialized_components['gemini_client'],
-            db_connection=db_connection,
-            settings=settings
-        )
-        
-        # Rendu de l'interface principale
-        generator.render()
-        
-    except Exception as e:
-        st.error(f"😔 Erreur lors du chargement de l'application principale : {e}")
-        st.info("🔄 Essayez de recharger la page ou contactez le support Phoenix.")
+    st.markdown("---")
+    
+    # Interface temporaire simple selon Contrat V5
+    st.markdown("""
+    <div style="text-align: center; padding: 2rem; 
+               background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); 
+               border-radius: 20px; color: white; margin: 2rem 0;">
+        <h3 style="margin: 0 0 1rem 0;">🔥 Phoenix Letters est prêt !</h3>
+        <p style="margin: 0; opacity: 0.9;">
+            Votre copilote bienveillant pour créer des lettres d'exception.
+            Interface complète en cours de finalisation...
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Informations de débogage
+    st.markdown("### 🔍 Informations de votre compte")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.info(f"""
+        **📧 Email** : {current_user.get('email', 'Non défini')}
+        **🆔 User ID** : {current_user.get('id', 'Non défini')}
+        **🎯 Plan actuel** : {current_user.get('user_tier', 'FREE').value.title()}
+        """)
+    
+    with col2:
+        if st.button("🚀 Générer ma première lettre", type="primary"):
+            st.success("🎉 Fonctionnalité bientôt disponible ! L'équipe Phoenix peaufine l'expérience.")
+            
+        if st.button("⚙️ Gérer mon abonnement"):
+            st.info("💎 Gestion des abonnements : redirection vers le portail Phoenix...")
 
 def _route_app_pages(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, async_runner):
     """Gère l'aiguillage des pages de l'application."""
