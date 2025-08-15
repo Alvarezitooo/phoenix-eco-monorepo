@@ -35,7 +35,7 @@ class SecurityConfig:
     allowed_html_attributes: dict = None
     
     # API Keys
-    gemini_api_key: str = os.getenv('GEMINI_API_KEY', '')
+    gemini_api_key: str = os.getenv('GOOGLE_API_KEY', '')
     
     def __post_init__(self):
         if self.allowed_file_types is None:

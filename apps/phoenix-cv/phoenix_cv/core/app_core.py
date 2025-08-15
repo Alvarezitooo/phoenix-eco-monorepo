@@ -118,7 +118,7 @@ class SecurePhoenixCVApp:
     def _security_checks(self):
         """Vérifications de sécurité préalables"""
         # Vérifier les variables d'environnement critiques
-        required_env = ["GEMINI_API_KEY", "PHOENIX_MASTER_KEY"]
+        required_env = ["GOOGLE_API_KEY", "PHOENIX_MASTER_KEY"]
         for env_var in required_env:
             if not os.environ.get(env_var):
                 raise SecurityException(
@@ -192,7 +192,7 @@ def _configure_logging():
 
 def _validate_environment_variables():
     """Valide la présence et le format des variables d'environnement critiques."""
-    required_env_vars = ["GEMINI_API_KEY", "PHOENIX_MASTER_KEY"]
+    required_env_vars = ["GOOGLE_API_KEY", "PHOENIX_MASTER_KEY"]
 
     for env_var in required_env_vars:
         if not os.environ.get(env_var):
@@ -203,7 +203,7 @@ def _validate_environment_variables():
             )
             st.stop()
 
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = os.environ.get("GOOGLE_API_KEY")
     if not re.match(r"^[A-Za-z0-9_-]{20,}$", api_key):
         st.error("🚫 Format de clé API invalide")
         secure_logger.log_security_event("INVALID_API_KEY_FORMAT", {}, "CRITICAL")

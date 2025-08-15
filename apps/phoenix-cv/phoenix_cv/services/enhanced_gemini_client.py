@@ -88,7 +88,7 @@ class EnhancedGeminiClient:
 
     def _setup_secure_client(self):
         """Configuration sécurisée du client Gemini Enhanced"""
-        api_key = os.environ.get("GEMINI_API_KEY")
+        api_key = os.environ.get("GOOGLE_API_KEY")
         if not api_key:
             # En mode dev ou déploiement, pas besoin de l'API key
             if os.environ.get("DEV_MODE", "false").lower() == "true" or not api_key:

@@ -45,7 +45,7 @@ class SecureGeminiClient:
 
     def _setup_secure_client(self):
         """Configuration sécurisée du client Gemini"""
-        api_key = os.environ.get("GEMINI_API_KEY")
+        api_key = os.environ.get("GOOGLE_API_KEY")
         if not api_key:
             raise SecurityException("API key Gemini non configurée")
 
