@@ -358,7 +358,7 @@ def render_smart_coach_widget():
         pass
 
 
-def render_header():
+def _render_app_header():
     """Rendu du header de l'application"""
 
     # Appel du header partagé pour la cohérence visuelle
@@ -1971,7 +1971,7 @@ def main():
         return
 
     # Header (affiché seulement après authentification)
-    render_header()
+    _render_app_header()
     
     # 🔬 BANNIÈRE RECHERCHE-ACTION PHOENIX (désactivable via ENV)
     try:
