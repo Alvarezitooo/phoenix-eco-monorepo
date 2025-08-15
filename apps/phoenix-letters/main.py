@@ -267,91 +267,68 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
     
     st.markdown("---")
     
-    # Interface production Phoenix selon Contrat V5
-    tier_status = "Premium" if current_user.get('user_tier') == UserTier.PREMIUM else "Gratuite"
-    tier_emoji = "💎" if current_user.get('user_tier') == UserTier.PREMIUM else "🌟"
-    
-    st.markdown(f"""
-    <div style="text-align: center; padding: 2.5rem; 
-               background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); 
-               border-radius: 20px; color: white; margin: 2rem 0;
-               box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);">
-        <h2 style="margin: 0 0 1rem 0; font-weight: 700;">🔥 Phoenix Letters</h2>
-        <p style="margin: 0 0 0.5rem 0; font-size: 1.2rem; opacity: 0.95;">
-            Votre copilote bienveillant pour des lettres d'exception
-        </p>
-        <div style="background: rgba(255,255,255,0.2); 
-                   padding: 0.8rem 1.5rem; border-radius: 25px; 
-                   display: inline-block; margin-top: 1rem;">
-            <span style="font-weight: 600;">{tier_emoji} Version {tier_status}</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Navigation par onglets vers les vraies fonctionnalités
-    tab1, tab2, tab3, tab4 = st.tabs(["🚀 Générateur", "💎 Premium", "⚙️ Paramètres", "ℹ️ À propos"])
-    
-    with tab1:
-        # Import et utilisation de la vraie GeneratorPage
-        try:
-            from ui.pages.generator_page import GeneratorPage
-            generator = GeneratorPage()
-            generator.render(
-                current_user=current_user,
-                settings=initialized_components['settings'],
-                gemini_client=initialized_components['gemini_client'],
-                db_connection=initialized_components['db_connection']
-            )
-        except Exception as e:
-            st.error(f"❌ Erreur lors du chargement du générateur : {e}")
-            st.info("📝 Module de génération en cours de finalisation...")
-    
-    with tab2:
-        # Import et utilisation de la vraie PremiumPage
-        try:
-            from ui.pages.premium_page import PremiumPage
-            premium = PremiumPage()
-            premium.render(current_user, subscription_service)
-        except Exception as e:
-            st.error(f"❌ Erreur lors du chargement de la page Premium : {e}")
-            
-        # Message selon tier utilisateur
-        if current_user.get('user_tier') == UserTier.PREMIUM:
-            st.success("🌟 Vous avez accès à toutes les fonctionnalités Premium !")
-        else:
-            st.info("💫 Découvrez les fonctionnalités Premium pour libérer tout votre potentiel !")
-    
-    with tab3:
-        # Import et utilisation de la vraie SettingsPage
-        try:
-            from ui.pages.settings_page import SettingsPage
-            settings_page = SettingsPage()
-            settings_page.render(current_user)
-        except Exception as e:
-            st.error(f"❌ Erreur lors du chargement des paramètres : {e}")
-            st.info("⚙️ Page de paramètres en cours de finalisation...")
-    
-    with tab4:
-        # Import et utilisation de la vraie AboutPage
-        try:
-            from ui.pages.about_page import AboutPage
-            about = AboutPage()
-            about.render()
-        except Exception as e:
-            st.error(f"❌ Erreur lors du chargement de la page À propos : {e}")
-            st.info("ℹ️ Page À propos en cours de finalisation...")
-            
-    # Message bienveillant selon Contrat V5
+    # Interface temporaire simple selon Contrat V5
     st.markdown("""
-    <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; 
-               background: linear-gradient(135deg, #fef3e2 0%, #fde8cc 100%); 
-               border-radius: 15px; border-left: 4px solid #f97316;">
-        <p style="margin: 0; color: #9a3412; font-size: 0.95rem; font-style: italic;">
-            "Chaque lettre est une opportunité de briller. Phoenix est là pour révéler 
-            votre potentiel unique et vous accompagner vers le succès."
+    <div style="text-align: center; padding: 2rem; 
+               background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); 
+               border-radius: 20px; color: white; margin: 2rem 0;">
+        <h3 style="margin: 0 0 1rem 0;">🔥 Phoenix Letters est prêt !</h3>
+        <p style="margin: 0; opacity: 0.9;">
+            Votre copilote bienveillant pour créer des lettres d'exception.
+            Interface complète en cours de finalisation...
         </p>
     </div>
     """, unsafe_allow_html=True)
+    
+    # Informations de débogage
+    st.markdown("### 🔍 Informations de votre compte")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.info(f"""
+        **📧 Email** : {current_user.get('email', 'Non défini')}
+        **🆔 User ID** : {current_user.get('id', 'Non défini')}
+        **🎯 Plan actuel** : {current_user.get('user_tier', 'FREE').value.title()}
+        """)
+    
+    with col2:
+        if st.button("🚀 Générer ma première lettre", type="primary"):
+            st.success("🎉 Fonctionnalité bientôt disponible ! L'équipe Phoenix peaufine l'expérience.")
+            
+        if st.button("⚙️ Gérer mon abonnement"):
+            st.info("💎 Gestion des abonnements : redirection vers le portail Phoenix...")
+            
+        # 🔧 BOUTON DEBUG ADMIN TEMPORAIRE
+        if st.button("🔧 [ADMIN] Forcer upgrade vers Premium", type="secondary"):
+            try:
+                # CLIENT ADMIN avec SERVICE_ROLE_KEY selon Oracle
+                settings = Settings()
+                
+                # Vérifier que la clé service existe
+                service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+                if not service_role_key:
+                    st.error("❌ SUPABASE_SERVICE_ROLE_KEY manquante dans les variables d'environnement")
+                    return
+                
+                # Créer client admin avec privilèges SERVICE_ROLE
+                from supabase import create_client
+                supabase_url = settings.supabase_url
+                admin_client = create_client(supabase_url, service_role_key)
+                
+                # Opération admin avec client privilégié - COLONNES MINIMALES
+                admin_subscription = {
+                    "user_id": current_user["id"],
+                    "current_tier": "premium"
+                }
+                
+                response = admin_client.table("user_subscriptions").upsert(admin_subscription).execute()
+                st.success(f"✅ Compte admin upgradé vers Premium avec SERVICE_ROLE ! Response: {response.data}")
+                st.info("🔄 Reconnectez-vous pour voir le changement.")
+                
+            except Exception as e:
+                st.error(f"❌ Erreur upgrade admin: {e}")
+                import traceback
+                st.code(traceback.format_exc())
 
 def _route_app_pages(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, async_runner):
     """Gère l'aiguillage des pages de l'application."""
