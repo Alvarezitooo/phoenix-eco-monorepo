@@ -46,7 +46,7 @@ class PremiumCheckout:
 
         # Plan Gratuit
         with col1:
-            # ... (code du plan gratuit inchangé)
+            st.info("🆓 Plan Gratuit - 3 lettres/mois")
 
         # Phoenix Letters Premium
         with col2:
@@ -179,8 +179,6 @@ class PremiumCheckout:
             st.error("Impossible de charger les statistiques d'utilisation")
 
     # Méthodes privées
-
-    
 
     def _handle_plan_change(self, user_id: str, new_plan_id: str):
         """Gère le changement de plan."""

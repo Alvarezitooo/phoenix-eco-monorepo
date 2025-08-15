@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class PremiumPage:
     def __init__(
         self, 
-        stripe_service: Optional[StripeService] = None,
+        stripe_service: Optional[StripeManager] = None,
         subscription_service: Optional[SubscriptionService] = None
     ):
         self.stripe_service = stripe_service
