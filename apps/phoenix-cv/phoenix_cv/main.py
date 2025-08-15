@@ -33,6 +33,7 @@ if str(PACKAGES_PATH) not in sys.path:
 
 from phoenix_shared_auth.stripe_manager import StripeManager
 from phoenix_shared_ui.components.consent_banner import render_consent_banner
+from phoenix_shared_ui.components.header import render_header
 from phoenix_cv.utils.html_sanitizer import html_sanitizer
 # from phoenix_cv.utils.safe_markdown import safe_markdown  # DÉSACTIVÉ - problème de rendu HTML
 from phoenix_cv.ui.login_page import handle_authentication_flow
@@ -361,7 +362,7 @@ def render_header():
     """Rendu du header de l'application"""
 
     # Appel du header partagé pour la cohérence visuelle
-    render_shared_header("Phoenix CV", "🚀")
+    render_header("Phoenix CV", "🚀")
 
     # Widget Smart Coach temps réel (fonctionnalité spécifique conservée)
     render_smart_coach_widget()

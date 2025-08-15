@@ -327,7 +327,7 @@ def main():
 
     # Initialisation des services de paiement (safe mode)
     try:
-        stripe_service = StripeService(settings, input_validator)
+        stripe_service = StripeManager()
         subscription_service = SubscriptionService(
             settings=settings,
             stripe_service=stripe_service,
