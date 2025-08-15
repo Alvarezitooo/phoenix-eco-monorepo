@@ -267,107 +267,58 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
     
     st.markdown("---")
     
-    # Interface temporaire simple selon Contrat V5
-    st.markdown("""
-    <div style="text-align: center; padding: 2rem; 
+    # Interface production Phoenix selon Contrat V5
+    tier_status = "Premium" if current_user.get('user_tier') == UserTier.PREMIUM else "Gratuite"
+    tier_emoji = "💎" if current_user.get('user_tier') == UserTier.PREMIUM else "🌟"
+    
+    st.markdown(f"""
+    <div style="text-align: center; padding: 2.5rem; 
                background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); 
-               border-radius: 20px; color: white; margin: 2rem 0;">
-        <h3 style="margin: 0 0 1rem 0;">🔥 Phoenix Letters est prêt !</h3>
-        <p style="margin: 0; opacity: 0.9;">
-            Votre copilote bienveillant pour créer des lettres d'exception.
-            Interface complète en cours de finalisation...
+               border-radius: 20px; color: white; margin: 2rem 0;
+               box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);">
+        <h2 style="margin: 0 0 1rem 0; font-weight: 700;">🔥 Phoenix Letters</h2>
+        <p style="margin: 0 0 0.5rem 0; font-size: 1.2rem; opacity: 0.95;">
+            Votre copilote bienveillant pour des lettres d'exception
         </p>
+        <div style="background: rgba(255,255,255,0.2); 
+                   padding: 0.8rem 1.5rem; border-radius: 25px; 
+                   display: inline-block; margin-top: 1rem;">
+            <span style="font-weight: 600;">{tier_emoji} Version {tier_status}</span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # Informations de débogage
-    st.markdown("### 🔍 Informations de votre compte")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.info(f"""
-        **📧 Email** : {current_user.get('email', 'Non défini')}
-        **🆔 User ID** : {current_user.get('id', 'Non défini')}
-        **🎯 Plan actuel** : {current_user.get('user_tier', 'FREE').value.title()}
-        """)
+    # Interface principale production
+    col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        if st.button("🚀 Générer ma première lettre", type="primary"):
-            st.success("🎉 Fonctionnalité bientôt disponible ! L'équipe Phoenix peaufine l'expérience.")
-            
-        if st.button("⚙️ Gérer mon abonnement"):
-            st.info("💎 Gestion des abonnements : redirection vers le portail Phoenix...")
-            
-        # 🔧 DIAGNOSTIC SUBSCRIPTION SERVICE EN TEMPS RÉEL
-        if st.button("🔬 [DEBUG] Tester service subscription", type="secondary"):
-            st.markdown("---")
-            st.markdown("### 🔬 Diagnostic du service subscription")
-            
-            # Test disponibilité du service
-            if subscription_service is None:
-                st.error("❌ SubscriptionService est None - Service non initialisé !")
-                st.warning("Le service de subscription n'a pas pu être initialisé au démarrage.")
-            else:
-                st.success("✅ SubscriptionService disponible")
-                
-                # Test récupération subscription
-                try:
-                    if st.session_state.async_service_runner:
-                        future = st.session_state.async_service_runner.run_coro_in_thread(
-                            subscription_service.get_user_subscription(current_user["id"])
-                        )
-                        subscription = future.result(timeout=10)
-                        
-                        if subscription:
-                            st.success(f"✅ Subscription trouvée : Tier = {subscription.current_tier.value}")
-                            st.json({
-                                "user_id": subscription.user_id,
-                                "current_tier": subscription.current_tier.value,
-                                "status": subscription.status.value if subscription.status else None,
-                                "customer_id": subscription.customer_id,
-                                "subscription_id": subscription.subscription_id
-                            })
-                        else:
-                            st.error("❌ Aucune subscription retournée par le service")
-                    else:
-                        st.error("❌ async_service_runner non disponible")
-                        
-                except Exception as e:
-                    st.error(f"❌ Erreur test subscription : {e}")
-                    import traceback
-                    st.code(traceback.format_exc())
+        st.markdown("### ✨ Commencer votre aventure")
         
-        # 🔧 BOUTON DEBUG ADMIN TEMPORAIRE
-        if st.button("🔧 [ADMIN] Forcer upgrade vers Premium", type="secondary"):
-            try:
-                # CLIENT ADMIN avec SERVICE_ROLE_KEY selon Oracle
-                settings = Settings()
+        # Interface de génération principale
+        if st.button("🚀 Générer ma première lettre", type="primary", use_container_width=True):
+            st.success("📝 Merci pour votre patience ! L'interface de génération arrive très bientôt pour libérer votre créativité.")
+            
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Gestion d'abonnement selon tier utilisateur
+        if current_user.get('user_tier') == UserTier.PREMIUM:
+            if st.button("💎 Mes fonctionnalités Premium", use_container_width=True):
+                st.info("🌟 Accès prioritaire aux nouvelles fonctionnalités, templates exclusifs et support dédié.")
+        else:
+            if st.button("⚙️ Découvrir Premium", use_container_width=True):
+                st.info("💫 Libérez tout votre potentiel avec les fonctionnalités avancées Phoenix !")
                 
-                # Vérifier que la clé service existe
-                service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-                if not service_role_key:
-                    st.error("❌ SUPABASE_SERVICE_ROLE_KEY manquante dans les variables d'environnement")
-                    return
-                
-                # Créer client admin avec privilèges SERVICE_ROLE
-                from supabase import create_client
-                supabase_url = settings.supabase_url
-                admin_client = create_client(supabase_url, service_role_key)
-                
-                # Opération admin avec client privilégié - COLONNES MINIMALES
-                admin_subscription = {
-                    "user_id": current_user["id"],
-                    "current_tier": "premium"
-                }
-                
-                response = admin_client.table("user_subscriptions").upsert(admin_subscription).execute()
-                st.success(f"✅ Compte admin upgradé vers Premium avec SERVICE_ROLE ! Response: {response.data}")
-                st.info("🔄 Reconnectez-vous pour voir le changement.")
-                
-            except Exception as e:
-                st.error(f"❌ Erreur upgrade admin: {e}")
-                import traceback
-                st.code(traceback.format_exc())
+        # Message bienveillant selon Contrat V5
+        st.markdown("""
+        <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; 
+                   background: linear-gradient(135deg, #fef3e2 0%, #fde8cc 100%); 
+                   border-radius: 15px; border-left: 4px solid #f97316;">
+            <p style="margin: 0; color: #9a3412; font-size: 0.95rem; font-style: italic;">
+                "Chaque lettre est une opportunité de briller. Phoenix est là pour révéler 
+                votre potentiel unique et vous accompagner vers le succès."
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
 
 def _route_app_pages(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, async_runner):
     """Gère l'aiguillage des pages de l'application."""
