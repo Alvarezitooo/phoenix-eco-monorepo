@@ -225,12 +225,13 @@ class SubscriptionService:
     async def get_user_subscription(self, user_id: str) -> Optional[UserSubscription]:
         """
         Récupère l'abonnement actuel d'un utilisateur.
+        Crée automatiquement une subscription FREE si aucune n'existe (Contrat V5).
         
         Args:
             user_id: ID utilisateur
             
         Returns:
-            UserSubscription ou None
+            UserSubscription (jamais None grâce à l'auto-création)
         """
         try:
             client = self.db.get_client()
@@ -238,7 +239,31 @@ class SubscriptionService:
             response = client.table("user_subscriptions").select("*").eq("user_id", user_id).execute()
             
             if not response.data:
-                return None
+                # 🔥 AUTO-CRÉATION PHOENIX : Subscription FREE par défaut
+                logger.info(f"Auto-création subscription FREE pour user {user_id}")
+                
+                default_subscription = {
+                    "user_id": user_id,
+                    "current_tier": "free",
+                    "auto_renewal": False,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+                
+                try:
+                    client.table("user_subscriptions").insert(default_subscription).execute()
+                    logger.info(f"✅ Subscription FREE créée pour user {user_id}")
+                except Exception as create_error:
+                    logger.warning(f"⚠️ Erreur création subscription DB: {create_error}")
+                
+                # Retourner subscription FREE par défaut (même si échec DB)
+                return UserSubscription(
+                    user_id=user_id,
+                    current_tier=UserTier.FREE,
+                    status=SubscriptionStatus.ACTIVE,
+                    created_at=datetime.now(timezone.utc),
+                    updated_at=datetime.now(timezone.utc)
+                )
                 
             data = response.data[0]
             
@@ -259,7 +284,15 @@ class SubscriptionService:
             
         except Exception as e:
             logger.error(f"Erreur récupération abonnement user {user_id}: {e}")
-            raise DatabaseError(f"Impossible de récupérer l'abonnement: {e}")
+            # 🛡️ FALLBACK PHOENIX : Subscription FREE garantie
+            logger.warning(f"Fallback vers subscription FREE pour user {user_id}")
+            return UserSubscription(
+                user_id=user_id,
+                current_tier=UserTier.FREE,
+                status=SubscriptionStatus.ACTIVE,
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc)
+            )
 
     async def upgrade_user_tier(
         self, 

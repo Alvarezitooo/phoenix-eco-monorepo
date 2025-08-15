@@ -9,6 +9,7 @@ Version: Smart-Deploy - Adaptive Entry Point
 # Point d'entrée principal - utilise la fonction main() de ce fichier
 
 import logging
+from datetime import datetime, timezone
 
 # === IMPORTS ABSOLUS - CONTRÔLE TOTAL DU CONTEXTE ===
 import streamlit as st
@@ -173,16 +174,17 @@ def render_login_page(auth_manager, subscription_service, async_runner):
                                     subscription = future.result(timeout=10)
                                     if subscription:
                                         st.session_state.user_tier = subscription.current_tier
-                                        st.info(f"🔍 DEBUG: Subscription trouvée - Tier: {subscription.current_tier.value}")
+                                        st.info(f"🔍 DEBUG: Subscription trouvée - User ID: {user_id} - Tier: {subscription.current_tier.value}")
+                                        st.info(f"🔍 DEBUG: Subscription complète: Status={subscription.status.value if subscription.status else 'None'}, Customer_ID={subscription.customer_id}")
                                     else:
                                         st.session_state.user_tier = UserTier.FREE
-                                        st.warning("🔍 DEBUG: Aucun abonnement trouvé - Tier FREE attribué")
+                                        st.warning(f"🔍 DEBUG: Aucun abonnement trouvé pour user_id: {user_id} - Tier FREE attribué")
                                 else:
                                     st.session_state.user_tier = UserTier.FREE # Fallback
                                     st.warning("🔍 DEBUG: async_runner non disponible - Tier FREE attribué")
                             except Exception as e:
                                 st.session_state.user_tier = UserTier.FREE
-                                st.error(f"🔍 DEBUG: Erreur récupération subscription: {e}")
+                                st.error(f"🔍 DEBUG: Erreur récupération subscription pour user_id {user_id}: {e}")
                             
                             st.success(f"🎉 Bienvenue dans votre espace Phoenix, {email.split('@')[0]} ! Votre créativité n'attend plus que vous.")
                             st.rerun()
@@ -294,6 +296,33 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
             
         if st.button("⚙️ Gérer mon abonnement"):
             st.info("💎 Gestion des abonnements : redirection vers le portail Phoenix...")
+            
+        # 🔧 BOUTON DEBUG ADMIN TEMPORAIRE
+        if st.button("🔧 [ADMIN] Forcer upgrade vers Premium", type="secondary"):
+            try:
+                # Récupérer les services nécessaires
+                settings = Settings()
+                db_connection = DatabaseConnection(settings)
+                client = db_connection.get_client()
+                
+                # Insérer ou mettre à jour vers Premium
+                admin_subscription = {
+                    "user_id": current_user["id"],
+                    "current_tier": "premium",
+                    "auto_renewal": False,
+                    "subscription_start": datetime.now(timezone.utc).isoformat(),
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+                
+                response = client.table("user_subscriptions").upsert(admin_subscription).execute()
+                st.success(f"✅ Compte admin upgradé vers Premium ! Response: {response.data}")
+                st.info("🔄 Reconnectez-vous pour voir le changement.")
+                
+            except Exception as e:
+                st.error(f"❌ Erreur upgrade admin: {e}")
+                import traceback
+                st.code(traceback.format_exc())
 
 def _route_app_pages(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, async_runner):
     """Gère l'aiguillage des pages de l'application."""

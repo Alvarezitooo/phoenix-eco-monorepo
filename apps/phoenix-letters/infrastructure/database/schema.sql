@@ -74,7 +74,7 @@ CREATE TABLE user_preferences (
 -- Table abonnements utilisateurs
 CREATE TABLE user_subscriptions (
     user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-    current_tier VARCHAR(20) NOT NULL DEFAULT 'free' CHECK (current_tier IN ('free', 'premium', 'premium_plus')),
+    current_tier VARCHAR(20) NOT NULL DEFAULT 'free' CHECK (current_tier IN ('free', 'premium')),
     subscription_start TIMESTAMP WITH TIME ZONE,
     subscription_end TIMESTAMP WITH TIME ZONE,
     auto_renewal BOOLEAN DEFAULT FALSE,
