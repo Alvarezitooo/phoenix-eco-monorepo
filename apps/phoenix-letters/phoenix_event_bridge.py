@@ -87,10 +87,10 @@ class PhoenixEventBridge:
         
         Args:
             supabase_url: URL Supabase (env SUPABASE_URL si None)
-            supabase_key: Clé Supabase (env SUPABASE_KEY si None)
+            supabase_key: Clé Supabase (env SUPABASE_ANON_KEY si None)
         """
         self.supabase_url = supabase_url or os.getenv("SUPABASE_URL")
-        self.supabase_key = supabase_key or os.getenv("SUPABASE_KEY")
+        self.supabase_key = supabase_key or os.getenv("SUPABASE_ANON_KEY")
         
         # Mode dégradé si configuration manquante
         self.degraded_mode = False
