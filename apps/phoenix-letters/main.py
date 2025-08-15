@@ -260,7 +260,7 @@ def render_login_page(auth_manager, subscription_service, async_runner):
     </div>
     """, unsafe_allow_html=True)
 
-def render_main_app(current_user, auth_manager, settings, db_connection, initialized_components):
+def render_main_app(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service):
     """Affiche l'application principale après authentification selon Contrat V5."""
     st.markdown("## ✨ Bienvenue dans Phoenix Letters")
     st.markdown(f"**Connecté en tant que** : {current_user.get('email', 'Utilisateur')} | **Plan** : {current_user.get('user_tier', 'FREE').value.title()}")
@@ -381,7 +381,7 @@ def _route_app_pages(current_user, auth_manager, settings, db_connection, initia
         else: # guest mode
             render_choice_page()
     else:  # L'utilisateur est connecté
-        render_main_app(current_user, auth_manager, settings, db_connection, initialized_components)
+        render_main_app(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service)
 
 def main():
     """Point d'entrée et aiguilleur principal de l'application."""
