@@ -146,8 +146,6 @@ def render_login_page(auth_manager, subscription_service, async_runner):
             help="Votre mot de passe reste privé et sécurisé"
         )
         
-        st.markdown("<br>", unsafe_allow_html=True)
-        
         # Bouton stylé selon Contrat V5
         col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
         with col_btn2:
@@ -213,8 +211,6 @@ def render_login_page(auth_manager, subscription_service, async_runner):
             placeholder="Minimum 8 caractères",
             help="Un bon mot de passe protège votre créativité"
         )
-        
-        st.markdown("<br>", unsafe_allow_html=True)
         
         # Bouton d'inscription stylé
         col_signup1, col_signup2, col_signup3 = st.columns([1, 2, 1])
