@@ -298,6 +298,45 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
         if st.button("⚙️ Gérer mon abonnement"):
             st.info("💎 Gestion des abonnements : redirection vers le portail Phoenix...")
             
+        # 🔧 DIAGNOSTIC SUBSCRIPTION SERVICE EN TEMPS RÉEL
+        if st.button("🔬 [DEBUG] Tester service subscription", type="secondary"):
+            st.markdown("---")
+            st.markdown("### 🔬 Diagnostic du service subscription")
+            
+            # Test disponibilité du service
+            if subscription_service is None:
+                st.error("❌ SubscriptionService est None - Service non initialisé !")
+                st.warning("Le service de subscription n'a pas pu être initialisé au démarrage.")
+            else:
+                st.success("✅ SubscriptionService disponible")
+                
+                # Test récupération subscription
+                try:
+                    if st.session_state.async_service_runner:
+                        future = st.session_state.async_service_runner.run_coro_in_thread(
+                            subscription_service.get_user_subscription(current_user["id"])
+                        )
+                        subscription = future.result(timeout=10)
+                        
+                        if subscription:
+                            st.success(f"✅ Subscription trouvée : Tier = {subscription.current_tier.value}")
+                            st.json({
+                                "user_id": subscription.user_id,
+                                "current_tier": subscription.current_tier.value,
+                                "status": subscription.status.value if subscription.status else None,
+                                "customer_id": subscription.customer_id,
+                                "subscription_id": subscription.subscription_id
+                            })
+                        else:
+                            st.error("❌ Aucune subscription retournée par le service")
+                    else:
+                        st.error("❌ async_service_runner non disponible")
+                        
+                except Exception as e:
+                    st.error(f"❌ Erreur test subscription : {e}")
+                    import traceback
+                    st.code(traceback.format_exc())
+        
         # 🔧 BOUTON DEBUG ADMIN TEMPORAIRE
         if st.button("🔧 [ADMIN] Forcer upgrade vers Premium", type="secondary"):
             try:
