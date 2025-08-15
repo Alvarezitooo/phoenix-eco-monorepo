@@ -32,6 +32,7 @@ if str(PACKAGES_PATH) not in sys.path:
     sys.path.insert(0, str(PACKAGES_PATH))
 
 from phoenix_shared_auth.stripe_manager import StripeManager
+from phoenix_shared_ui.components.consent_banner import render_consent_banner
 from phoenix_cv.utils.html_sanitizer import html_sanitizer
 # from phoenix_cv.utils.safe_markdown import safe_markdown  # DÉSACTIVÉ - problème de rendu HTML
 from phoenix_cv.ui.login_page import handle_authentication_flow
