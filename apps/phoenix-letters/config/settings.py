@@ -89,9 +89,9 @@ class Settings:
                 self, "jwt_refresh_token_expire_days", int(jwt_refresh_expire)
             )
 
-        # Supabase configuration
+        # Supabase configuration (Contrat V5: Convention standard)
         object.__setattr__(self, "supabase_url", self._get_required_env("SUPABASE_URL"))
-        object.__setattr__(self, "supabase_key", self._get_required_env("SUPABASE_KEY"))
+        object.__setattr__(self, "supabase_key", self._get_required_env("SUPABASE_ANON_KEY"))
         
         # Stripe configuration
         object.__setattr__(self, "stripe_publishable_key", os.getenv("STRIPE_PUBLISHABLE_KEY"))
