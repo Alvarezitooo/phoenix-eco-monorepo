@@ -305,14 +305,10 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
                 db_connection = DatabaseConnection(settings)
                 client = db_connection.get_client()
                 
-                # Insérer ou mettre à jour vers Premium
+                # Insérer ou mettre à jour vers Premium (colonnes minimales)
                 admin_subscription = {
                     "user_id": current_user["id"],
-                    "current_tier": "premium",
-                    "auto_renewal": False,
-                    "subscription_start": datetime.now(timezone.utc).isoformat(),
-                    "created_at": datetime.now(timezone.utc).isoformat(),
-                    "updated_at": datetime.now(timezone.utc).isoformat()
+                    "current_tier": "premium"
                 }
                 
                 response = client.table("user_subscriptions").upsert(admin_subscription).execute()
