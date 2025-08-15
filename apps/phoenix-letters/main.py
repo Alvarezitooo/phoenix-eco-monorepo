@@ -315,11 +315,10 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
                 supabase_url = settings.supabase_url
                 admin_client = create_client(supabase_url, service_role_key)
                 
-                # Opération admin avec client privilégié
+                # Opération admin avec client privilégié - COLONNES MINIMALES
                 admin_subscription = {
                     "user_id": current_user["id"],
-                    "current_tier": "premium",
-                    "status": "active"
+                    "current_tier": "premium"
                 }
                 
                 response = admin_client.schema("api").table("user_subscriptions").upsert(admin_subscription).execute()
