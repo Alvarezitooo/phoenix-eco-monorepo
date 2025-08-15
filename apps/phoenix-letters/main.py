@@ -9,6 +9,7 @@ Version: Smart-Deploy - Adaptive Entry Point
 # Point d'entrée principal - utilise la fonction main() de ce fichier
 
 import logging
+import os
 from datetime import datetime, timezone
 
 # === IMPORTS ABSOLUS - CONTRÔLE TOTAL DU CONTEXTE ===
@@ -300,19 +301,29 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
         # 🔧 BOUTON DEBUG ADMIN TEMPORAIRE
         if st.button("🔧 [ADMIN] Forcer upgrade vers Premium", type="secondary"):
             try:
-                # Récupérer les services nécessaires
+                # CLIENT ADMIN avec SERVICE_ROLE_KEY selon Oracle
                 settings = Settings()
-                db_connection = DatabaseConnection(settings)
-                client = db_connection.get_client()
                 
-                # TEST MINIMAL - seulement colonnes sûres
+                # Vérifier que la clé service existe
+                service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+                if not service_role_key:
+                    st.error("❌ SUPABASE_SERVICE_ROLE_KEY manquante dans les variables d'environnement")
+                    return
+                
+                # Créer client admin avec privilèges SERVICE_ROLE
+                from supabase import create_client
+                supabase_url = settings.get_supabase_url()
+                admin_client = create_client(supabase_url, service_role_key)
+                
+                # Opération admin avec client privilégié
                 admin_subscription = {
                     "user_id": current_user["id"],
-                    "current_tier": "premium"
+                    "current_tier": "premium",
+                    "status": "active"
                 }
                 
-                response = client.table("user_subscriptions").upsert(admin_subscription).execute()
-                st.success(f"✅ Compte admin upgradé vers Premium ! Response: {response.data}")
+                response = admin_client.table("user_subscriptions").upsert(admin_subscription).execute()
+                st.success(f"✅ Compte admin upgradé vers Premium avec SERVICE_ROLE ! Response: {response.data}")
                 st.info("🔄 Reconnectez-vous pour voir le changement.")
                 
             except Exception as e:
