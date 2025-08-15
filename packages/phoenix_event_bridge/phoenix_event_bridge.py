@@ -97,7 +97,7 @@ class PhoenixEventBridge:
         self.supabase_key = supabase_key or os.getenv("SUPABASE_KEY")
         
         if not self.supabase_url or not self.supabase_key:
-            raise ValueError("SUPABASE_URL et SUPABASE_KEY requis")
+            raise ValueError("SUPABASE_URL et SUPABASE_ANON_KEY requis")
         
         self.supabase: Client = create_client(self.supabase_url, self.supabase_key)
         
