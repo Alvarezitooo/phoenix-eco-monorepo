@@ -82,45 +82,10 @@ except Exception as e:
 
 
 def render_choice_page():
-    """Affiche la page d'accueil avec message clair et parcours guidé."""
-    st.markdown("### ✨ Phoenix Letters")
-    st.markdown("**Votre Assistant Lettres de Motivation Personnalisées**")
-    st.markdown(
-        """
-        <p style="text-align: center; font-size: 1.2rem; margin-bottom: 0; opacity: 0.8;">Créez une lettre unique qui valorise votre reconversion en 3 minutes</p>
-        """,
-        unsafe_allow_html=True,
-    )
-    
-    col1, col2, col3 = st.columns([1, 2, 1])
-    
-    with col2:
-        st.info(
-            "🎯 **Démarrez maintenant**\n\n"
-            "**Aucune inscription requise** • **Données sécurisées** • **Résultat immédiat**\n\n"
-            "Votre lettre sera générée en transformant votre expérience passée en atout pour votre nouvelle carrière."
-        )
-        
-        if st.button(
-            "▶️ Créer ma première lettre",
-            use_container_width=True,
-            key="start_letter_button",
-            type="primary"
-        ):
-            st.session_state.auth_flow_choice = "guest"
-            st.session_state.user_tier = UserTier.FREE
-            st.rerun()
-        
-        st.markdown("---")
-        st.markdown("##### 💾 Vous avez déjà un compte ?")
-        if st.button(
-            "🔑 Me connecter pour retrouver mes lettres",
-            use_container_width=True,
-            key="login_existing_button",
-        ):
-            st.session_state.auth_flow_choice = "login"
-            st.rerun()
-
+    """Affiche la page d'accueil avec message clair et parcours guidé selon Contrat V5."""
+    # Rediriger directement vers la belle page d'auth
+    st.session_state.auth_flow_choice = "login"
+    st.rerun()
 
 def render_login_page(auth_manager, subscription_service, async_runner):
     """Affiche le formulaire de connexion/inscription esthétique selon Contrat V5."""
