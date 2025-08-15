@@ -269,14 +269,14 @@ class SubscriptionService:
             
             return UserSubscription(
                 user_id=data["user_id"],
-                current_tier=UserTier(data["current_tier"]),  # ✅ Schéma corrigé
-                subscription_id=data.get("stripe_subscription_id"),  # ✅ Nom correct
+                current_tier=UserTier(data["subscription_tier"]),  # ✅ SCHEMA SUPABASE PROD
+                subscription_id=data.get("stripe_subscription_id"),
                 customer_id=data.get("stripe_customer_id"),
                 status=SubscriptionStatus(data.get("status", "active")),
-                subscription_start=self._parse_datetime(data.get("subscription_start")),  # ✅ Nom correct
-                subscription_end=self._parse_datetime(data.get("subscription_end")),      # ✅ Nom correct
-                auto_renewal=False,  # ✅ Pas dans le schéma prod, valeur par défaut
-                payment_method=None,  # ✅ Pas dans le schéma prod
+                subscription_start=self._parse_datetime(data.get("current_period_start")),  # ✅ SCHEMA SUPABASE PROD
+                subscription_end=self._parse_datetime(data.get("current_period_end")),      # ✅ SCHEMA SUPABASE PROD
+                auto_renewal=False,  # ✅ Pas dans le schéma prod
+                payment_method=None,  # ✅ Pas dans le schéma prod 
                 last_payment_date=None,  # ✅ Pas dans le schéma prod
                 created_at=self._parse_datetime(data.get("created_at")),
                 updated_at=self._parse_datetime(data.get("updated_at"))
