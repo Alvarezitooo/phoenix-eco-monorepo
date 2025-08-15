@@ -47,8 +47,10 @@ wheel>=0.40.0
 structlog>=23.2.0
 cachetools>=5.3.0
 
-# 📦 Phoenix Packages Partagés (Contrat V5)
--e ../../packages/phoenix_shared_auth
--e ../../packages/phoenix_event_bridge
--e ../../packages/phoenix-shared-models
--e ../../packages/phoenix-shared-db
+# 📦 Phoenix Packages Partagés (Contrat V5 - Déploiement Streamlit Cloud via Git)
+# NOTE: Si le dépôt est privé, Streamlit Cloud a besoin d'un accès. Vous pouvez aussi utiliser un Personal Access Token (PAT).
+# Exemple: git+https://<VOTRE_PAT>@github.com/mattvaness/phoenix-eco-monorepo.git#subdirectory=...
+git+https://github.com/mattvaness/phoenix-eco-monorepo.git#subdirectory=packages/phoenix_shared_auth
+git+https://github.com/mattvaness/phoenix-eco-monorepo.git#subdirectory=packages/phoenix_event_bridge
+git+https://github.com/mattvaness/phoenix-eco-monorepo.git#subdirectory=packages/phoenix-shared-models
+git+https://github.com/mattvaness/phoenix-eco-monorepo.git#subdirectory=packages/phoenix-shared-db
