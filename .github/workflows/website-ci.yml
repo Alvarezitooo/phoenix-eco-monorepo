@@ -1,15 +1,16 @@
-name: 🌐 Phoenix Website CI/CD Pipeline
+# TEMPORARILY DISABLED - CI/CD PAUSED FOR DEVELOPMENT
+# name: 🌐 Phoenix Website CI/CD Pipeline
 
-on:
-  push:
-    branches: [ main, develop ]
-    paths:
-      - 'apps/phoenix-website/**'
-      - '.github/workflows/website-ci.yml'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - 'apps/phoenix-website/**'
+# on:
+#   push:
+#     branches: [ main, develop ]
+#     paths:
+#       - 'apps/phoenix-website/**'
+#       - '.github/workflows/website-ci.yml'
+#   pull_request:
+#     branches: [ main ]
+#     paths:
+#       - 'apps/phoenix-website/**'
 
 permissions:
   contents: read

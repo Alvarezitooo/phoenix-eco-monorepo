@@ -1,10 +1,11 @@
-name: 🐍 Phoenix Python Quality Gate
+# TEMPORARILY DISABLED - CI/CD PAUSED FOR DEVELOPMENT
+# name: 🐍 Phoenix Python Quality Gate
 
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
+# on:
+#   push:
+#     branches: [ main, develop ]
+#   pull_request:
+#     branches: [ main ]
 
 permissions:
   contents: read

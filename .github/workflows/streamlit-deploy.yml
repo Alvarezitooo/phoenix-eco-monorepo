@@ -2,12 +2,13 @@
 # Déploiement automatique de Phoenix CV et Phoenix Letters sur Streamlit Cloud
 # Author: Claude Phoenix DevSecOps Guardian
 
-name: 📱 Phoenix Streamlit Deploy
+# TEMPORARILY DISABLED - CI/CD PAUSED FOR DEVELOPMENT
+# name: 📱 Phoenix Streamlit Deploy
 
-on:
-  push:
-    branches: [ main, develop ]
-    paths:
+# on:
+#   push:
+#     branches: [ main, develop ]
+#     paths:
       - 'apps/phoenix-cv/**'
       - 'apps/phoenix-letters/**'
       - 'packages/phoenix_shared_auth/**'

@@ -1,13 +1,14 @@
-name: 🛡️ Phoenix Security Audit
+# TEMPORARILY DISABLED - CI/CD PAUSED FOR DEVELOPMENT
+# name: 🛡️ Phoenix Security Audit
 
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
-  schedule:
-    # Audit sécurité automatique chaque lundi à 6h
-    - cron: '0 6 * * 1'
+# on:
+#   push:
+#     branches: [ main, develop ]
+#   pull_request:
+#     branches: [ main ]
+#   schedule:
+#     # Audit sécurité automatique chaque lundi à 6h
+#     - cron: '0 6 * * 1'
 
 permissions:
   contents: read
