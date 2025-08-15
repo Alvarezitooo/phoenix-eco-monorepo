@@ -7,7 +7,7 @@ packages = [{ include = "phoenix_shared_db" }]
 
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
-supabase = "*"
+supabase = ">=2.0.0"
 asyncio-extras = "*"
 
 [build-system]

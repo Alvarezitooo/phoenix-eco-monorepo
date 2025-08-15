@@ -11,7 +11,7 @@ setup(
     author="Claude Phoenix DevSecOps Guardian",
     packages=find_packages(),
     install_requires=[
-        "streamlit>=1.28.0",
+        "streamlit>=1.30.0",
     ],
     python_requires=">=3.11",
     package_data={
