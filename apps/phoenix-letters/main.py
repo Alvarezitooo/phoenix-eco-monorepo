@@ -325,7 +325,12 @@ def main():
         gemini_client = GeminiClient(settings)
         st.sidebar.success("Mode API Réelle activé.")
 
-    initialized_components = _initialize_app_components(settings, db_connection, gemini_client)
+    # Components initialisés directement (fix NameError)
+    initialized_components = {
+        'gemini_client': gemini_client,
+        'settings': settings,
+        'db_connection': db_connection
+    }
 
     # Bannière de mise à niveau pour les utilisateurs Free
     if current_user and current_user["user_tier"] == UserTier.FREE:
