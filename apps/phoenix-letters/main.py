@@ -322,7 +322,7 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
                     "status": "active"
                 }
                 
-                response = admin_client.schema("public").table("user_subscriptions").upsert(admin_subscription).execute()
+                response = admin_client.table("user_subscriptions").upsert(admin_subscription).execute()
                 st.success(f"✅ Compte admin upgradé vers Premium avec SERVICE_ROLE ! Response: {response.data}")
                 st.info("🔄 Reconnectez-vous pour voir le changement.")
                 
