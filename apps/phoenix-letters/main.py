@@ -234,7 +234,7 @@ def main():
     # Initialisation des services nécessaires
     session_manager = SecureSessionManager(settings)
     input_validator = InputValidator()
-    auth_manager = AuthManager(db_connection, session_manager, input_validator)
+    auth_manager = AuthManager()  # Contrat V5: AuthManager unifié sans paramètres
 
     # Initialisation des services de paiement (safe mode)
     try:
