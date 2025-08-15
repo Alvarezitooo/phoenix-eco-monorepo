@@ -288,37 +288,70 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
     </div>
     """, unsafe_allow_html=True)
     
-    # Interface principale production
-    col1, col2, col3 = st.columns([1, 2, 1])
+    # Navigation par onglets vers les vraies fonctionnalités
+    tab1, tab2, tab3, tab4 = st.tabs(["🚀 Générateur", "💎 Premium", "⚙️ Paramètres", "ℹ️ À propos"])
     
-    with col2:
-        st.markdown("### ✨ Commencer votre aventure")
-        
-        # Interface de génération principale
-        if st.button("🚀 Générer ma première lettre", type="primary", use_container_width=True):
-            st.success("📝 Merci pour votre patience ! L'interface de génération arrive très bientôt pour libérer votre créativité.")
+    with tab1:
+        # Import et utilisation de la vraie GeneratorPage
+        try:
+            from ui.pages.generator_page import GeneratorPage
+            generator = GeneratorPage()
+            generator.render(
+                current_user=current_user,
+                settings=initialized_components['settings'],
+                gemini_client=initialized_components['gemini_client'],
+                db_connection=initialized_components['db_connection']
+            )
+        except Exception as e:
+            st.error(f"❌ Erreur lors du chargement du générateur : {e}")
+            st.info("📝 Module de génération en cours de finalisation...")
+    
+    with tab2:
+        # Import et utilisation de la vraie PremiumPage
+        try:
+            from ui.pages.premium_page import PremiumPage
+            premium = PremiumPage()
+            premium.render(current_user, subscription_service)
+        except Exception as e:
+            st.error(f"❌ Erreur lors du chargement de la page Premium : {e}")
             
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        # Gestion d'abonnement selon tier utilisateur
+        # Message selon tier utilisateur
         if current_user.get('user_tier') == UserTier.PREMIUM:
-            if st.button("💎 Mes fonctionnalités Premium", use_container_width=True):
-                st.info("🌟 Accès prioritaire aux nouvelles fonctionnalités, templates exclusifs et support dédié.")
+            st.success("🌟 Vous avez accès à toutes les fonctionnalités Premium !")
         else:
-            if st.button("⚙️ Découvrir Premium", use_container_width=True):
-                st.info("💫 Libérez tout votre potentiel avec les fonctionnalités avancées Phoenix !")
-                
-        # Message bienveillant selon Contrat V5
-        st.markdown("""
-        <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; 
-                   background: linear-gradient(135deg, #fef3e2 0%, #fde8cc 100%); 
-                   border-radius: 15px; border-left: 4px solid #f97316;">
-            <p style="margin: 0; color: #9a3412; font-size: 0.95rem; font-style: italic;">
-                "Chaque lettre est une opportunité de briller. Phoenix est là pour révéler 
-                votre potentiel unique et vous accompagner vers le succès."
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+            st.info("💫 Découvrez les fonctionnalités Premium pour libérer tout votre potentiel !")
+    
+    with tab3:
+        # Import et utilisation de la vraie SettingsPage
+        try:
+            from ui.pages.settings_page import SettingsPage
+            settings_page = SettingsPage()
+            settings_page.render(current_user)
+        except Exception as e:
+            st.error(f"❌ Erreur lors du chargement des paramètres : {e}")
+            st.info("⚙️ Page de paramètres en cours de finalisation...")
+    
+    with tab4:
+        # Import et utilisation de la vraie AboutPage
+        try:
+            from ui.pages.about_page import AboutPage
+            about = AboutPage()
+            about.render()
+        except Exception as e:
+            st.error(f"❌ Erreur lors du chargement de la page À propos : {e}")
+            st.info("ℹ️ Page À propos en cours de finalisation...")
+            
+    # Message bienveillant selon Contrat V5
+    st.markdown("""
+    <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; 
+               background: linear-gradient(135deg, #fef3e2 0%, #fde8cc 100%); 
+               border-radius: 15px; border-left: 4px solid #f97316;">
+        <p style="margin: 0; color: #9a3412; font-size: 0.95rem; font-style: italic;">
+            "Chaque lettre est une opportunité de briller. Phoenix est là pour révéler 
+            votre potentiel unique et vous accompagner vers le succès."
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
 def _route_app_pages(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, async_runner):
     """Gère l'aiguillage des pages de l'application."""
