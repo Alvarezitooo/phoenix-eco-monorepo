@@ -312,7 +312,7 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
                 
                 # Créer client admin avec privilèges SERVICE_ROLE
                 from supabase import create_client
-                supabase_url = settings.get_supabase_url()
+                supabase_url = settings.supabase_url
                 admin_client = create_client(supabase_url, service_role_key)
                 
                 # Opération admin avec client privilégié
