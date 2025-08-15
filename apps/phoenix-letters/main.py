@@ -167,15 +167,22 @@ def render_login_page(auth_manager, subscription_service, async_runner):
                             st.session_state.is_authenticated = True
                             
                             # Récupérer le statut d'abonnement
-                            if async_runner:
-                                future = async_runner.run_coro_in_thread(subscription_service.get_user_subscription(user_id))
-                                subscription = future.result(timeout=10)
-                                if subscription:
-                                    st.session_state.user_tier = subscription.current_tier
+                            try:
+                                if async_runner:
+                                    future = async_runner.run_coro_in_thread(subscription_service.get_user_subscription(user_id))
+                                    subscription = future.result(timeout=10)
+                                    if subscription:
+                                        st.session_state.user_tier = subscription.current_tier
+                                        st.info(f"🔍 DEBUG: Subscription trouvée - Tier: {subscription.current_tier.value}")
+                                    else:
+                                        st.session_state.user_tier = UserTier.FREE
+                                        st.warning("🔍 DEBUG: Aucun abonnement trouvé - Tier FREE attribué")
                                 else:
-                                    st.session_state.user_tier = UserTier.FREE
-                            else:
-                                st.session_state.user_tier = UserTier.FREE # Fallback
+                                    st.session_state.user_tier = UserTier.FREE # Fallback
+                                    st.warning("🔍 DEBUG: async_runner non disponible - Tier FREE attribué")
+                            except Exception as e:
+                                st.session_state.user_tier = UserTier.FREE
+                                st.error(f"🔍 DEBUG: Erreur récupération subscription: {e}")
                             
                             st.success(f"🎉 Bienvenue dans votre espace Phoenix, {email.split('@')[0]} ! Votre créativité n'attend plus que vous.")
                             st.rerun()
@@ -249,6 +256,28 @@ def render_login_page(auth_manager, subscription_service, async_runner):
             Nous respectons votre vie privée et ne partageons jamais vos informations.</p>
     </div>
     """, unsafe_allow_html=True)
+
+def render_main_app(current_user, auth_manager, settings, db_connection, initialized_components):
+    """Affiche l'application principale après authentification selon Contrat V5."""
+    st.markdown("## ✨ Bienvenue dans Phoenix Letters")
+    st.markdown(f"**Connecté en tant que** : {current_user.get('email', 'Utilisateur')} | **Plan** : {current_user.get('user_tier', 'FREE').value.title()}")
+    
+    try:
+        from ui.pages.generator_page import GeneratorPage
+        
+        # Initialiser la page de génération avec les services
+        generator = GeneratorPage(
+            gemini_client=initialized_components['gemini_client'],
+            db_connection=db_connection,
+            settings=settings
+        )
+        
+        # Rendu de l'interface principale
+        generator.render()
+        
+    except Exception as e:
+        st.error(f"😔 Erreur lors du chargement de l'application principale : {e}")
+        st.info("🔄 Essayez de recharger la page ou contactez le support Phoenix.")
 
 def _route_app_pages(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, async_runner):
     """Gère l'aiguillage des pages de l'application."""
