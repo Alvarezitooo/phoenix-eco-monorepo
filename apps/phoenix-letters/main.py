@@ -305,10 +305,10 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
                 db_connection = DatabaseConnection(settings)
                 client = db_connection.get_client()
                 
-                # Insérer ou mettre à jour vers Premium (SCHEMA SUPABASE PROD)
+                # Insérer ou mettre à jour vers Premium (SCHEMA REEL FINAL)
                 admin_subscription = {
                     "user_id": current_user["id"],
-                    "subscription_tier": "premium",
+                    "current_tier": "premium",
                     "status": "active"
                 }
                 
