@@ -11,7 +11,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 
 // Initialiser le client Supabase admin pour l'écriture en BDD
 const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy.supabase.co',
+  process.env.SUPABASE_URL || 'https://dummy.supabase.co',
   process.env.SUPABASE_SERVICE_ROLE_KEY || 'dummy-key',
 );
 
