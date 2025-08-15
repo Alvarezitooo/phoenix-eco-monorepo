@@ -123,28 +123,77 @@ def render_choice_page():
 
 
 def render_login_page(auth_manager, subscription_service, async_runner):
-    """Affiche le formulaire de connexion/inscription esthétique."""
-    st.markdown("### 🔑 Connexion Phoenix Letters")
-    st.markdown("**Accédez à vos lettres sauvegardées et fonctionnalités Premium**")
+    """Affiche le formulaire de connexion/inscription esthétique selon Contrat V5."""
+    # Design moderne et bienveillant selon Contrat V5
+    st.markdown("""
+    <div style="text-align: center; margin: 2rem 0;">
+        <h1 style="
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        ">🔥 Phoenix Letters</h1>
+        <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 2rem;">
+            Votre copilote bienveillant pour des lettres d'exception
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        with st.container():
-            st.markdown(
-                """
-                <div style="background: var(--phoenix-surface); padding: var(--phoenix-spacing-lg); border-radius: var(--phoenix-border-radius-lg); box-shadow: var(--phoenix-shadow-md); border: 1px solid #e1e5e9;">
-                """,
-                unsafe_allow_html=True,
-            )
-            
-            st.subheader("Se connecter")
-            email = st.text_input("Email", key="login_email")
-            password = st.text_input("Mot de passe", type="password", key="login_password")
-            
-            if st.button("Se connecter", key="login_btn", type="primary"):
+        st.markdown("""
+        <div style="
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            backdrop-filter: blur(10px);
+        ">
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <h3 style="color: #1e293b; margin: 0; font-weight: 600;">
+                ✨ Connectez-vous à votre espace
+            </h3>
+            <p style="color: #64748b; margin-top: 0.5rem; font-size: 0.95rem;">
+                Prêt(e) à créer des lettres qui marquent les esprits ?
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Champs de saisie stylés
+        email = st.text_input(
+            "📧 Adresse e-mail", 
+            key="login_email",
+            placeholder="votre.email@exemple.com",
+            help="Utilisez l'email de votre compte Phoenix"
+        )
+        password = st.text_input(
+            "🔒 Mot de passe", 
+            type="password", 
+            key="login_password",
+            placeholder="Votre mot de passe sécurisé",
+            help="Votre mot de passe reste privé et sécurisé"
+        )
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Bouton stylé selon Contrat V5
+        col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
+        with col_btn2:
+            if st.button(
+                "🚀 Se connecter à Phoenix", 
+                key="login_btn", 
+                type="primary",
+                use_container_width=True
+            ):
                 if not email or not password:
-                    st.error("Veuillez entrer votre email et mot de passe.")
+                    st.error("✋ Merci de remplir tous les champs pour continuer votre aventure Phoenix.")
                 else:
                     try:
                         success, message, user_id, access_token = auth_manager.sign_in(email, password)
@@ -165,21 +214,53 @@ def render_login_page(auth_manager, subscription_service, async_runner):
                             else:
                                 st.session_state.user_tier = UserTier.FREE # Fallback
                             
-                            st.success(f"Bienvenue, {email} !")
+                            st.success(f"🎉 Bienvenue dans votre espace Phoenix, {email.split('@')[0]} ! Votre créativité n'attend plus que vous.")
                             st.rerun()
                         else:
-                            st.error(f"Erreur de connexion : {message}")
+                            st.error(f"😔 Connexion impossible : {message}. Vérifiez vos identifiants et réessayez.")
                     except Exception as e:
-                        st.error(f"Une erreur inattendue est survenue : {e}")
-            
-            st.markdown("--- ")
-            st.subheader("Créer un compte")
-            new_email = st.text_input("Email", key="signup_email")
-            new_password = st.text_input("Mot de passe", type="password", key="signup_password")
-            
-            if st.button("Créer un compte", key="signup_btn"):
+                        st.error(f"😕 Une erreur inattendue est survenue. Notre équipe Phoenix travaille à la résoudre : {e}")
+        
+        st.markdown("""
+        <div style="text-align: center; margin: 2rem 0; padding: 1.5rem; 
+                   background: linear-gradient(135deg, #fef3e2 0%, #fde8cc 100%); 
+                   border-radius: 15px; border-left: 4px solid #f97316;">
+            <h4 style="color: #ea580c; margin: 0 0 0.5rem 0;">
+                ✨ Pas encore de compte Phoenix ?
+            </h4>
+            <p style="color: #9a3412; margin: 0; font-size: 0.95rem;">
+                Rejoignez notre communauté et débloquez votre potentiel créatif
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Champs d'inscription stylés
+        new_email = st.text_input(
+            "📧 Votre adresse e-mail", 
+            key="signup_email",
+            placeholder="nom.prenom@exemple.com",
+            help="Utilisez une adresse e-mail valide pour recevoir vos confirmations"
+        )
+        new_password = st.text_input(
+            "🔐 Créez un mot de passe sécurisé", 
+            type="password", 
+            key="signup_password",
+            placeholder="Minimum 8 caractères",
+            help="Un bon mot de passe protège votre créativité"
+        )
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Bouton d'inscription stylé
+        col_signup1, col_signup2, col_signup3 = st.columns([1, 2, 1])
+        with col_signup2:
+            if st.button(
+                "🌟 Créer mon compte Phoenix", 
+                key="signup_btn",
+                use_container_width=True
+            ):
                 if not new_email or not new_password:
-                    st.error("Veuillez entrer un email et un mot de passe.")
+                    st.error("🤔 Merci de remplir tous les champs pour créer votre compte Phoenix.")
                 else:
                     try:
                         success, message, user_id = auth_manager.sign_up(new_email, new_password)
@@ -188,17 +269,25 @@ def render_login_page(auth_manager, subscription_service, async_runner):
                             st.session_state.user_email = new_email
                             st.session_state.is_authenticated = True
                             st.session_state.user_tier = UserTier.FREE # Nouveau compte est Free par défaut
-                            st.success(f"Compte créé avec succès pour {new_email} ! Vous êtes maintenant connecté.")
+                            st.success(f"🎊 Fantastique ! Votre compte Phoenix est créé, {new_email.split('@')[0]}. Vous pouvez maintenant déployer vos ailes créatives !")
                             st.rerun()
                         else:
-                            st.error(f"Erreur d'inscription : {message}")
+                            st.error(f"🚫 Inscription impossible : {message}. Peut-être que ce compte existe déjà ?")
                     except Exception as e:
-                        st.error(f"Une erreur inattendue est survenue : {e}")
-
-            st.markdown("</div>", unsafe_allow_html=True)
+                        st.error(f"😓 Une erreur technique est survenue. Notre équipe Phoenix y travaille : {e}")
         
-        st.info("🔒 **Sécurité garantie** : Vos données sont chiffrées et protégées selon les standards RGPD. "
-                "Création de compte gratuite et sans engagement.")
+        # Fermeture du container principal
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Message de confiance en bas de page
+    st.markdown("""
+    <div style="text-align: center; margin: 3rem 0; padding: 1rem; 
+               background: #f1f5f9; border-radius: 10px; border: 1px solid #e2e8f0;">
+        <p style="margin: 0; color: #475569; font-size: 0.9rem;">
+            🔒 <strong>Sécurité Phoenix :</strong> Vos données sont chiffrées et protégées selon les standards RGPD. 
+            Nous respectons votre vie privée et ne partageons jamais vos informations.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 def _route_app_pages(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, async_runner):
     """Gère l'aiguillage des pages de l'application."""
