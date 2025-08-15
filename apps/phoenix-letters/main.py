@@ -305,11 +305,10 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
                 db_connection = DatabaseConnection(settings)
                 client = db_connection.get_client()
                 
-                # Insérer ou mettre à jour vers Premium (SCHEMA REEL FINAL)
+                # TEST MINIMAL - seulement colonnes sûres
                 admin_subscription = {
                     "user_id": current_user["id"],
-                    "current_tier": "premium",
-                    "status": "active"
+                    "current_tier": "premium"
                 }
                 
                 response = client.table("user_subscriptions").upsert(admin_subscription).execute()
