@@ -17,12 +17,24 @@ import docx
 import PyPDF2
 import streamlit as st
 
-# Services Phoenix CV
-from phoenix_cv.services.ai_trajectory_builder import ai_trajectory_builder
-from phoenix_cv.services.enhanced_gemini_client import get_enhanced_gemini_client
-from phoenix_cv.services.mirror_match_engine import mirror_match_engine
-from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
-from phoenix_cv.services.smart_coach import CoachingContext, smart_coach
+# Services Phoenix CV (avec fallback pour mode standalone)
+try:
+    from phoenix_cv.services.ai_trajectory_builder import ai_trajectory_builder
+    from phoenix_cv.services.enhanced_gemini_client import get_enhanced_gemini_client
+    from phoenix_cv.services.mirror_match_engine import mirror_match_engine
+    from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
+    from phoenix_cv.services.smart_coach import CoachingContext, smart_coach
+    SERVICES_AVAILABLE = True
+except Exception:
+    # Mode standalone - services indisponibles
+    ai_trajectory_builder = None
+    get_enhanced_gemini_client = None
+    mirror_match_engine = None
+    PhoenixApp = None
+    phoenix_bridge = None
+    CoachingContext = None 
+    smart_coach = None
+    SERVICES_AVAILABLE = False
 
 # UI Components Modernisés
 from phoenix_cv.ui.components.phoenix_header import PhoenixCVHeader, PhoenixCVAlert, PhoenixCVCard
@@ -82,6 +94,11 @@ def main_modern():
     
     # CSS global Phoenix
     inject_phoenix_css()
+    
+    # Vérification services
+    if not SERVICES_AVAILABLE:
+        st.warning("⚠️ Services avancés indisponibles - Mode basique activé")
+        st.info("💡 Configurez les secrets Supabase pour accéder aux fonctionnalités complètes")
     
     # Authentification
     if not handle_authentication_check():
