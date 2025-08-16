@@ -58,14 +58,36 @@ except Exception as e:
     SERVICES_AVAILABLE = False
     SERVICES_ERROR = f"Échec critique d'importation des services: {e}\n\nTraceback complet:\n{traceback.format_exc()}"
 
-# UI Components Modernisés
-from phoenix_cv.ui.components.phoenix_header import PhoenixCVHeader, PhoenixCVAlert, PhoenixCVCard
-from phoenix_cv.ui.components.premium_components import PhoenixCVPremiumBarrier, PhoenixCVProgressBar, PhoenixCVMetrics
-from phoenix_cv.ui.components.navigation_component import PhoenixCVNavigation, PhoenixCVQuickActions
+# UI Components Modernisés (avec fallback)
+try:
+    from phoenix_cv.ui.components.phoenix_header import PhoenixCVHeader, PhoenixCVAlert, PhoenixCVCard
+    from phoenix_cv.ui.components.premium_components import PhoenixCVPremiumBarrier, PhoenixCVProgressBar, PhoenixCVMetrics
+    from phoenix_cv.ui.components.navigation_component import PhoenixCVNavigation, PhoenixCVQuickActions
+    UI_COMPONENTS_AVAILABLE = True
+except Exception as e:
+    print(f"⚠️ ORACLE DEBUG: Échec import composants UI: {e}")
+    # Fallback components
+    class PhoenixCVHeader:
+        @staticmethod
+        def render(*args, **kwargs):
+            st.title("📄 Phoenix CV")
+    class PhoenixCVNavigation:
+        @staticmethod
+        def render_breadcrumb(pages):
+            st.markdown(" → ".join(pages))
+        @staticmethod
+        def render_sidebar_nav():
+            pass
+    UI_COMPONENTS_AVAILABLE = False
 
-# Pages Modernisées
-from phoenix_cv.ui.create_cv_page import render_create_cv_page_secure
-from phoenix_cv.ui.upload_cv_page import render_upload_cv_page_secure
+# Pages Modernisées (avec fallback)
+try:
+    from phoenix_cv.ui.create_cv_page import render_create_cv_page_secure
+    from phoenix_cv.ui.upload_cv_page import render_upload_cv_page_secure
+    UI_PAGES_AVAILABLE = True
+except Exception as e:
+    print(f"⚠️ ORACLE DEBUG: Échec import pages UI: {e}")
+    UI_PAGES_AVAILABLE = False
 
 # Legacy imports (compatibilité)
 import sys
@@ -322,8 +344,12 @@ def render_create_page_modern():
         return
     
     # Page création avec nouveaux composants (si services disponibles)
-    gemini_client = get_enhanced_gemini_client()
-    render_create_cv_page_secure(gemini_client, display_generated_cv_secure)
+    if UI_PAGES_AVAILABLE:
+        gemini_client = get_enhanced_gemini_client()
+        render_create_cv_page_secure(gemini_client, display_generated_cv_secure)
+    else:
+        st.error("🚫 Pages UI indisponibles")
+        st.info("💡 Mode ultra-dégradé - Interface basique seulement")
 
 
 def render_upload_page_modern():
