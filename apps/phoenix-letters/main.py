@@ -560,6 +560,31 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
     
     # Pied de page bienveillant
     st.markdown("---")
+    
+    # 🔧 BOUTON DEBUG ADMIN TEMPORAIRE (à retirer en production)
+    with st.expander("🔧 Admin Debug (temporaire)", expanded=False):
+        if st.button("🔧 [ADMIN] Forcer upgrade vers Premium", type="secondary"):
+            try:
+                service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+                if not service_role_key:
+                    st.error("❌ SUPABASE_SERVICE_ROLE_KEY manquante")
+                    return
+                
+                from supabase import create_client
+                admin_client = create_client(settings.supabase_url, service_role_key)
+                
+                admin_subscription = {
+                    "user_id": current_user["id"],
+                    "current_tier": "premium"
+                }
+                
+                response = admin_client.table("user_subscriptions").upsert(admin_subscription).execute()
+                st.success(f"✅ Upgrade Premium réussi ! Response: {response.data}")
+                st.info("🔄 Rechargez la page pour voir le changement.")
+                
+            except Exception as e:
+                st.error(f"❌ Erreur upgrade admin: {e}")
+    
     st.markdown("""
     <div style="text-align: center; padding: 1rem; opacity: 0.7;">
         <p style="margin: 0; font-style: italic; color: #64748b;">
