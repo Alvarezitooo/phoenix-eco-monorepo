@@ -260,7 +260,7 @@ def render_login_page(auth_manager, subscription_service, async_runner):
     </div>
     """, unsafe_allow_html=True)
 
-def render_main_app(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service):
+def render_main_app(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, stripe_service):
     """Affiche l'application principale après authentification selon Contrat V5."""
     
     # Header élégant avec informations utilisateur
@@ -486,8 +486,8 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
         # Import et rendu de la vraie PremiumPage
         try:
             from ui.pages.premium_page import PremiumPage
-            premium_page = PremiumPage()
-            premium_page.render(current_user, subscription_service)
+            premium_page = PremiumPage(stripe_service, subscription_service)
+            premium_page.render()
         except Exception as e:
             st.error(f"❌ Erreur chargement page Premium : {e}")
             
@@ -522,7 +522,7 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
         try:
             from ui.pages.settings_page import SettingsPage
             settings_page = SettingsPage()
-            settings_page.render(current_user)
+            settings_page.render()
         except Exception as e:
             st.error(f"❌ Erreur chargement paramètres : {e}")
             
@@ -580,7 +580,7 @@ def _route_app_pages(current_user, auth_manager, settings, db_connection, initia
         else: # guest mode
             render_choice_page()
     else:  # L'utilisateur est connecté
-        render_main_app(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service)
+        render_main_app(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, stripe_service)
 
 def main():
     """Point d'entrée et aiguilleur principal de l'application."""
@@ -703,7 +703,7 @@ def main():
             input_validator = InputValidator()
             
             # Services UI
-            file_uploader = SecureFileUploader()
+            file_uploader = SecureFileUploader(input_validator, settings)
             progress_indicator = ProgressIndicator()
             letter_editor = LetterEditor()
             
