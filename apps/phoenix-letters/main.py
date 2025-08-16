@@ -568,7 +568,7 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
     </div>
     """, unsafe_allow_html=True)
 
-def _route_app_pages(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, async_runner):
+def _route_app_pages(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, stripe_service, async_runner):
     """Gère l'aiguillage des pages de l'application."""
     if "auth_flow_choice" not in st.session_state:
         st.session_state.auth_flow_choice = None
@@ -786,7 +786,7 @@ def main():
             unsafe_allow_html=True
         )
 
-    _route_app_pages(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, st.session_state.async_service_runner)
+    _route_app_pages(current_user, auth_manager, settings, db_connection, initialized_components, subscription_service, stripe_service, st.session_state.async_service_runner)
 
 if __name__ == "__main__":
     main()
