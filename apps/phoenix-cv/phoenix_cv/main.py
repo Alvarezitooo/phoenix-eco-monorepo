@@ -2197,123 +2197,15 @@ def render_research_action_banner():
 
 
 def main():
-    """Application principale Enhanced avec authentification"""
-    # Chargement .env
-    load_env_file()
+    """Point d'entrée principal - délègue vers l'interface modernisée"""
+    # Délégation vers la nouvelle interface modernisée
+    main_modern()
 
-    # Configuration page
-    configure_page()
-    
-    # Vérification authentification avec imports dynamiques
-    try:
-        # Essayer d'importer les packages partagés
-        try:
-            from phoenix_shared_auth.services.phoenix_auth_service import PhoenixAuthService
-            from phoenix_shared_auth.database.phoenix_db_connection import PhoenixDatabaseConnection
-        except ImportError:
-            # Fallback pour Streamlit Cloud
-            PhoenixAuthService = None
-            PhoenixDatabaseConnection = None
-        # from phoenix_shared_auth.services.cross_app_auth import get_cross_app_auth_service  # Module not found
-        try:
-            from phoenix_shared_auth.services.cross_app_auth import get_cross_app_auth_service
-        except ImportError:
-            def get_cross_app_auth_service():
-                return None
-        
-        # Si ça marche, on est en mode monorepo
-        try:
-            db_conn = PhoenixDatabaseConnection()
-            auth_service = PhoenixAuthService(db_conn, None)
-            cross_app_service = get_cross_app_auth_service(auth_service)
-            
-            # Vérifier cross-app login
-            cross_app_user = cross_app_service.init_streamlit_auth_check()
-            if cross_app_user:
-                st.session_state['cross_app_authenticated'] = True
-                st.session_state['user_id'] = str(cross_app_user.id)
-                st.session_state['user_email'] = cross_app_user.email
-                st.success(f"✅ Connecté depuis l'écosystème Phoenix : {cross_app_user.email}")
-        except:
-            # Service auth partagé non disponible, continuer normal
-            pass
-            
-    except ImportError:
-        # Packages partagés non disponibles, mode standalone
-        # Fallback: vérification de session existante
-        if "user_id" not in st.session_state:
-            st.warning("⚠️ Service d'authentification partagé recommandé pour une expérience optimale")
-    
-    # Gestion de l'authentification
-    is_authenticated = handle_authentication_flow()
-    
-    # Si l'utilisateur n'est pas encore passé par l'auth, on s'arrête ici
-    if not is_authenticated:
-        return
 
-    # Header (affiché seulement après authentification)
-    _render_app_header()
-    
-    # 🔬 BANNIÈRE RECHERCHE-ACTION PHOENIX (désactivable via ENV)
-    try:
-        import os
-        enable_banner = os.getenv("ENABLE_RESEARCH_BANNER", "false").lower() == "true"
-    except Exception:
-        enable_banner = False
-    if enable_banner:
-        render_research_action_banner()
-    
-    # 🔮 PROTOCOLE RENAISSANCE - Vérification et bannière
-    try:
-        from services.renaissance_cv_service import PhoenixCVRenaissanceService
-        
-        # Récupération de l'utilisateur actuel (session ou autre méthode)
-        current_user_id = st.session_state.get('user_id') or 'anonymous_user'
-        
-        renaissance_service = PhoenixCVRenaissanceService()
-        
-        if renaissance_service.should_show_renaissance_banner_cv(current_user_id):
-            st.markdown(
-                """
-                <div style="
-                    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-                    color: white;
-                    padding: 1.5rem;
-                    border-radius: 15px;
-                    margin-bottom: 2rem;
-                    text-align: center;
-                    box-shadow: 0 8px 25px rgba(245,158,11,0.4);
-                    border: 2px solid rgba(255,255,255,0.2);
-                ">
-                    <h3 style="margin: 0; font-size: 1.3rem; font-weight: bold;">
-                        🔮 PROTOCOLE RENAISSANCE CV ACTIVÉ
-                    </h3>
-                    <p style="margin: 0.5rem 0 0 0; font-size: 1rem; opacity: 0.9;">
-                        Vos patterns de création CV suggèrent qu'une nouvelle approche pourrait booster votre candidature. 
-                        Transformons votre CV ensemble ! 🚀
-                    </p>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-            
-            # Affichage des recommandations Renaissance spécifiques CV
-            recommendations = renaissance_service.get_renaissance_cv_recommendations(current_user_id)
-            if recommendations and len(recommendations) > 4:  # Afficher seulement les recommandations spécifiques CV
-                cv_specific_recs = [rec for rec in recommendations if any(word in rec.lower() for word in ['cv', 'ats', 'template', 'présentation'])]
-                if cv_specific_recs:
-                    with st.expander("🎯 Recommandations Renaissance CV", expanded=False):
-                        for rec in cv_specific_recs:
-                            st.markdown(f"• {rec}")
-    except ImportError:
-        # Mode dégradé si le service n'est pas disponible
-        pass
-    except Exception:
-        # Mode silencieux en cas d'erreur
-        pass
-
-    # Navigation
-    current_page = render_sidebar()
+# NOTE: Code obsolète - le vrai point d'entrée est à la fin du fichier
+# if __name__ == "__main__":
+#     main()
+#     current_page = render_sidebar()
 
     # Gestion état de session
     if "current_page" in st.session_state:
