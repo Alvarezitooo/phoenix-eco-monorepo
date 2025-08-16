@@ -2344,30 +2344,31 @@ def main():
 #     main()
 #     current_page = render_sidebar()
 
-    # Gestion état de session
-    if "current_page" in st.session_state:
-        current_page = st.session_state["current_page"]
-
-    # Rendu des pages
-    if current_page == "home":
-        render_home_page()
-    elif current_page == "create":
-        render_create_cv_page()
-    elif current_page == "analyze":
-        render_analyze_cv_page()
-    elif current_page == "mirror_match":
-        render_mirror_match_page()
-    elif current_page == "trajectory":
-        render_trajectory_builder_page()
-    elif current_page == "ecosystem":
-        render_ecosystem_page()
-    elif current_page == "pricing":
-        render_pricing_page()
-    elif current_page == "test_render":
-        render_test_page()
-
-    # Footer
-    render_footer()
+# NOTE: Code obsolète commenté - utilise main_modern() maintenant
+#     # Gestion état de session
+#     if "current_page" in st.session_state:
+#         current_page = st.session_state["current_page"]
+# 
+#     # Rendu des pages
+#     if current_page == "home":
+#         render_home_page()
+#     elif current_page == "create":
+#         render_create_cv_page()
+#     elif current_page == "analyze":
+#         render_analyze_cv_page()
+#     elif current_page == "mirror_match":
+#         render_mirror_match_page()
+#     elif current_page == "trajectory":
+#         render_trajectory_builder_page()
+#     elif current_page == "ecosystem":
+#         render_ecosystem_page()
+#     elif current_page == "pricing":
+#         render_pricing_page()
+#     elif current_page == "test_render":
+#         render_test_page()
+# 
+#     # Footer
+#     render_footer()
 
 
 def render_test_page():
