@@ -25,7 +25,8 @@ try:
     from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
     from phoenix_cv.services.smart_coach import CoachingContext, smart_coach
     SERVICES_AVAILABLE = True
-except Exception:
+    SERVICES_ERROR = None
+except Exception as e:
     # Mode standalone - services indisponibles
     ai_trajectory_builder = None
     get_enhanced_gemini_client = None
@@ -35,6 +36,7 @@ except Exception:
     CoachingContext = None 
     smart_coach = None
     SERVICES_AVAILABLE = False
+    SERVICES_ERROR = str(e)
 
 # UI Components Modernisés
 from phoenix_cv.ui.components.phoenix_header import PhoenixCVHeader, PhoenixCVAlert, PhoenixCVCard
@@ -99,6 +101,9 @@ def main_modern():
     if not SERVICES_AVAILABLE:
         st.warning("⚠️ Services avancés indisponibles - Mode basique activé")
         st.info("💡 Configurez les secrets Supabase pour accéder aux fonctionnalités complètes")
+        if SERVICES_ERROR:
+            with st.expander("🔍 Détails de l'erreur"):
+                st.code(SERVICES_ERROR)
     
     # Authentification
     if not handle_authentication_check():
@@ -226,6 +231,14 @@ def render_create_page_modern():
     
     # Breadcrumb
     PhoenixCVNavigation.render_breadcrumb(["Accueil", "Créer CV"])
+    
+    # Vérification services disponibles
+    if not SERVICES_AVAILABLE or get_enhanced_gemini_client is None:
+        st.error("🚫 Service de génération CV indisponible")
+        st.info("💡 Configurez les services requis pour activer la création de CV")
+        if SERVICES_ERROR:
+            st.code(f"Erreur: {SERVICES_ERROR}")
+        return
     
     # Page création avec nouveaux composants
     gemini_client = get_enhanced_gemini_client()
