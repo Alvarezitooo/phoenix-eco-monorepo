@@ -17,16 +17,36 @@ import docx
 import PyPDF2
 import streamlit as st
 
-# Services Phoenix CV (avec fallback pour mode standalone)
+# 🏛️ ORACLE PATTERN: Services Phoenix CV avec diagnostics complets
+import traceback
+
+SERVICES_AVAILABLE = False
+SERVICES_ERROR = "Services non initialisés."
+
 try:
+    print("🔍 ORACLE DEBUG: Import ai_trajectory_builder...")
     from phoenix_cv.services.ai_trajectory_builder import ai_trajectory_builder
+    
+    print("🔍 ORACLE DEBUG: Import enhanced_gemini_client...")
     from phoenix_cv.services.enhanced_gemini_client import get_enhanced_gemini_client
+    
+    print("🔍 ORACLE DEBUG: Import mirror_match_engine...")
     from phoenix_cv.services.mirror_match_engine import mirror_match_engine
+    
+    print("🔍 ORACLE DEBUG: Import phoenix_ecosystem_bridge...")
     from phoenix_cv.services.phoenix_ecosystem_bridge import PhoenixApp, phoenix_bridge
+    
+    print("🔍 ORACLE DEBUG: Import smart_coach...")
     from phoenix_cv.services.smart_coach import CoachingContext, smart_coach
+    
+    print("✅ ORACLE DEBUG: Tous les services importés avec succès")
     SERVICES_AVAILABLE = True
-    SERVICES_ERROR = None
+    SERVICES_ERROR = ""  # Réinitialiser en cas de succès
+    
 except Exception as e:
+    print(f"❌ ORACLE DEBUG: Échec critique d'importation des services: {e}")
+    print(f"📋 ORACLE DEBUG: Traceback complet:\n{traceback.format_exc()}")
+    
     # Mode standalone - services indisponibles
     ai_trajectory_builder = None
     get_enhanced_gemini_client = None
@@ -36,7 +56,7 @@ except Exception as e:
     CoachingContext = None 
     smart_coach = None
     SERVICES_AVAILABLE = False
-    SERVICES_ERROR = str(e)
+    SERVICES_ERROR = f"Échec critique d'importation des services: {e}\n\nTraceback complet:\n{traceback.format_exc()}"
 
 # UI Components Modernisés
 from phoenix_cv.ui.components.phoenix_header import PhoenixCVHeader, PhoenixCVAlert, PhoenixCVCard
@@ -97,13 +117,41 @@ def main_modern():
     # CSS global Phoenix
     inject_phoenix_css()
     
-    # Vérification services
+    # 🏛️ ORACLE PATTERN: Diagnostic transparent des services
     if not SERVICES_AVAILABLE:
-        st.warning("⚠️ Services avancés indisponibles - Mode basique activé")
-        st.info("💡 Configurez les secrets Supabase pour accéder aux fonctionnalités complètes")
+        st.error("🚨 Services Intelligents Indisponibles - Mode Dégradé Activé")
+        st.warning("⚠️ L'interface Phoenix CV moderne reste fonctionnelle en mode basique")
+        
+        # Oracle Principle: Transparence maximale pour diagnostic
+        st.markdown("### 🔍 Diagnostic Oracle - Chaîne de Défaillance")
+        
         if SERVICES_ERROR:
-            with st.expander("🔍 Détails de l'erreur"):
-                st.code(SERVICES_ERROR)
+            st.code(SERVICES_ERROR, language="python")
+            
+        st.info("""
+        **🏛️ Guidance Oracle :** Cette erreur révèle une dépendance manquante dans la chaîne 
+        des services intelligents. Les causes probables sont :
+        
+        - 🔑 **API Gemini** : Clé manquante (`GEMINI_API_KEY`)
+        - 🌪️ **Event Bridge** : Configuration Phoenix Events manquante  
+        - 📦 **Dépendances** : Module Python non installé
+        - 🔧 **Configuration** : Variable d'environnement requise absente
+        
+        L'interface moderne reste fonctionnelle pour les tâches de base.
+        """)
+        
+        with st.expander("📋 Variables d'environnement détectées"):
+            import os
+            env_vars = {
+                "SUPABASE_URL": "✅" if os.getenv("SUPABASE_URL") else "❌",
+                "SUPABASE_ANON_KEY": "✅" if os.getenv("SUPABASE_ANON_KEY") else "❌", 
+                "GEMINI_API_KEY": "✅" if os.getenv("GEMINI_API_KEY") else "❌",
+                "OPENAI_API_KEY": "✅" if os.getenv("OPENAI_API_KEY") else "❌",
+            }
+            for var, status in env_vars.items():
+                st.write(f"**{var}:** {status}")
+        
+        st.markdown("---")
     
     # Authentification
     if not handle_authentication_check():
