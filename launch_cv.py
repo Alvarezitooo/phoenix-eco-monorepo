@@ -34,17 +34,28 @@ print(f"📂 Racine: {ROOT_DIR}")
 print(f"📱 App: {APP_ROOT}")
 
 try:
-    # Import du service d'authentification unifié selon vision stratégique
-    from packages.phoenix_shared_auth.client import get_auth_manager
-    auth_manager = get_auth_manager()
-    print("✅ AuthManager unifié initialisé")
+    # Vérifier d'abord si les secrets Supabase sont disponibles
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_key = os.getenv("SUPABASE_ANON_KEY")
+    
+    if supabase_url and supabase_key:
+        # Import du service d'authentification unifié selon vision stratégique
+        from packages.phoenix_shared_auth.client import get_auth_manager
+        auth_manager = get_auth_manager()
+        print("✅ AuthManager unifié initialisé")
+    else:
+        print("⚠️ Secrets Supabase non disponibles - mode standalone activé")
+        auth_manager = None
     
     # Import de la fonction main de Phoenix CV
     from phoenix_cv.main import main
     print("✅ Module Phoenix CV importé")
     
     if __name__ == "__main__":
-        print("🚀 Lancement de Phoenix CV avec authentification unifiée...")
+        if auth_manager:
+            print("🚀 Lancement de Phoenix CV avec authentification unifiée...")
+        else:
+            print("🚀 Lancement de Phoenix CV en mode standalone...")
         main()
 
 except ImportError as e:
@@ -83,7 +94,23 @@ except Exception as e:
             App Phoenix CV: {APP_ROOT}
             Erreur: {str(e)}
             PYTHONPATH: {sys.path[:5]}
+            Variables Supabase: SUPABASE_URL={'✅' if os.getenv('SUPABASE_URL') else '❌'}, SUPABASE_ANON_KEY={'✅' if os.getenv('SUPABASE_ANON_KEY') else '❌'}
             """)
+            
+        # Solution alternative : afficher le bouton de configuration
+        st.markdown("---")
+        st.markdown("### 🔧 Configuration requise")
+        st.info("""
+        **Pour activer l'authentification unifiée Phoenix :**
+        
+        1. Configurez les secrets Streamlit Cloud :
+           - `SUPABASE_URL` 
+           - `SUPABASE_ANON_KEY`
+        
+        2. Redéployez l'application
+        
+        **En attendant :** L'application fonctionne en mode standalone limité.
+        """)
     except:
         print("❌ Impossible d'afficher l'interface Streamlit")
         raise e
