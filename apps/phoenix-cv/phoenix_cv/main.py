@@ -229,18 +229,51 @@ def render_home_page_modern():
 def render_create_page_modern():
     """Page création CV modernisée"""
     
-    # Breadcrumb
-    PhoenixCVNavigation.render_breadcrumb(["Accueil", "Créer CV"])
+    try:
+        # Breadcrumb
+        PhoenixCVNavigation.render_breadcrumb(["Accueil", "Créer CV"])
+    except:
+        st.markdown("**Accueil → Créer CV**")
+    
+    # Header Phoenix CV
+    try:
+        PhoenixCVHeader.render(
+            title="Phoenix CV Creator",
+            subtitle="Créez des CV professionnels • Mode Standalone",
+            icon="📄"
+        )
+    except:
+        st.title("📄 Phoenix CV Creator")
+        st.caption("Créez des CV professionnels • Mode Standalone")
     
     # Vérification services disponibles
     if not SERVICES_AVAILABLE or get_enhanced_gemini_client is None:
         st.error("🚫 Service de génération CV indisponible")
-        st.info("💡 Configurez les services requis pour activer la création de CV")
+        st.info("💡 Les services avancés nécessitent une configuration complète")
+        
         if SERVICES_ERROR:
-            st.code(f"Erreur: {SERVICES_ERROR}")
+            with st.expander("🔍 Détails de l'erreur"):
+                st.code(f"Erreur: {SERVICES_ERROR}")
+        
+        # Interface basique de remplacement
+        st.markdown("### 📝 Interface Basique")
+        st.warning("⚠️ Mode dégradé - Fonctionnalités limitées")
+        
+        with st.form("basic_cv_form"):
+            st.markdown("**Informations de base :**")
+            name = st.text_input("Nom complet")
+            email = st.text_input("Email")
+            target_job = st.text_input("Poste visé")
+            
+            if st.form_submit_button("📄 Générer CV Basique"):
+                if name and email and target_job:
+                    st.success("✅ CV basique généré !")
+                    st.info("🔧 Configurez les services pour des fonctionnalités avancées")
+                else:
+                    st.error("⚠️ Veuillez remplir tous les champs")
         return
     
-    # Page création avec nouveaux composants
+    # Page création avec nouveaux composants (si services disponibles)
     gemini_client = get_enhanced_gemini_client()
     render_create_cv_page_secure(gemini_client, display_generated_cv_secure)
 
