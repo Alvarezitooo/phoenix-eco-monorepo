@@ -1,44 +1,59 @@
 """
-Gestionnaire de connexion à Supabase pour Phoenix Letters.
-Fournit un client Supabase initialisé et prêt à l'emploi.
+🏛️ CONSOLIDATION: Gestionnaire de connexion Supabase unifié pour Phoenix Letters
+Utilise le client centralisé phoenix_common au lieu de duplications locales
+
+Author: Claude Phoenix DevSecOps Guardian  
+Version: 4.1.0 - Consolidation Supabase
 """
 
 import logging
 from typing import Optional
-
-from config.settings import Settings
+from supabase import Client
 from shared.exceptions.specific_exceptions import DatabaseError
-from supabase import Client, ClientOptions, create_client
 
 logger = logging.getLogger(__name__)
 
-
 class DatabaseConnection:
     """
-    Gère le cycle de vie du client Supabase.
+    🏛️ CONSOLIDATION: Délègue au client Supabase centralisé
     """
 
     _client: Optional[Client] = None
 
-    def __init__(self, settings: Settings):
-        self.settings = settings
-        if not self.settings.supabase_url or not self.settings.supabase_key:
-            raise DatabaseError(
-                "L'URL et la clé Supabase doivent être définies dans la configuration."
-            )
-
+    def __init__(self, settings=None):
+        """
+        Initialise avec le client centralisé phoenix_common
+        
+        Args:
+            settings: Ignoré, garde compatibilité API
+        """
         try:
-            options = ClientOptions(schema="api")
-            self._client = create_client(
-                self.settings.supabase_url, self.settings.supabase_key, options=options
-            )
-            logger.info("Client Supabase initialisé avec succès pour le schéma 'api'.")
+            # 🏛️ CONSOLIDATION: Utilisation client centralisé
+            from phoenix_common.clients import get_supabase_client
+            self._client = get_supabase_client()
+            logger.info("Client Supabase centralisé initialisé pour Phoenix Letters")
+            
         except Exception as e:
-            logger.error(f"Erreur lors de l'initialisation du client Supabase: {e}")
-            raise DatabaseError(f"Impossible de créer le client Supabase: {e}")
+            logger.error(f"Erreur client Supabase centralisé: {e}")
+            raise DatabaseError(f"Impossible de charger client Supabase centralisé: {e}")
 
     def get_client(self) -> Client:
-        """Retourne le client Supabase actif."""
+        """Retourne le client Supabase centralisé."""
         if not self._client:
-            raise DatabaseError("Le client Supabase n'a pas été initialisé.")
+            raise DatabaseError("Le client Supabase centralisé n'a pas été initialisé.")
         return self._client
+
+# 🏛️ CONSOLIDATION: Factory function pour compatibilité
+def get_database_client() -> Client:
+    """
+    Factory centralisée pour client Supabase Phoenix Letters
+    
+    Returns:
+        Client Supabase configuré via phoenix_common
+    """
+    try:
+        from phoenix_common.clients import get_supabase_client
+        return get_supabase_client()
+    except Exception as e:
+        logger.error(f"Factory client Supabase échec: {e}")
+        raise DatabaseError(f"Factory client Supabase échec: {e}")

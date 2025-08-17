@@ -19,14 +19,14 @@ class PhoenixCVStandaloneAuth:
         # URLs configurables via secrets Streamlit
         self.website_url = st.secrets.get("app", {}).get("website_url", "https://phoenix-eco-monorepo.vercel.app")
         
-        # Supabase config depuis secrets
+        # 🏛️ CONSOLIDATION: Utilisation client Supabase centralisé
         try:
-            self.supabase_url = st.secrets["supabase"]["url"]
-            self.supabase_key = st.secrets["supabase"]["anon_key"]
+            from phoenix_common.clients import get_supabase_client
+            self.supabase_client = get_supabase_client()
             self.supabase_available = True
-        except KeyError:
+        except Exception as e:
             self.supabase_available = False
-            st.error("❌ Configuration Supabase manquante dans les secrets")
+            st.error(f"❌ Client Supabase centralisé indisponible: {e}")
     
     def check_authentication(self) -> Tuple[bool, Optional[Dict[str, Any]]]:
         """Vérifie si l'utilisateur est authentifié"""

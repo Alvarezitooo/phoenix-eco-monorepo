@@ -5,7 +5,7 @@
 import os
 import time
 from typing import Dict, Any, Optional
-from .settings import get_settings
+from phoenix_common.settings import get_settings
 
 def init_sentry() -> bool:
     """

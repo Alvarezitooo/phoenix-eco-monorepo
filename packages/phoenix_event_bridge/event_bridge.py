@@ -13,7 +13,7 @@ from typing import Dict, Any, Optional, List, Callable
 from datetime import datetime
 import asyncio
 
-from .phoenix_event_types import PhoenixEventData, PhoenixEventType, PhoenixEventStream
+from phoenix_event_bridge.phoenix_event_types import PhoenixEventData, PhoenixEventType, PhoenixEventStream
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 from functools import wraps
 import streamlit as st
-from packages.phoenix_shared_ui.components.upgrade_prompt import render_upgrade_prompt
-from .entities.phoenix_user import UserTier
+from phoenix_shared_ui.components.upgrade_prompt import render_upgrade_prompt
+from phoenix_shared_auth.entities.phoenix_user import UserTier
 
 def premium_feature(feature_name: str):
     """

@@ -9,7 +9,7 @@ Version: 4.1.0 - Performance Optimized
 
 import streamlit as st
 from typing import Any, Optional
-from .settings import get_settings
+from phoenix_common.settings import get_settings
 
 # 🤖 GEMINI CLIENT OPTIMISÉ
 @st.cache_resource(show_spinner=False)

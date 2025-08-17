@@ -6,7 +6,7 @@ import os
 import hashlib
 import hmac
 from typing import Optional
-from .settings import get_settings
+from phoenix_common.settings import get_settings
 
 def verify_stripe_webhook(payload: bytes, signature: str) -> bool:
     """

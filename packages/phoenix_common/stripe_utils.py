@@ -4,7 +4,7 @@
 
 import streamlit as st
 from typing import Optional, Dict, Any
-from .settings import get_settings
+from phoenix_common.settings import get_settings
 
 @st.cache_resource(show_spinner=False)
 def get_stripe_client():
