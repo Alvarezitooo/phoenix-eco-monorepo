@@ -1,29 +1,29 @@
 """
-🤖 PHOENIX RISE - PAGE IRIS
-Page dédiée à l'agent Iris pour Phoenix Rise.
+🤖 PHOENIX RISE - PAGE ALESSIO
+Page dédiée à l'agent Alessio pour Phoenix Rise.
 Interface complète d'accompagnement développement personnel et reconversion.
 """
 
 import streamlit as st
-from .iris_integration import (
-    render_coaching_iris_chat,
-    render_reconversion_iris_assistant,
-    render_emotional_iris_chat,
-    render_goals_iris_assistant,
-    render_reflection_iris_chat
+from .alessio_integration import (
+    render_coaching_alessio_chat,
+    render_reconversion_alessio_assistant,
+    render_emotional_alessio_chat,
+    render_goals_alessio_assistant,
+    render_reflection_alessio_chat
 )
 
-def render_iris_page():
-    """Page principale d'Iris pour Phoenix Rise"""
+def render_alessio_page():
+    """Page principale d'Alessio pour Phoenix Rise"""
     
-    st.title("🤖 Iris Coach - Votre Accompagnateur Reconversion")
+    st.title("🤖 Alessio Coach - Votre Accompagnateur Reconversion")
     
     # Vérification de l'authentification
     if not st.session_state.get('authenticated_user'):
-        st.warning("🔒 Connectez-vous pour accéder à Iris Coach")
-        st.info("Iris Coach vous accompagne dans votre développement personnel et votre reconversion professionnelle.")
+        st.warning("🔒 Connectez-vous pour accéder à Alessio Coach")
+        st.info("Alessio Coach vous accompagne dans votre développement personnel et votre reconversion professionnelle.")
         
-        with st.expander("💡 Découvrez les capacités d'Iris Coach"):
+        with st.expander("💡 Découvrez les capacités d'Alessio Coach"):
             st.markdown("""
             **🌱 Accompagnement Personnel**
             - Coaching personnalisé basé sur votre journal
@@ -93,7 +93,7 @@ def render_iris_page():
         if journal_entries:
             st.success(f"📖 {len(journal_entries)} entrées récentes analysées")
         
-        render_coaching_iris_chat(journal_entries=journal_entries, mood_data=mood_data)
+        render_coaching_alessio_chat(journal_entries=journal_entries, mood_data=mood_data)
     
     with tab2:
         st.markdown("### 🚀 Stratégie Reconversion")
@@ -150,7 +150,7 @@ def render_iris_page():
         
         progress_data = st.session_state.get('reconversion_progress')
         
-        render_reconversion_iris_assistant(career_goals=career_goals, progress_data=progress_data)
+        render_reconversion_alessio_assistant(career_goals=career_goals, progress_data=progress_data)
     
     with tab3:
         st.markdown("### 💖 Soutien Émotionnel")
@@ -189,13 +189,13 @@ def render_iris_page():
             )
         
         if current_mood or current_challenges:
-            st.info("💡 Iris adapte son soutien à votre état émotionnel actuel")
+            st.info("💡 Alessio adapte son soutien à votre état émotionnel actuel")
         
-        render_emotional_iris_chat(recent_mood=current_mood, challenges=current_challenges)
+        render_emotional_alessio_chat(recent_mood=current_mood, challenges=current_challenges)
     
     with tab4:
         st.markdown("### 🎯 Définition d'Objectifs")
-        st.info("Créez, suivez et atteignez vos objectifs avec l'aide d'Iris.")
+        st.info("Créez, suivez et atteignez vos objectifs avec l'aide d'Alessio.")
         
         # Gestion des objectifs
         current_goals = st.session_state.get('current_goals', [])
@@ -228,7 +228,7 @@ def render_iris_page():
             for i, goal in enumerate(current_goals):
                 st.write(f"{i+1}. {goal['title']} ({goal['category']})")
         
-        render_goals_iris_assistant(current_goals=current_goals, achievements=achievements)
+        render_goals_alessio_assistant(current_goals=current_goals, achievements=achievements)
     
     with tab5:
         st.markdown("### 🌅 Réflexion Quotidienne")
@@ -273,7 +273,7 @@ def render_iris_page():
                         st.session_state['show_quick_journal'] = False
                         st.rerun()
         
-        render_reflection_iris_chat(today_entry=today_entry)
+        render_reflection_alessio_chat(today_entry=today_entry)
     
     # Section conseils rapides
     st.markdown("---")
@@ -283,20 +283,20 @@ def render_iris_page():
     
     with action_cols[0]:
         if st.button("💪 Boost de motivation"):
-            st.session_state['iris_quick_question'] = "J'ai besoin d'un boost de motivation pour continuer ma reconversion. Peux-tu me remotiver ?"
+            st.session_state['alessio_quick_question'] = "J'ai besoin d'un boost de motivation pour continuer ma reconversion. Peux-tu me remotiver ?"
             st.rerun()
     
     with action_cols[1]:
         if st.button("🧘 Exercice de relaxation"):
-            st.session_state['iris_quick_question'] = "Guide-moi dans un exercice de relaxation rapide pour gérer mon stress"
+            st.session_state['alessio_quick_question'] = "Guide-moi dans un exercice de relaxation rapide pour gérer mon stress"
             st.rerun()
     
     with action_cols[2]:
         if st.button("🎯 Objectif de la semaine"):
-            st.session_state['iris_quick_question'] = "Aide-moi à définir un objectif réalisable pour cette semaine"
+            st.session_state['alessio_quick_question'] = "Aide-moi à définir un objectif réalisable pour cette semaine"
             st.rerun()
     
     with action_cols[3]:
         if st.button("📊 Bilan de progression"):
-            st.session_state['iris_quick_question'] = "Fais un bilan de ma progression dans ma reconversion et donne-moi des conseils"
+            st.session_state['alessio_quick_question'] = "Fais un bilan de ma progression dans ma reconversion et donne-moi des conseils"
             st.rerun()

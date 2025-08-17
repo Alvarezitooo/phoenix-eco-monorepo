@@ -1,5 +1,5 @@
 """
-🤖 Widget flottant Iris pour Phoenix Letters
+🤖 Widget flottant Alessio pour Phoenix Letters
 Composant d'assistant IA intégré en bas à droite de l'interface
 """
 
@@ -10,12 +10,14 @@ from typing import Optional, Dict, Any
 
 logger = logging.getLogger(__name__)
 
-class IrisFloatingWidget:
-    """Widget flottant pour l'assistant Iris spécialisé lettres de motivation."""
+class AlessioFloatingWidget:
+    """
+    Widget flottant pour l'assistant Alessio spécialisé lettres de motivation.
+    """
     
     def __init__(self, api_url: Optional[str] = None):
         """
-        Initialise le widget Iris.
+        Initialise le widget Alessio.
         
         Args:
             api_url: URL de l'API Iris (optionnel, utilise une valeur par défaut)
@@ -25,17 +27,19 @@ class IrisFloatingWidget:
         self.is_available = bool(self.api_url)
         
         # État du widget
-        if "iris_chat_history" not in st.session_state:
-            st.session_state.iris_chat_history = []
-        if "iris_widget_open" not in st.session_state:
-            st.session_state.iris_widget_open = False
+        if "alessio_chat_history" not in st.session_state:
+            st.session_state.alessio_chat_history = []
+        if "alessio_widget_open" not in st.session_state:
+            st.session_state.alessio_widget_open = False
     
     def _inject_floating_css(self):
-        """Injecte le CSS pour créer le widget flottant."""
+        """
+        Injecte le CSS pour créer le widget flottant.
+        """
         st.markdown("""
         <style>
-        /* Widget flottant Iris */
-        .iris-floating-widget {
+        /* Widget flottant Alessio */
+        .alessio-floating-widget {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -44,7 +48,7 @@ class IrisFloatingWidget:
         }
         
         /* Bouton d'ouverture/fermeture */
-        .iris-toggle-btn {
+        .alessio-toggle-btn {
             width: 60px;
             height: 60px;
             border-radius: 50%;
@@ -60,13 +64,13 @@ class IrisFloatingWidget:
             font-size: 24px;
         }
         
-        .iris-toggle-btn:hover {
+        .alessio-toggle-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 25px rgba(79, 70, 229, 0.6);
         }
         
         /* Fenêtre de chat */
-        .iris-chat-window {
+        .alessio-chat-window {
             position: absolute;
             bottom: 80px;
             right: 0;
@@ -82,7 +86,7 @@ class IrisFloatingWidget:
         }
         
         /* Header du chat */
-        .iris-chat-header {
+        .alessio-chat-header {
             background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             color: white;
             padding: 16px;
@@ -93,7 +97,7 @@ class IrisFloatingWidget:
         }
         
         /* Zone de messages */
-        .iris-chat-messages {
+        .alessio-chat-messages {
             flex: 1;
             padding: 16px;
             overflow-y: auto;
@@ -101,46 +105,46 @@ class IrisFloatingWidget:
         }
         
         /* Message bulle */
-        .iris-message {
+        .alessio-message {
             margin-bottom: 12px;
             max-width: 80%;
         }
         
-        .iris-message.user {
+        .alessio-message.user {
             margin-left: auto;
         }
         
-        .iris-message.assistant {
+        .alessio-message.assistant {
             margin-right: auto;
         }
         
-        .iris-message-bubble {
+        .alessio-message-bubble {
             padding: 10px 14px;
             border-radius: 12px;
             font-size: 14px;
             line-height: 1.4;
         }
         
-        .iris-message.user .iris-message-bubble {
+        .alessio-message.user .alessio-message-bubble {
             background: #4f46e5;
             color: white;
             border-bottom-right-radius: 4px;
         }
         
-        .iris-message.assistant .iris-message-bubble {
+        .alessio-message.assistant .alessio_message-bubble {
             background: white;
             border: 1px solid #e5e7eb;
             border-bottom-left-radius: 4px;
         }
         
         /* Zone de saisie */
-        .iris-input-area {
+        .alessio-input-area {
             padding: 16px;
             border-top: 1px solid #e5e7eb;
             background: white;
         }
         
-        .iris-status-offline {
+        .alessio-status-offline {
             background: #ef4444;
             color: white;
             padding: 8px;
@@ -150,7 +154,7 @@ class IrisFloatingWidget:
         </style>
         """, unsafe_allow_html=True)
     
-    def _call_iris_api(self, message: str, context: Dict[str, Any] = None) -> str:
+    def _call_alessio_api(self, message: str, context: Dict[str, Any] = None) -> str:
         """
         Appelle l'API Iris pour obtenir une réponse.
         
@@ -159,10 +163,10 @@ class IrisFloatingWidget:
             context: Contexte de la conversation (CV, offre, etc.)
             
         Returns:
-            str: Réponse d'Iris
+            str: Réponse d'Alessio
         """
         if not self.is_available:
-            return "🤖 Désolé, je ne suis pas disponible pour le moment. Veuillez réessayer plus tard."
+            return "🤖 Désolé, Alessio n'est pas disponible pour le moment. Veuillez réessayer plus tard."
         
         try:
             payload = {
@@ -186,14 +190,16 @@ class IrisFloatingWidget:
                 return data.get("response", "Je n'ai pas pu traiter votre demande.")
             else:
                 logger.error(f"API Iris error: {response.status_code}")
-                return "🤖 J'ai rencontré un problème technique. Pouvez-vous reformuler votre question ?"
+                return "🤖 Alessio a rencontré un problème technique. Pouvez-vous reformuler votre question ?"
                 
         except requests.exceptions.RequestException as e:
             logger.error(f"Iris API call failed: {e}")
-            return "🤖 Je ne suis pas disponible actuellement. Veuillez réessayer plus tard."
+            return "🤖 Alessio n'est pas disponible actuellement. Veuillez réessayer plus tard."
     
     def _get_context(self) -> Dict[str, Any]:
-        """Récupère le contexte actuel de Phoenix Letters."""
+        """
+        Récupère le contexte actuel de Phoenix Letters.
+        """
         context = {}
         
         # Ajouter le contexte CV si disponible
@@ -211,13 +217,15 @@ class IrisFloatingWidget:
         return context
     
     def render(self):
-        """Rend le widget flottant Iris."""
+        """
+Rend le widget flottant Alessio.
+"""
         # Injecter le CSS
         self._inject_floating_css()
         
         # Container flottant
         st.markdown("""
-        <div class="iris-floating-widget">
+        <div class="alessio-floating-widget">
         </div>
         """, unsafe_allow_html=True)
         
@@ -230,34 +238,34 @@ class IrisFloatingWidget:
                 st.write("")  # Espace pour pousser vers le bas
                 
                 # Bouton toggle
-                if st.button("🤖" if not st.session_state.iris_widget_open else "✕", 
-                           key="iris_toggle",
-                           help="Assistant Iris - Spécialiste lettres de motivation"):
-                    st.session_state.iris_widget_open = not st.session_state.iris_widget_open
+                if st.button("🤖" if not st.session_state.alessio_widget_open else "✕", 
+                           key="alessio_toggle",
+                           help="Assistant Alessio - Spécialiste lettres de motivation"):
+                    st.session_state.alessio_widget_open = not st.session_state.alessio_widget_open
                 
                 # Fenêtre de chat si ouverte
-                if st.session_state.iris_widget_open:
+                if st.session_state.alessio_widget_open:
                     with st.container():
                         # Header
-                        st.markdown("**🤖 Iris - Assistant Lettres**")
+                        st.markdown("**🤖 Alessio - Assistant Lettres**")
                         
                         if not self.is_available:
-                            st.error("🔴 Iris hors ligne")
-                            st.info("💡 Iris vous aide à optimiser vos lettres de motivation, analyser des offres d'emploi, et vous conseiller pour votre reconversion.")
+                            st.error("🔴 Alessio hors ligne")
+                            st.info("💡 Alessio vous aide à optimiser vos lettres de motivation, analyser des offres d'emploi, et vous conseiller pour votre reconversion.")
                         else:
                             # Zone de messages
                             messages_container = st.container()
                             with messages_container:
-                                for msg in st.session_state.iris_chat_history[-5:]:  # Afficher les 5 derniers messages
+                                for msg in st.session_state.alessio_chat_history[-5:]:  # Afficher les 5 derniers messages
                                     if msg["role"] == "user":
                                         st.markdown(f"**Vous:** {msg['content']}")
                                     else:
-                                        st.markdown(f"**🤖 Iris:** {msg['content']}")
+                                        st.markdown(f"**🤖 Alessio:** {msg['content']}")
                             
                             # Zone de saisie
-                            with st.form("iris_chat_form", clear_on_submit=True):
+                            with st.form("alessio_chat_form", clear_on_submit=True):
                                 user_input = st.text_input(
-                                    "Posez votre question à Iris...",
+                                    "Posez votre question à Alessio...",
                                     placeholder="Ex: Comment améliorer ma lettre ?",
                                     label_visibility="collapsed"
                                 )
@@ -268,18 +276,18 @@ class IrisFloatingWidget:
                                 
                                 if send_button and user_input.strip():
                                     # Ajouter le message utilisateur
-                                    st.session_state.iris_chat_history.append({
+                                    st.session_state.alessio_chat_history.append({
                                         "role": "user",
                                         "content": user_input.strip()
                                     })
                                     
-                                    # Appeler Iris
+                                    # Appeler Alessio
                                     context = self._get_context()
-                                    with st.spinner("🤖 Iris réfléchit..."):
-                                        response = self._call_iris_api(user_input.strip(), context)
+                                    with st.spinner("🤖 Alessio réfléchit..."):
+                                        response = self._call_alessio_api(user_input.strip(), context)
                                     
-                                    # Ajouter la réponse d'Iris
-                                    st.session_state.iris_chat_history.append({
+                                    # Ajouter la réponse d'Alessio
+                                    st.session_state.alessio_chat_history.append({
                                         "role": "assistant", 
                                         "content": response
                                     })
@@ -292,23 +300,25 @@ class IrisFloatingWidget:
                             col1, col2 = st.columns(2)
                             
                             with col1:
-                                if st.button("💡 Conseils", key="iris_tips"):
+                                if st.button("💡 Conseils", key="alessio_tips"):
                                     # Auto-poser une question
                                     tips_msg = "Donne-moi 3 conseils pour améliorer ma lettre de motivation"
-                                    st.session_state.iris_chat_history.append({"role": "user", "content": tips_msg})
-                                    response = self._call_iris_api(tips_msg, self._get_context())
-                                    st.session_state.iris_chat_history.append({"role": "assistant", "content": response})
+                                    st.session_state.alessio_chat_history.append({"role": "user", "content": tips_msg})
+                                    response = self._call_alessio_api(tips_msg, self._get_context())
+                                    st.session_state.alessio_chat_history.append({"role": "assistant", "content": response})
                                     st.rerun()
                             
                             with col2:
-                                if st.button("🔍 Analyser", key="iris_analyze"):
+                                if st.button("🔍 Analyser", key="alessio_analyze"):
                                     analyze_msg = "Analyse le contexte actuel et donne-moi des recommandations"
-                                    st.session_state.iris_chat_history.append({"role": "user", "content": analyze_msg})
-                                    response = self._call_iris_api(analyze_msg, self._get_context())
-                                    st.session_state.iris_chat_history.append({"role": "assistant", "content": response})
+                                    st.session_state.alessio_chat_history.append({"role": "user", "content": analyze_msg})
+                                    response = self._call_alessio_api(analyze_msg, self._get_context())
+                                    st.session_state.alessio_chat_history.append({"role": "assistant", "content": response})
                                     st.rerun()
 
-def render_iris_floating_widget():
-    """Fonction helper pour rendre le widget Iris flottant."""
-    widget = IrisFloatingWidget()
+def render_alessio_floating_widget():
+    """
+    Fonction helper pour rendre le widget Alessio flottant.
+    """
+    widget = AlessioFloatingWidget()
     widget.render()

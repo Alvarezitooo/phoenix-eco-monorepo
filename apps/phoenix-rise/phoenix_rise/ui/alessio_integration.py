@@ -1,37 +1,37 @@
 """
-🤖 PHOENIX RISE - INTÉGRATION IRIS
-Module d'intégration de l'agent Iris dans Phoenix Rise.
+🤖 PHOENIX RISE - INTÉGRATION ALESSIO
+Module d'intégration de l'agent Alessio dans Phoenix Rise.
 Spécialisé pour l'accompagnement développement personnel et reconversion.
 """
 
 import os
 
 try:
-    from iris_client import (
-        IrisStreamlitClient,
-        IrisAppContext,
-        render_iris_chat,
-        render_iris_status,
+    from alessio_client import (
+        AlessioStreamlitClient,
+        AlessioAppContext,
+        render_alessio_chat,
+        render_alessio_status,
     )
 except ImportError:
     # Fallback si le package n'est pas disponible
-    class IrisStreamlitClient:
+    class AlessioStreamlitClient:
         def __init__(self, app_context, api_url=None):
             self.app_context = app_context
             self.api_url = api_url
         def render_chat_interface(self, additional_context=None):
             import streamlit as st
-            st.error("🤖 Iris temporairement indisponible")
+            st.error("🤖 Alessio temporairement indisponible")
     
-    IrisAppContext = None
+    AlessioAppContext = None
     
-    def render_iris_chat(*args, **kwargs):
+    def render_alessio_chat(*args, **kwargs):
         import streamlit as st
-        st.error("🤖 Iris temporairement indisponible")
+        st.error("🤖 Alessio temporairement indisponible")
     
-    def render_iris_status(*args, **kwargs):
+    def render_alessio_status(*args, **kwargs):
         import streamlit as st
-        st.warning("🤖 Iris hors ligne")
+        st.warning("🤖 Alessio hors ligne")
 
 import streamlit as st
 import logging
@@ -39,29 +39,29 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-class PhoenixRiseIrisIntegration:
+class PhoenixRiseAlessioIntegration:
     """
-    Intégration spécialisée d'Iris pour Phoenix Rise.
+    Intégration spécialisée d'Alessio pour Phoenix Rise.
     Contexte: développement personnel, reconversion, coaching, journal.
     """
     
     def __init__(self):
-        self.iris_client = IrisStreamlitClient(
-            app_context=IrisAppContext.RISE,
+        self.alessio_client = AlessioStreamlitClient(
+            app_context=AlessioAppContext.RISE,
             api_url=os.getenv('IRIS_API_URL', 'http://localhost:8003/api/v1/chat')
         )
     
     def render_personal_coaching_chat(self, journal_entries=None, mood_data=None):
         """
-        Interface Iris spécialisée pour le coaching personnel.
+        Interface Alessio spécialisée pour le coaching personnel.
         
         Args:
             journal_entries: Entrées récentes du journal (optionnel)
             mood_data: Données d'humeur/émotions (optionnel)
         """
-        st.subheader("🤖 Iris Coach - Accompagnement Personnel")
+        st.subheader("🤖 Alessio Coach - Accompagnement Personnel")
         
-        # Contexte additionnel pour Iris
+        # Contexte additionnel pour Alessio
         additional_context = {
             "current_page": "personal_coaching",
             "has_journal_entries": journal_entries is not None,
@@ -81,7 +81,7 @@ class PhoenixRiseIrisIntegration:
                 "last_entry_date": journal_entries[0].get('created_at') if journal_entries else None,
                 "journaling_frequency": "regular" if recent_entries_count > 3 else "occasional"
             }
-            st.info(f"💡 Iris a accès à vos {recent_entries_count} dernières entrées de journal pour un coaching personnalisé")
+            st.info(f"💡 Alessio a accès à vos {recent_entries_count} dernières entrées de journal pour un coaching personnalisé")
         
         # Si des données d'humeur sont disponibles
         if mood_data:
@@ -92,17 +92,17 @@ class PhoenixRiseIrisIntegration:
             }
         
         # Interface de chat avec contexte coaching
-        self.iris_client.render_chat_interface(additional_context)
+        self.alessio_client.render_chat_interface(additional_context)
     
     def render_reconversion_assistant(self, career_goals=None, progress_data=None):
         """
-        Assistant Iris spécialisé pour l'accompagnement reconversion.
+        Assistant Alessio spécialisé pour l'accompagnement reconversion.
         
         Args:
             career_goals: Objectifs de reconversion
             progress_data: Données de progression
         """
-        st.subheader("🚀 Iris Reconversion - Stratégie & Progression")
+        st.subheader("🚀 Alessio Reconversion - Stratégie & Progression")
         
         additional_context = {
             "current_page": "reconversion_planning",
@@ -118,7 +118,7 @@ class PhoenixRiseIrisIntegration:
                 "timeline": career_goals.get('timeline', ''),
                 "key_challenges": career_goals.get('challenges', [])
             }
-            st.success("🎯 Iris adapte ses conseils à votre projet de reconversion")
+            st.success("🎯 Alessio adapte ses conseils à votre projet de reconversion")
         
         if progress_data:
             additional_context["progress_context"] = {
@@ -127,17 +127,17 @@ class PhoenixRiseIrisIntegration:
                 "success_rate": progress_data.get('success_rate', 0)
             }
         
-        self.iris_client.render_chat_interface(additional_context)
+        self.alessio_client.render_chat_interface(additional_context)
     
     def render_emotional_support_chat(self, recent_mood=None, challenges=None):
         """
-        Chat Iris pour le soutien émotionnel et gestion du stress.
+        Chat Alessio pour le soutien émotionnel et gestion du stress.
         
         Args:
             recent_mood: Humeur récente
             challenges: Défis actuels
         """
-        st.subheader("💖 Iris Bien-être - Soutien Émotionnel")
+        st.subheader("💖 Alessio Bien-être - Soutien Émotionnel")
         
         additional_context = {
             "current_page": "emotional_support",
@@ -155,19 +155,19 @@ class PhoenixRiseIrisIntegration:
             st.info(f"💡 Humeur actuelle : {mood_display} {recent_mood.title()}")
         
         if challenges:
-            st.info("💡 Iris vous accompagne face à vos défis actuels")
+            st.info("💡 Alessio vous accompagne face à vos défis actuels")
         
-        self.iris_client.render_chat_interface(additional_context)
+        self.alessio_client.render_chat_interface(additional_context)
     
     def render_goal_setting_assistant(self, current_goals=None, achievements=None):
         """
-        Assistant Iris pour la définition et suivi d'objectifs.
+        Assistant Alessio pour la définition et suivi d'objectifs.
         
         Args:
             current_goals: Objectifs actuels
             achievements: Réalisations récentes
         """
-        st.subheader("🎯 Iris Objectifs - Planification & Suivi")
+        st.subheader("🎯 Alessio Objectifs - Planification & Suivi")
         
         additional_context = {
             "current_page": "goal_setting",
@@ -182,21 +182,21 @@ class PhoenixRiseIrisIntegration:
                 "goal_categories": [goal.get('category') for goal in current_goals],
                 "progress_overview": "in_progress"
             }
-            st.success(f"🎯 {len(current_goals)} objectifs actifs suivis par Iris")
+            st.success(f"🎯 {len(current_goals)} objectifs actifs suivis par Alessio")
         
         if achievements:
             st.success(f"🏆 {len(achievements)} réalisations récentes à célébrer !")
         
-        self.iris_client.render_chat_interface(additional_context)
+        self.alessio_client.render_chat_interface(additional_context)
     
     def render_daily_reflection_chat(self, today_entry=None):
         """
-        Chat Iris pour la réflexion quotidienne et l'introspection.
+        Chat Alessio pour la réflexion quotidienne et l'introspection.
         
         Args:
             today_entry: Entrée du jour dans le journal
         """
-        st.subheader("🌅 Iris Réflexion - Introspection Quotidienne")
+        st.subheader("🌅 Alessio Réflexion - Introspection Quotidienne")
         
         additional_context = {
             "current_page": "daily_reflection",
@@ -211,15 +211,17 @@ class PhoenixRiseIrisIntegration:
                 "mood_logged": today_entry.get('mood') is not None,
                 "goals_mentioned": 'objectif' in today_entry.get('content', '').lower()
             }
-            st.info("💡 Iris vous aide à approfondir votre réflexion du jour")
+            st.info("💡 Alessio vous aide à approfondir votre réflexion du jour")
         else:
-            st.info("💡 Iris vous guide dans votre introspection quotidienne")
+            st.info("💡 Alessio vous guide dans votre introspection quotidienne")
         
-        self.iris_client.render_chat_interface(additional_context)
+        self.alessio_client.render_chat_interface(additional_context)
     
     def render_sidebar_status(self):
-        """Affiche le statut Iris dans la sidebar de Phoenix Rise"""
-        self.iris_client.render_sidebar_status()
+        """
+Affiche le statut Alessio dans la sidebar de Phoenix Rise
+"""
+        self.alessio_client.render_sidebar_status()
     
     def get_rise_specific_suggestions(self, context="general"):
         """
@@ -259,29 +261,41 @@ class PhoenixRiseIrisIntegration:
         return suggestions.get(context, suggestions["general"])
 
 # Instance globale pour Phoenix Rise
-phoenix_rise_iris = PhoenixRiseIrisIntegration()
+phoenix_rise_alessio = PhoenixRiseAlessioIntegration()
 
 # Fonctions d'interface pour compatibilité
-def render_coaching_iris_chat(journal_entries=None, mood_data=None):
-    """Interface rapide pour le coaching personnel"""
-    phoenix_rise_iris.render_personal_coaching_chat(journal_entries, mood_data)
+def render_coaching_alessio_chat(journal_entries=None, mood_data=None):
+    """
+    Interface rapide pour le coaching personnel
+    """
+    phoenix_rise_alessio.render_personal_coaching_chat(journal_entries, mood_data)
 
-def render_reconversion_iris_assistant(career_goals=None, progress_data=None):
-    """Interface rapide pour l'assistant reconversion"""
-    phoenix_rise_iris.render_reconversion_assistant(career_goals, progress_data)
+def render_reconversion_alessio_assistant(career_goals=None, progress_data=None):
+    """
+    Interface rapide pour l'assistant reconversion
+    """
+    phoenix_rise_alessio.render_reconversion_assistant(career_goals, progress_data)
 
-def render_emotional_iris_chat(recent_mood=None, challenges=None):
-    """Interface rapide pour le soutien émotionnel"""
-    phoenix_rise_iris.render_emotional_support_chat(recent_mood, challenges)
+def render_emotional_alessio_chat(recent_mood=None, challenges=None):
+    """
+    Interface rapide pour le soutien émotionnel
+    """
+    phoenix_rise_alessio.render_emotional_support_chat(recent_mood, challenges)
 
-def render_goals_iris_assistant(current_goals=None, achievements=None):
-    """Interface rapide pour l'assistant objectifs"""
-    phoenix_rise_iris.render_goal_setting_assistant(current_goals, achievements)
+def render_goals_alessio_assistant(current_goals=None, achievements=None):
+    """
+    Interface rapide pour l'assistant objectifs
+    """
+    phoenix_rise_alessio.render_goal_setting_assistant(current_goals, achievements)
 
-def render_reflection_iris_chat(today_entry=None):
-    """Interface rapide pour la réflexion quotidienne"""
-    phoenix_rise_iris.render_daily_reflection_chat(today_entry)
+def render_reflection_alessio_chat(today_entry=None):
+    """
+    Interface rapide pour la réflexion quotidienne
+    """
+    phoenix_rise_alessio.render_daily_reflection_chat(today_entry)
 
-def render_iris_sidebar():
-    """Interface rapide pour la sidebar Iris"""
-    phoenix_rise_iris.render_sidebar_status()
+def render_alessio_sidebar():
+    """
+    Interface rapide pour la sidebar Alessio
+    """
+    phoenix_rise_alessio.render_sidebar_status()

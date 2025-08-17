@@ -1,28 +1,28 @@
 """
-🤖 PHOENIX CV - PAGE IRIS
-Page dédiée à l'agent Iris pour Phoenix CV.
+🤖 PHOENIX CV - PAGE ALESSIO
+Page dédiée à l'agent Alessio pour Phoenix CV.
 Interface complète d'accompagnement CV et carrière.
 """
 
 import streamlit as st
-from phoenix_cv.ui.iris_integration import (
-    render_cv_iris_chat,
-    render_ats_iris_assistant, 
-    render_template_iris_assistant,
-    render_career_iris_chat
+from phoenix_cv.ui.alessio_integration import (
+    render_cv_alessio_chat,
+    render_ats_alessio_assistant, 
+    render_template_alessio_assistant,
+    render_career_alessio_chat
 )
 
-def render_iris_page():
-    """Page principale d'Iris pour Phoenix CV"""
+def render_alessio_page():
+    """Page principale d'Alessio pour Phoenix CV"""
     
-    st.title("🤖 Iris CV - Votre Expert Carrière IA")
+    st.title("🤖 Alessio CV - Votre Expert Carrière IA")
     
     # Vérification de l'authentification
     if not st.session_state.get('authenticated_user'):
-        st.warning("🔒 Connectez-vous pour accéder à Iris CV")
-        st.info("Iris CV vous accompagne dans l'optimisation de votre CV et votre stratégie carrière.")
+        st.warning("🔒 Connectez-vous pour accéder à Alessio CV")
+        st.info("Alessio CV vous accompagne dans l'optimisation de votre CV et votre stratégie carrière.")
         
-        with st.expander("💡 Découvrez les capacités d'Iris CV"):
+        with st.expander("💡 Découvrez les capacités d'Alessio CV"):
             st.markdown("""
             **🎯 Optimisation CV & ATS**
             - Analyse de votre CV et suggestions d'amélioration
@@ -62,7 +62,7 @@ def render_iris_page():
         cv_data = st.session_state.get('current_cv_data')
         template_type = st.session_state.get('selected_template')
         
-        render_cv_iris_chat(cv_data=cv_data, template_type=template_type)
+        render_cv_alessio_chat(cv_data=cv_data, template_type=template_type)
     
     with tab2:
         st.markdown("### 🎯 Optimisation ATS")
@@ -86,7 +86,7 @@ def render_iris_page():
             else:
                 job_offer = None
         
-        render_ats_iris_assistant(job_offer=job_offer)
+        render_ats_alessio_assistant(job_offer=job_offer)
     
     with tab3:
         st.markdown("### 🎨 Templates & Design")
@@ -110,7 +110,7 @@ def render_iris_page():
         else:
             templates_context = available_templates
         
-        render_template_iris_assistant(templates=templates_context)
+        render_template_alessio_assistant(templates=templates_context)
     
     with tab4:
         st.markdown("### 🚀 Trajectoire Carrière")
@@ -138,7 +138,7 @@ def render_iris_page():
             elif target_role:
                 st.info(f"🎯 Objectif : {target_role}")
         
-        render_career_iris_chat(current=current_role, target=target_role)
+        render_career_alessio_chat(current=current_role, target=target_role)
     
     # Section conseils rapides
     st.markdown("---")
@@ -148,26 +148,26 @@ def render_iris_page():
     
     with tips_cols[0]:
         if st.button("🔍 Analyse express de mon CV"):
-            st.session_state['iris_quick_question'] = "Peux-tu analyser rapidement mon CV et me donner 3 conseils d'amélioration prioritaires ?"
+            st.session_state['alessio_quick_question'] = "Peux-tu analyser rapidement mon CV et me donner 3 conseils d'amélioration prioritaires ?"
             st.rerun()
     
     with tips_cols[1]:
         if st.button("📈 Mots-clés tendance 2025"):
-            st.session_state['iris_quick_question'] = "Quels sont les mots-clés et compétences les plus recherchés en 2025 pour mon secteur ?"
+            st.session_state['alessio_quick_question'] = "Quels sont les mots-clés et compétences les plus recherchés en 2025 pour mon secteur ?"
             st.rerun()
     
     with tips_cols[2]:
         if st.button("🎯 Optimisation ATS rapide"):
-            st.session_state['iris_quick_question'] = "Comment optimiser rapidement mon CV pour passer les filtres ATS ?"
+            st.session_state['alessio_quick_question'] = "Comment optimiser rapidement mon CV pour passer les filtres ATS ?"
             st.rerun()
     
-    # Métriques d'utilisation d'Iris (si disponibles)
+    # Métriques d'utilisation d'Alessio (si disponibles)
     with st.sidebar:
-        st.markdown("### 📊 Utilisation Iris CV")
+        st.markdown("### 📊 Utilisation Alessio CV")
         
         user_tier = st.session_state.get('user_tier', 'FREE')
         if user_tier == 'FREE':
-            messages_used = st.session_state.get('iris_messages_today', 0)
+            messages_used = st.session_state.get('alessio_messages_today', 0)
             st.metric("Messages aujourd'hui", f"{messages_used}/5")
             
             if messages_used >= 4:
@@ -175,4 +175,4 @@ def render_iris_page():
             
             st.markdown("[🚀 Passer à PREMIUM](/pricing)")
         else:
-            st.success("💎 Accès illimité à Iris")
+            st.success("💎 Accès illimité à Alessio")
