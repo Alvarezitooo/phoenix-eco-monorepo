@@ -13,12 +13,12 @@ import json
 
 try:
     from supabase import Client
-    from ..entities.phoenix_subscription import (
+    from phoenix_shared_authentities.phoenix_subscription import (
         PhoenixUserSubscription, AppSubscriptionDetails, 
         SubscriptionTier, SubscriptionStatus, PhoenixApp,
         STRIPE_PRICE_IDS, BUNDLE_PRICE_IDS
     )
-    from ..database.phoenix_db_connection import get_phoenix_db_connection
+    from phoenix_shared_authdatabase.phoenix_db_connection import get_phoenix_db_connection
     SUPABASE_AVAILABLE = True
 except ImportError:
     SUPABASE_AVAILABLE = False

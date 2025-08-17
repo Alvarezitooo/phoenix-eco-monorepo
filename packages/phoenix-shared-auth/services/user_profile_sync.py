@@ -16,8 +16,8 @@ from enum import Enum
 try:
     from supabase import Client
     from .phoenix_auth_service import PhoenixAuthService
-    from ..entities.phoenix_user import PhoenixUser, UserTier, PhoenixApp
-    from ..database.phoenix_db_connection import get_phoenix_db_connection
+    from phoenix_shared_auth.entities.phoenix_user import PhoenixUser, UserTier, PhoenixApp
+    from phoenix_shared_auth.database.phoenix_db_connection import get_phoenix_db_connection
     SUPABASE_AVAILABLE = True
 except ImportError:
     SUPABASE_AVAILABLE = False

@@ -13,107 +13,13 @@ Author: Claude Phoenix DevSecOps Guardian
 Version: 4.1.0 - Event-Sourcing Architecture
 """
 
-import importlib
-import importlib.util
-import traceback
 import streamlit as st
 import os
 import sys
-from typing import Dict, List, Optional, Any
+from typing import Optional, Any
 
-# 🏛️ ORACLE PATTERN: Event-Sourcing pour diagnostics UI
-try:
-    from phoenix_shared_models.events import UIComponentImportFailed
-    from phoenix_event_bridge.helpers import publish_event
-    EVENT_SOURCING_AVAILABLE = True
-except ImportError:
-    EVENT_SOURCING_AVAILABLE = False
-    # Fallback simple sans event sourcing
-    def publish_event(event):
-        print(f"📡 EVENT (fallback): {event}")
-
-# Global state pour diagnostics UI
-UI_ERRORS: Dict[str, str] = {}
-
-def import_ui(module_path: str, names: List[str]) -> List[Optional[Any]]:
-    """
-    Import sécurisé avec Event-Sourcing conforme Contrat V5
-    
-    Args:
-        module_path: Chemin du module à importer
-        names: Liste des attributs à extraire
-        
-    Returns:
-        Liste des objets importés (None si échec)
-    """
-    
-    # Vérification de l'existence du module
-    spec = importlib.util.find_spec(module_path)
-    if spec is None:
-        msg = f"Module introuvable (sys.path): {module_path}"
-        UI_ERRORS[module_path] = msg
-        
-        # 🎯 EVENT-SOURCING: Publication événement d'échec
-        if EVENT_SOURCING_AVAILABLE:
-            publish_event(UIComponentImportFailed(
-                module_path=module_path, 
-                reason="not_found"
-            ))
-        return [None for _ in names]
-    
-    # Tentative d'import du module
-    try:
-        mod = importlib.import_module(module_path)
-        out = []
-        
-        # Extraction des attributs demandés
-        for name in names:
-            try:
-                out.append(getattr(mod, name))
-            except AttributeError:
-                tb = traceback.format_exc()
-                key = f"{module_path}.{name}"
-                UI_ERRORS[key] = tb
-                
-                # 🎯 EVENT-SOURCING: Échec d'attribut
-                if EVENT_SOURCING_AVAILABLE:
-                    publish_event(UIComponentImportFailed(
-                        module_path=key, 
-                        reason="attr_error", 
-                        traceback=tb
-                    ))
-                out.append(None)
-        
-        return out
-        
-    except Exception:
-        tb = traceback.format_exc()
-        UI_ERRORS[module_path] = tb
-        
-        # 🎯 EVENT-SOURCING: Échec d'import
-        if EVENT_SOURCING_AVAILABLE:
-            publish_event(UIComponentImportFailed(
-                module_path=module_path, 
-                reason="import_error", 
-                traceback=tb
-            ))
-        return [None for _ in names]
-
-def render_ui_diagnostics():
-    """
-    Interface diagnostics UI conforme sécurité Contrat V5
-    """
-    if UI_ERRORS:
-        with st.expander("🔍 Diagnostics UI (imports)", expanded=False):
-            st.warning("⚠️ Certains composants UI ne sont pas disponibles")
-            
-            for module_path, error_msg in UI_ERRORS.items():
-                st.markdown(f"**❌ {module_path}**")
-                st.code(error_msg, language="python")
-                
-                # 🛡️ SÉCURITÉ: Pas de secrets dans les tracebacks
-                if any(secret in error_msg.lower() for secret in ['password', 'key', 'token', 'secret']):
-                    st.error("🛡️ Erreur contenant des informations sensibles masquée")
+# 🏛️ UTILISATION_SERVICES_PARTAGES: UI Loader commun
+from phoenix_common.ui_loader import import_ui_safe, render_ui_diagnostics_safe, create_ui_fallback
 
 # Import sécurisé des composants UI
 def load_ui_components():
@@ -121,54 +27,45 @@ def load_ui_components():
     Chargement des composants UI avec fallbacks sécurisés
     """
     
-    # Import des composants principaux
-    PhoenixCVHeader, PhoenixCVPremiumBarrier, PhoenixCVNavigation = import_ui(
+    # Import des composants principaux avec loader sécurisé
+    PhoenixCVHeader, PhoenixCVPremiumBarrier, PhoenixCVNavigation = import_ui_safe(
         "phoenix_cv.ui.components",
         ["PhoenixCVHeader", "PhoenixCVPremiumBarrier", "PhoenixCVNavigation"]
     )
     
     # Fallbacks sécurisés si imports échouent
     if PhoenixCVHeader is None:
-        class PhoenixCVHeader:
-            @staticmethod
-            def render(title="Phoenix CV", **kwargs):
-                st.markdown(f"# 📄 {title}")
-                st.caption("Mode dégradé - composant header indisponible")
+        PhoenixCVHeader = create_ui_fallback("PhoenixCVHeader", "Header Phoenix CV indisponible")
     
     if PhoenixCVPremiumBarrier is None:
-        class PhoenixCVPremiumBarrier:
-            @staticmethod
-            def render(feature_name, description, **kwargs):
-                st.info(f"🔐 {feature_name}: {description}")
-                st.warning("Mode dégradé - barrière premium indisponible")
+        PhoenixCVPremiumBarrier = create_ui_fallback("PhoenixCVPremiumBarrier", "Barrière premium indisponible")
     
     if PhoenixCVNavigation is None:
-        class PhoenixCVNavigation:
-            @staticmethod
-            def render_main_nav():
-                st.info("🔗 Navigation indisponible en mode dégradé")
-            
-            @staticmethod
-            def render_sidebar_nav():
-                pass
+        PhoenixCVNavigation = create_ui_fallback("PhoenixCVNavigation", "Navigation Phoenix CV indisponible")
     
     return PhoenixCVHeader, PhoenixCVPremiumBarrier, PhoenixCVNavigation
 
 # Import des services partagés (OBLIGATOIRE Contrat V5)
 def load_shared_services():
     """
-    Chargement des services partagés Phoenix
+    Chargement des services partagés Phoenix avec clients optimisés
     """
     
     try:
-        # 🏛️ UTILISATION_SERVICES_PARTAGES: Authentification obligatoire
-        from phoenix_shared_auth.client import get_auth_manager
-        auth_manager = get_auth_manager()
+        # 🏛️ UTILISATION_SERVICES_PARTAGES: Settings unifié + clients optimisés
+        from phoenix_common.settings import get_settings
+        from phoenix_common.clients import get_phoenix_auth_client, get_cached_client_status
+        
+        settings = get_settings()
+        
+        # Clients optimisés avec cache
+        auth_manager = get_phoenix_auth_client()
+        client_status = get_cached_client_status()
         
         # 🏛️ UTILISATION_SERVICES_PARTAGES: Modèles de données obligatoires  
         from phoenix_shared_models.user import PhoenixUser
         
-        return True, auth_manager, PhoenixUser
+        return True, auth_manager, PhoenixUser, settings, client_status
         
     except ImportError as e:
         # 🎯 EVENT-SOURCING: Service partagé indisponible
@@ -179,7 +76,7 @@ def load_shared_services():
                 traceback=str(e)
             ))
         
-        return False, None, None
+        return False, None, None, None, None
 
 def run():
     """
@@ -195,14 +92,25 @@ def run():
         initial_sidebar_state="expanded"
     )
     
-    # Chargement des services partagés
-    services_ok, auth_manager, PhoenixUser = load_shared_services()
+    # Chargement des services partagés avec optimisations
+    services_result = load_shared_services()
+    services_ok = services_result[0] if services_result else False
+    auth_manager = services_result[1] if services_ok else None
+    PhoenixUser = services_result[2] if services_ok else None
+    settings = services_result[3] if services_ok else None
+    client_status = services_result[4] if services_ok else None
     
     # Chargement des composants UI avec diagnostics
     PhoenixCVHeader, PhoenixCVPremiumBarrier, PhoenixCVNavigation = load_ui_components()
     
     # Interface diagnostics si erreurs
-    render_ui_diagnostics()
+    render_ui_diagnostics_safe()
+    
+    # Affichage statut clients en mode développement
+    if settings and settings.is_development() and client_status:
+        with st.expander("🔧 Statut des clients Phoenix", expanded=False):
+            for service, status in client_status.items():
+                st.markdown(f"**{service.title()}**: {status}")
     
     # Header principal
     PhoenixCVHeader.render(

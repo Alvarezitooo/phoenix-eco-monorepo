@@ -9,8 +9,8 @@ from typing import Any, Callable, Dict, Optional
 
 import streamlit as st
 
-from ..entities.phoenix_user import PhoenixApp, PhoenixUser
-from ..services.phoenix_auth_service import PhoenixAuthService
+from phoenix_shared_authentities.phoenix_user import PhoenixApp, PhoenixUser
+from phoenix_shared_authservices.phoenix_auth_service import PhoenixAuthService
 
 
 class PhoenixStreamlitAuth:
@@ -293,7 +293,7 @@ class PhoenixStreamlitAuth:
         # Simplification pour la session - reconstruire depuis la DB si besoin complet
         from uuid import UUID
 
-        from ..entities.phoenix_user import PhoenixSubscription, UserTier
+        from phoenix_shared_authentities.phoenix_user import PhoenixSubscription, UserTier
 
         # Si c'est un invité, créer un objet simple
         if user_data.get("is_guest"):
