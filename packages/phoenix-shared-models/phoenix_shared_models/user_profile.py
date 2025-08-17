@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional
-from datetime import date
+from datetime import date, datetime
 
 @dataclass
 class Skill:
@@ -28,6 +28,12 @@ class Letter:
     job_title: str
     company: str
     content_hash: str
+    content: str
+    user_id: str
+    created_at: Optional[datetime] = None
+    quality_score: Optional[float] = None
+    tone_type: Optional[str] = None  # formal, dynamic, sober, creative, startup, associative
+    is_career_change: bool = False
 
 @dataclass
 class UserProfile:

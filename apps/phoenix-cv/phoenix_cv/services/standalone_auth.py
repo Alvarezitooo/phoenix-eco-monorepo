@@ -1,32 +1,32 @@
 """
-🔐 Phoenix CV - Service d'authentification standalone
-Service d'auth intégré pour déploiement Streamlit Cloud sans dépendances monorepo
+🔐 Phoenix CV - Service d'authentification unifié
+🏛️ CONSOLIDATION: Délégation vers phoenix-shared-auth
 """
 
 import streamlit as st
-import requests
 import logging
 from typing import Dict, Any, Optional, Tuple
-from datetime import datetime
-import json
 
 logger = logging.getLogger(__name__)
 
 class PhoenixCVStandaloneAuth:
-    """Service d'authentification standalone pour Phoenix CV"""
+    """Wrapper vers phoenix-shared-auth pour compatibilité CV"""
     
     def __init__(self):
-        # URLs configurables via secrets Streamlit
-        self.website_url = st.secrets.get("app", {}).get("website_url", "https://phoenix-eco-monorepo.vercel.app")
-        
-        # 🏛️ CONSOLIDATION: Utilisation client Supabase centralisé
+        # 🏛️ CONSOLIDATION: Utilisation service auth unifié
         try:
-            from phoenix_common.clients import get_supabase_client
-            self.supabase_client = get_supabase_client()
-            self.supabase_available = True
+            from phoenix_shared_auth import PhoenixAuthService, PhoenixStreamlitAuth
+            self.auth_service = PhoenixAuthService()
+            self.streamlit_auth = PhoenixStreamlitAuth()
+            self.auth_available = True
+            
+            # URLs configurables via secrets Streamlit
+            self.website_url = st.secrets.get("app", {}).get("website_url", "https://phoenix-eco-monorepo.vercel.app")
+            
         except Exception as e:
-            self.supabase_available = False
-            st.error(f"❌ Client Supabase centralisé indisponible: {e}")
+            self.auth_available = False
+            st.error(f"❌ Service authentification centralisé indisponible: {e}")
+            logger.error(f"Échec chargement phoenix-shared-auth: {e}")
     
     def check_authentication(self) -> Tuple[bool, Optional[Dict[str, Any]]]:
         """Vérifie si l'utilisateur est authentifié"""
@@ -81,77 +81,52 @@ class PhoenixCVStandaloneAuth:
             return True  # Fallback pour éviter de bloquer
     
     def login_with_supabase(self, email: str, password: str) -> Tuple[bool, str]:
-        """Login direct avec Supabase"""
-        if not self.supabase_available:
-            return False, "Supabase non configuré"
+        """Login via service authentification centralisé"""
+        if not self.auth_available:
+            return False, "Service authentification non disponible"
         
         try:
-            import supabase
-            client = supabase.create_client(self.supabase_url, self.supabase_key)
-            
-            response = client.auth.sign_in_with_password({
-                "email": email,
-                "password": password
-            })
-            
-            if response.user:
-                # Stocker en session
-                st.session_state["access_token"] = response.session.access_token
-                st.session_state["user_id"] = response.user.id
-                st.session_state["user_email"] = response.user.email
-                st.session_state["user_name"] = response.user.user_metadata.get("name", email.split("@")[0])
-                
-                # Récupérer tier d'abonnement
-                profile_response = client.table("profiles").select("subscription_tier").eq("id", response.user.id).execute()
-                if profile_response.data:
-                    st.session_state["subscription_tier"] = profile_response.data[0].get("subscription_tier", "free")
-                else:
-                    st.session_state["subscription_tier"] = "free"
-                
+            # 🏛️ CONSOLIDATION: Délégation vers phoenix-shared-auth
+            success = self.streamlit_auth.authenticate_user(email, password)
+            if success:
                 return True, "Connexion réussie"
-            
-            return False, "Email ou mot de passe incorrect"
-            
+            else:
+                return False, "Email ou mot de passe incorrect"
+                
         except Exception as e:
-            logger.error(f"❌ Erreur login Supabase: {e}")
+            logger.error(f"❌ Erreur login centralisé: {e}")
             return False, f"Erreur: {str(e)}"
     
     def register_with_supabase(self, email: str, password: str, name: str) -> Tuple[bool, str]:
-        """Inscription avec Supabase"""
-        if not self.supabase_available:
-            return False, "Supabase non configuré"
+        """Inscription via service authentification centralisé"""
+        if not self.auth_available:
+            return False, "Service authentification non disponible"
         
         try:
-            import supabase
-            client = supabase.create_client(self.supabase_url, self.supabase_key)
-            
-            response = client.auth.sign_up({
-                "email": email,
-                "password": password,
-                "options": {
-                    "data": {"name": name}
-                }
-            })
-            
-            if response.user:
+            # 🏛️ CONSOLIDATION: Délégation vers phoenix-shared-auth
+            success = self.streamlit_auth.register_user(email, password, name)
+            if success:
                 return True, "Inscription réussie ! Vérifiez votre email."
-            
-            return False, "Erreur lors de l'inscription"
-            
+            else:
+                return False, "Erreur lors de l'inscription"
+                
         except Exception as e:
-            logger.error(f"❌ Erreur inscription Supabase: {e}")
+            logger.error(f"❌ Erreur inscription centralisée: {e}")
             return False, f"Erreur: {str(e)}"
     
     def logout(self):
-        """Déconnexion"""
-        # Nettoyer session Streamlit
-        keys_to_clear = ["access_token", "user_id", "user_email", "user_name", "subscription_tier"]
-        for key in keys_to_clear:
-            if key in st.session_state:
-                del st.session_state[key]
-        
-        st.success("✅ Déconnexion réussie")
-        st.rerun()
+        """Déconnexion via service centralisé"""
+        if self.auth_available:
+            # 🏛️ CONSOLIDATION: Délégation vers phoenix-shared-auth
+            self.streamlit_auth.logout()
+        else:
+            # Fallback manuel si service indisponible
+            keys_to_clear = ["access_token", "user_id", "user_email", "user_name", "subscription_tier"]
+            for key in keys_to_clear:
+                if key in st.session_state:
+                    del st.session_state[key]
+            st.success("✅ Déconnexion réussie")
+            st.rerun()
     
     def get_cv_features(self, user_id: str) -> Dict[str, Any]:
         """Récupère les fonctionnalités CV pour un utilisateur"""

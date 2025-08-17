@@ -1,9 +1,19 @@
-"""Entité métier pour les lettres de motivation."""
+"""
+Entité métier pour les lettres de motivation.
+🏛️ CONSOLIDATION: Import modèles depuis phoenix-shared-models
+"""
 
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, Optional
+
+# 🏛️ CONSOLIDATION: Utilisation modèles partagés
+try:
+    from phoenix_shared_models import Letter as SharedLetter
+except ImportError:
+    # Fallback si package non disponible
+    SharedLetter = None
 
 
 
@@ -48,20 +58,33 @@ class GenerationRequest:
             raise ValueError("Career change requires old_domain and new_domain")
 
 
-@dataclass
-class Letter:
-    """Entité lettre de motivation."""
+# 🏛️ CONSOLIDATION: Utilisation du modèle partagé avec extension
+if SharedLetter:
+    # Héritage du modèle partagé
+    @dataclass  
+    class Letter(SharedLetter):
+        """Entité lettre de motivation étendue."""
+        generation_request: Optional[GenerationRequest] = None
+        
+        def __post_init__(self):
+            """Validation de la lettre."""
+            if not self.user_id:
+                raise ValueError("User ID is required")
+else:
+    # Fallback si modèle partagé indisponible
+    @dataclass
+    class Letter:
+        """Entité lettre de motivation (fallback)."""
+        content: str
+        generation_request: GenerationRequest
+        created_at: datetime
+        user_id: str
+        quality_score: Optional[float] = None
 
-    content: str
-    generation_request: GenerationRequest
-    created_at: datetime
-    user_id: str
-    quality_score: Optional[float] = None
-
-    def __post_init__(self):
-        """Validation de la lettre."""
-        if not self.user_id:
-            raise ValueError("User ID is required")
+        def __post_init__(self):
+            """Validation de la lettre."""
+            if not self.user_id:
+                raise ValueError("User ID is required")
 
 
 @dataclass

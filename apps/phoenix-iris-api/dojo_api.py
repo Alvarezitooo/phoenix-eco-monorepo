@@ -11,14 +11,30 @@ try:
 except Exception:
     from .local_jwt_manager import JWTManager  # type: ignore
 
-# Initialisation de Supabase
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
-
-if not SUPABASE_URL or not SUPABASE_KEY:
-    raise ValueError("SUPABASE_URL and SUPABASE_KEY must be set in environment variables")
-
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# 🏛️ CONSOLIDATION: Utilisation settings centralisés
+try:
+    from phoenix_common.settings import get_settings
+    settings = get_settings()
+    
+    SUPABASE_URL = settings.SUPABASE_URL
+    SUPABASE_KEY = settings.SUPABASE_KEY
+    
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        raise ValueError("SUPABASE configuration missing in centralized settings")
+        
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    
+except ImportError:
+    # Fallback si phoenix_common indisponible
+    from phoenix_common.secrets_migration import get_secret_with_migration_warning
+    
+    SUPABASE_URL = get_secret_with_migration_warning("SUPABASE_URL", caller_file=__file__)
+    SUPABASE_KEY = get_secret_with_migration_warning("SUPABASE_KEY", caller_file=__file__)
+    
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        raise ValueError("SUPABASE_URL and SUPABASE_KEY must be set in environment variables")
+    
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 app = FastAPI(
     title="Dojo Mental API",
@@ -97,10 +113,26 @@ async def create_kaizen(kaizen: KaizenCreate, current_user_id: str = Depends(get
         if any(f in cleaned_action.lower() for f in forbidden):
             raise HTTPException(status_code=400, detail="Contenu non autorisé détecté")
 
-        response = supabase.table("kaizen").insert({"user_id": kaizen.user_id, "action": cleaned_action, "date": kaizen.date.isoformat(), "completed": kaizen.completed}).execute()
-        if response.data:
-            return response.data[0]
-        raise HTTPException(status_code=500, detail="Failed to create Kaizen")
+        # 🏛️ EVENT-SOURCING: Publication événement au lieu de mutation directe
+        try:
+            from phoenix_common.event_sourcing_guard import EventSourcingGuard
+            
+            payload = {
+                "user_id": kaizen.user_id,
+                "action": cleaned_action,
+                "date": kaizen.date.isoformat(),
+                "completed": kaizen.completed
+            }
+            
+            event_id = EventSourcingGuard.safe_state_mutation("kaizen.created", payload)
+            return {"id": event_id, **payload}
+            
+        except ImportError:
+            # Fallback si event-sourcing non disponible
+            response = supabase.table("kaizen").insert({"user_id": kaizen.user_id, "action": cleaned_action, "date": kaizen.date.isoformat(), "completed": kaizen.completed}).execute()
+            if response.data:
+                return response.data[0]
+            raise HTTPException(status_code=500, detail="Failed to create Kaizen")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

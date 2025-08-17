@@ -1,6 +1,6 @@
 """
-🎨 Phoenix CV - Header Component Réutilisable
-Composant header unifié style Phoenix Letters avec branding CV
+🎨 Phoenix CV - Header Component Unifié
+🏛️ CONSOLIDATION: Délégation vers phoenix-shared-ui
 
 Author: Claude Phoenix DevSecOps Guardian  
 Version: 4.1.0 - Reusable UI Components
@@ -11,7 +11,7 @@ from typing import Dict, Any, Optional
 
 
 class PhoenixCVHeader:
-    """Composant header réutilisable pour Phoenix CV"""
+    """Wrapper vers phoenix-shared-ui pour compatibilité CV"""
     
     @staticmethod
     def render(
@@ -22,7 +22,7 @@ class PhoenixCVHeader:
         custom_gradient: Optional[str] = None
     ):
         """
-        Rendu header Phoenix CV avec style Letters
+        Rendu header via service unifié phoenix-shared-ui
         
         Args:
             title: Titre principal
@@ -32,51 +32,49 @@ class PhoenixCVHeader:
             custom_gradient: Gradient CSS personnalisé
         """
         
-        # Gradient par défaut Phoenix CV (bleu)
-        default_gradient = "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)"
-        gradient = custom_gradient or default_gradient
-        
-        # Header HTML
-        header_html = f"""
-        <div style="
-            background: {gradient};
-            padding: 2rem;
-            border-radius: 1rem;
-            margin-bottom: 2rem;
-            color: white;
-            text-align: center;
-            box-shadow: 0 8px 25px rgba(30, 58, 138, 0.3);
-            position: relative;
-            overflow: hidden;
-        ">
-            <!-- Pattern overlay -->
-            <div style="
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"20\" cy=\"20\" r=\"2\" fill=\"white\" opacity=\"0.1\"/><circle cx=\"80\" cy=\"80\" r=\"2\" fill=\"white\" opacity=\"0.1\"/></svg>');
-                pointer-events: none;
-            "></div>
+        try:
+            # 🏛️ CONSOLIDATION: Utilisation header unifié
+            from phoenix_shared_ui.components.header import render_cv_header
             
-            <!-- Content -->
-            <div style="position: relative; z-index: 1;">
-                <h1 style="margin: 0; font-size: 2.5rem; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    {icon} {title}
-                </h1>
-                <p style="margin: 0.5rem 0 0 0; font-size: 1.2rem; opacity: 0.9;">
-                    {subtitle}
-                </p>
-            </div>
-        </div>
-        """
+            # Récupérer stats utilisateur si demandé
+            user_stats = None
+            if show_stats:
+                user_stats = PhoenixCVHeader._get_user_stats()
+            
+            # Déléguer au header unifié
+            render_cv_header(
+                title=title,
+                subtitle=subtitle,
+                show_stats=show_stats,
+                user_stats=user_stats,
+                custom_gradient=custom_gradient
+            )
+            
+        except ImportError:
+            # Fallback si phoenix-shared-ui indisponible
+            st.error("❌ Phoenix Shared UI indisponible - header simplifié")
+            st.markdown(f"## {icon} {title}")
+            st.markdown(f"*{subtitle}*")
+    
+    @staticmethod
+    def _get_user_stats() -> Dict[str, Any]:
+        """Récupère les stats utilisateur pour le header unifié"""
         
-        st.markdown(header_html, unsafe_allow_html=True)
+        user_id = st.session_state.get("user_id", "anonymous")
         
-        # Stats utilisateur si activé
-        if show_stats:
-            PhoenixCVHeader._render_user_stats()
+        if user_id == "anonymous":
+            return {}
+        
+        from phoenix_cv.models.phoenix_user import UserTier
+        user_tier = st.session_state.get("user_tier", UserTier.FREE)
+        remaining = PhoenixCVHeader._get_remaining_generations(user_tier)
+        
+        return {
+            "CV Créés": st.session_state.get("total_cv_generated", 0),
+            "Générations": remaining if remaining != -1 else "∞",
+            "Score ATS": f"{st.session_state.get('avg_ats_score', 75)}%",
+            "Téléchargements": st.session_state.get("total_downloads", 0)
+        }
     
     @staticmethod
     def _render_user_stats():
