@@ -1,29 +1,17 @@
-PYTHON ?= 3.11
+# Makefile Phoenix Monorepo
+# Automatisation rapide pour dev
 
-.PHONY: bootstrap lint typecheck test smoke clean pre-commit ci
+.PHONY: fmt lint test smoke
 
-bootstrap:
-	python -m pip install --upgrade pip poetry
-	poetry install --with dev || true
-	pre-commit install || true
+fmt:
+	poetry run black packages apps tests
 
 lint:
-	ruff check .
-
-typecheck:
-	mypy .
+	poetry run ruff check packages apps tests
+	poetry run mypy packages apps
 
 test:
-	pytest -q
+	poetry run pytest
 
 smoke:
-	python3 scripts/smoke_test.py
-
-clean:
-	rm -rf **/__pycache__ **/.pytest_cache **/.mypy_cache **/.ruff_cache || true
-
-pre-commit:
-	pre-commit run --all-files
-
-ci: lint typecheck test smoke
-
+	poetry run pytest -q tests/test_ui_imports.py

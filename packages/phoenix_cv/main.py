@@ -92,6 +92,25 @@ def run():
         initial_sidebar_state="expanded"
     )
     
+    # 🏛️ HOOK INTÉGRATION: Settings + validation
+    from phoenix_common.settings import get_settings, validate_env
+    from phoenix_common.monitoring import init_sentry, phoenix_safe_mode_ui, track_user_journey
+    
+    settings = get_settings()
+    errs = validate_env(settings)
+    if errs:
+        st.error("Configuration incomplète:\n- " + "\n- ".join(errs))
+        st.stop()
+    
+    # Mode sécurisé
+    if settings.PHOENIX_SAFE_MODE:
+        phoenix_safe_mode_ui()
+        return
+    
+    # Monitoring
+    init_sentry()
+    track_user_journey("visit", user_id=st.session_state.get("user_id"))
+    
     # Chargement des services partagés avec optimisations
     services_result = load_shared_services()
     services_ok = services_result[0] if services_result else False
