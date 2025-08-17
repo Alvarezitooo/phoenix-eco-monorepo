@@ -22,10 +22,20 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 # Configuration Supabase (depuis variables d'environnement)
-SUPABASE_CONFIG = {
-    "url": os.getenv("SUPABASE_URL", "https://bfnkgodxpkdarpabigbg.supabase.co"),
-    "key": os.getenv("SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmbmtnb2R4cGtkYXJwYWJpZ2JnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5ODA0OTIsImV4cCI6MjA2OTU1NjQ5Mn0.-Fjb6YiSDf55nR6Esi9bKkOmpJeCVWrHfMJBm0e4kK8")
-}
+# 🚨 SÉCURITÉ CRITIQUE: Configuration centralisée via phoenix_common.settings
+try:
+    from phoenix_common.settings import get_settings
+    settings = get_settings()
+    SUPABASE_CONFIG = {
+        "url": settings.SUPABASE_URL,
+        "key": settings.SUPABASE_KEY
+    }
+except ImportError:
+    # Fallback d'urgence - ne jamais utiliser en production
+    SUPABASE_CONFIG = {
+        "url": os.getenv("SUPABASE_URL"),
+        "key": os.getenv("SUPABASE_ANON_KEY")
+    }
 
 
 class PhoenixSupabaseExistingService:

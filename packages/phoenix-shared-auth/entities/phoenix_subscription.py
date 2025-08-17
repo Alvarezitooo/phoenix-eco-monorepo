@@ -438,8 +438,8 @@ BUNDLE_PRICE_IDS = {
     "phoenix_trio_all_apps": "price_bundle_all_apps_monthly"
 }
 
-# Clé publique Stripe (production)
-STRIPE_PUBLISHABLE_KEY = "pk_live_51RrZGNDcM3VIYgvyvNDVGUCRzqBv0gn23jVS82xNTnJxwSO2hOVxzWAazgRp6oaGubVcgE0iYlnw4kfMlJYSdwEK00NWdVHGM8"
+# 🚨 SÉCURITÉ CRITIQUE: Clé déplacée vers phoenix_common.settings
+# STRIPE_PUBLISHABLE_KEY = get_settings().STRIPE_PK
 
 class PackageType(Enum):
     """Types de packages disponibles"""

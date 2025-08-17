@@ -1,0 +1,28 @@
+# 🚀 Phoenix CV - Requirements.txt optimisé (DÉDUPLIQUÉ)
+# Phase 3: Dépendances spécifiques CV uniquement
+
+# 🎨 Interface utilisateur (version unifiée)
+streamlit>=1.30.0
+
+# 🤖 Intelligence Artificielle CV-spécifique
+google-generativeai>=0.3.2
+
+# 📄 Traitement documents & PDF (CV uniquement)
+PyPDF2>=3.0.0
+PyMuPDF>=1.24.1
+python-docx>=1.1.0
+
+# 🖼️ OCR & Traitement d'image (CV uniquement)
+pytesseract>=0.3.10
+Pillow>=10.3.0
+
+# 📦 Phoenix Packages Partagés (apportent leurs propres dépendances)
+-e ../../packages/phoenix_common
+-e ../../packages/phoenix-shared-auth
+-e ../../packages/phoenix_event_bridge
+-e ../../packages/phoenix-shared-models
+-e ../../packages/phoenix_shared_ui
+
+# 🔧 Build & Security (locaux si nécessaires)
+setuptools>=75.0.0
+wheel>=0.40.0

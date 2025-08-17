@@ -1,0 +1,24 @@
+# 🚀 Phoenix Letters - Requirements.txt optimisé (DÉDUPLIQUÉ)
+# Phase 3: Dépendances spécifiques Letters uniquement
+
+# 🎨 Interface utilisateur (version unifiée)
+streamlit>=1.30.0
+
+# 🤖 Intelligence Artificielle Letters-spécifique
+google-generativeai>=0.3.2
+
+# 📊 Analytics & Monitoring (Letters uniquement)
+tenacity>=8.2.0
+plotly>=5.0.0
+pandas>=1.5.0
+
+# 📦 Phoenix Packages Partagés (apportent leurs propres dépendances)
+-e ../../packages/phoenix_common
+-e ../../packages/phoenix-shared-auth
+-e ../../packages/phoenix_event_bridge
+-e ../../packages/phoenix-shared-models
+-e ../../packages/phoenix_shared_ui
+
+# 🔧 Build & Security (locaux si nécessaires)  
+setuptools>=75.0.0
+wheel>=0.40.0

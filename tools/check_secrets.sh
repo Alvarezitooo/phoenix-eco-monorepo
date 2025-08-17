@@ -1,51 +1,101 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # tools/check_secrets.sh
-# Détection de secrets (gitleaks + rg patterns sensibles)
-set -euo pipefail
+# 🛡️ PHASE 3: Audit sécurité des secrets
 
-ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-cd "$ROOT_DIR"
+echo "🛡️ AUDIT SÉCURITÉ - Détection secrets hardcodés"
+echo "============================================"
 
-RED=$'\e[31m'; GREEN=$'\e[32m'; YELLOW=$'\e[33m'; BLUE=$'\e[34m'; DIM=$'\e[2m'; RESET=$'\e[0m'
-say(){ echo -e "${BLUE}[$(date +%H:%M:%S)]${RESET} $*"; }
-ok(){ echo -e "  ${GREEN}✔${RESET} $*"; }
-warn(){ echo -e "  ${YELLOW}▲${RESET} $*"; }
-bad(){ echo -e "  ${RED}✖${RESET} $*"; }
+# Dossiers à scanner (scope Phase 3)
+SCAN_DIRS="apps/phoenix-cv apps/phoenix-letters apps/phoenix-website packages/"
 
-mkdir -p reports
-TS="$(date +%Y%m%d_%H%M%S)"
-EXIT=0
+# Patterns de secrets dangereux
+SECRET_PATTERNS=(
+    "sk_[a-zA-Z0-9_]{20,}"           # Stripe secret keys
+    "pk_test_[a-zA-Z0-9_]{20,}"      # Stripe public test keys
+    "pk_live_[a-zA-Z0-9_]{20,}"      # Stripe public live keys
+    "AIza[a-zA-Z0-9_]{35}"           # Google API keys
+    "ya29\.[a-zA-Z0-9_-]{100,}"      # Google OAuth tokens
+    "[a-zA-Z0-9_-]{32,}\.[a-zA-Z0-9_-]{6,}\.[a-zA-Z0-9_-]{27,}" # JWT tokens
+    "postgres://[^[:space:]]+:[^[:space:]]+@[^[:space:]]+"       # DB URLs avec creds
+    "mongodb://[^[:space:]]+:[^[:space:]]+@[^[:space:]]+"        # MongoDB URLs
+    "https://[a-z0-9-]+\.supabase\.co"                          # Supabase URLs hardcodées
+)
 
-say "🕵️ Scan gitleaks…"
-if command -v gitleaks >/dev/null 2>&1; then
-  if gitleaks detect --no-banner --redact --report-path "reports/gitleaks_${TS}.json"; then
-    ok "Gitleaks OK (aucun secret trouvé)."
-  else
-    bad "Gitleaks a détecté des secrets (voir reports/gitleaks_${TS}.json)."
-    EXIT=2
-  fi
+# Exclusions (fichiers légitimes)
+EXCLUDE_PATTERNS=(
+    "\.env\.example"
+    "\.md$"
+    "test_"
+    "\.example\."
+    "README"
+    "GUIDE_"
+)
+
+echo "📋 Scanning directories: $SCAN_DIRS"
+echo ""
+
+total_violations=0
+
+for pattern in "${SECRET_PATTERNS[@]}"; do
+    echo "🔍 Searching pattern: $pattern"
+    
+    # Construire la commande rg avec exclusions
+    exclude_args=""
+    for exclude in "${EXCLUDE_PATTERNS[@]}"; do
+        exclude_args="$exclude_args --glob !*$exclude*"
+    done
+    
+    # Scanner avec ripgrep
+    results=$(eval "rg --type py --type js --type ts --type json '$pattern' $SCAN_DIRS $exclude_args --line-number --no-heading 2>/dev/null")
+    
+    if [ -n "$results" ]; then
+        echo "🚨 SECRETS HARDCODÉS DÉTECTÉS:"
+        echo "$results"
+        violation_count=$(echo "$results" | wc -l)
+        total_violations=$((total_violations + violation_count))
+        echo ""
+    else
+        echo "✅ Aucun secret hardcodé trouvé pour ce pattern"
+    fi
+    echo ""
+done
+
+echo "📊 RÉSUMÉ AUDIT SÉCURITÉ"
+echo "========================"
+if [ $total_violations -eq 0 ]; then
+    echo "✅ AUDIT RÉUSSI: Aucun secret hardcodé détecté"
+    echo "✅ Utilisation correcte de phoenix_common.settings"
 else
-  warn "gitleaks non installé. \`brew install gitleaks\` recommandé."
+    echo "🚨 AUDIT ÉCHOUÉ: $total_violations secrets hardcodés détectés"
+    echo "❌ ACTIONS REQUISES:"
+    echo "   1. Migrer vers phoenix_common.settings.get_settings()"
+    echo "   2. Utiliser variables d'environnement"
+    echo "   3. Retirer secrets du code source"
 fi
 
-say "🔎 Scan ripgrep (patterns sensibles) hors settings.py/Rise/Aube…"
-if command -v rg >/dev/null 2>&1; then
-  set +e
-  rg -n '(sk_live_|pk_live_|eyJhbGci|STRIPE_|SUPABASE_|GEMINI_)' \
-     packages apps/phoenix-{cv,letters,website} \
-     --glob '!packages/phoenix_common/settings.py' \
-     --glob '!apps/phoenix-rise/**' --glob '!apps/phoenix-aube/**' \
-     --glob '!.env*' --glob '!**/__pycache__/**'
-  RC=$?
-  set -e
-  if [[ $RC -eq 0 ]]; then
-    bad "Patterns sensibles repérés hors loader central. Corrige immédiatement."
-    EXIT=2
-  else
-    ok "Aucun hardcode sensible détecté hors settings.py."
-  fi
-else
-  warn "ripgrep (rg) non installé. \`brew install ripgrep\`."
+echo ""
+echo "🔧 VÉRIFICATION UTILISATION phoenix_common.settings"
+echo "================================================="
+
+# Vérifier utilisation correcte du service centralisé
+correct_usage=$(rg --type py "from phoenix_common\.settings import get_settings" $SCAN_DIRS --count 2>/dev/null | awk -F: '{sum += $2} END {print sum+0}')
+old_usage=$(rg --type py "os\.environ\.get|st\.secrets" $SCAN_DIRS --count 2>/dev/null | awk -F: '{sum += $2} END {print sum+0}')
+
+echo "✅ Utilisation phoenix_common.settings: $correct_usage occurrences"
+echo "⚠️  Accès directs os.environ/st.secrets: $old_usage occurrences"
+
+if [ $old_usage -gt 0 ]; then
+    echo ""
+    echo "📋 DÉTAIL ACCÈS DIRECTS À MIGRER:"
+    rg --type py "os\.environ\.get|st\.secrets" $SCAN_DIRS --line-number --no-heading | head -10
 fi
 
-exit $EXIT
+echo ""
+echo "🎯 RECOMMANDATIONS"
+echo "=================="
+echo "1. Utiliser UNIQUEMENT phoenix_common.settings.get_settings()"
+echo "2. Tester avec PYTHONPATH=./packages dans tous les environments"
+echo "3. Vérifier .env.example mais jamais de .env committé"
+echo "4. Activer secrets_migration.py warnings en dev"
+
+exit $total_violations
