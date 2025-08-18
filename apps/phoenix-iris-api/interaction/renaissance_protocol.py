@@ -76,4 +76,4 @@ class RenaissanceProtocol:
         return "Je ne suis pas un professionnel de la santé mentale, un médecin, un thérapeute ou un conseiller financier. Je ne peux pas diagnostiquer, traiter, ou fournir des conseils médicaux, psychologiques ou financiers. Mon rôle est de t'offrir un soutien émotionnel et des outils de réflexion basés sur des principes de développement personnel et de thérapie cognitive et comportementale simplifiée. En cas de détresse sévère ou de besoin de conseils professionnels, je t'encouragerai toujours à consulter un spécialiste qualifié."
 
     def _handle_fin_repos(self, eev: Dict[str, Any]) -> str:
-        return "Iris est en mode repos. N'hésite pas à me solliciter quand tu en auras besoin."
+        return "Alessio est en mode repos. N'hésite pas à me solliciter quand tu en auras besoin."

@@ -48,7 +48,7 @@ class PhoenixRiseAlessioIntegration:
     def __init__(self):
         self.alessio_client = AlessioStreamlitClient(
             app_context=AlessioAppContext.RISE,
-            api_url=os.getenv('IRIS_API_URL', 'http://localhost:8003/api/v1/chat')
+            api_url=os.getenv('ALESSIO_API_URL', 'http://localhost:8003/api/v1/chat')
         )
     
     def render_personal_coaching_chat(self, journal_entries=None, mood_data=None):

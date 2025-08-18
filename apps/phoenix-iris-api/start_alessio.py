@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🚀 IRIS AGENT STARTUP SCRIPT - Démarrage sécurisé de l'agent Iris
+🚀 ALESSIO AGENT STARTUP SCRIPT - Démarrage sécurisé de l'agent Alessio
 Script de démarrage avec vérifications de sécurité et configuration.
 """
 
@@ -16,7 +16,7 @@ def setup_logging():
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
             logging.StreamHandler(sys.stdout),
-            logging.FileHandler('iris_agent.log', mode='a')
+            logging.FileHandler('alessio_agent.log', mode='a')
         ]
     )
     return logging.getLogger(__name__)
@@ -86,8 +86,8 @@ def load_env_file():
                     key, value = line.split('=', 1)
                     os.environ.setdefault(key, value)
 
-def start_iris_agent():
-    """Lance l'agent Iris avec uvicorn."""
+def start_alessio_agent():
+    """Lance l'agent Alessio avec uvicorn."""
     import uvicorn
     
     # Configuration uvicorn sécurisée
@@ -95,20 +95,20 @@ def start_iris_agent():
         "app": "main:app",
         "host": "0.0.0.0",
         "port": 8003,
-        "log_level": os.getenv('IRIS_LOG_LEVEL', 'info').lower(),
-        "reload": os.getenv('IRIS_ENV', 'production') == 'development',
+        "log_level": os.getenv('ALESSIO_LOG_LEVEL', 'info').lower(),
+        "reload": os.getenv('ALESSIO_ENV', 'production') == 'development',
         "access_log": True,
     }
     
     # En production, désactiver le reload et certaines features debug
-    if os.getenv('IRIS_ENV', 'production') == 'production':
+    if os.getenv('ALESSIO_ENV', 'production') == 'production':
         config.update({
             "reload": False,
             "debug": False,
         })
     
     logger = logging.getLogger(__name__)
-    logger.info("🚀 Démarrage d'Iris Agent...")
+    logger.info("🚀 Démarrage d'Alessio Agent...")
     logger.info(f"Configuration: {config}")
     
     uvicorn.run(**config)
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     # Setup initial logging
     logger = setup_logging()
     
-    logger.info("🤖 IRIS AGENT - Démarrage du système")
+    logger.info("🤖 ALESSIO AGENT - Démarrage du système")
     
     # Load environment file
     load_env_file()
@@ -131,9 +131,9 @@ if __name__ == "__main__":
     
     # All checks passed, start the agent
     try:
-        start_iris_agent()
+        start_alessio_agent()
     except KeyboardInterrupt:
-        logger.info("🛑 Arrêt d'Iris Agent par l'utilisateur")
+        logger.info("🛑 Arrêt d'Alessio Agent par l'utilisateur")
     except Exception as e:
         logger.error(f"❌ Erreur critique lors du démarrage: {e}")
         sys.exit(1)

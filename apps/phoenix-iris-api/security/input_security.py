@@ -83,7 +83,7 @@ class PromptInjectionGuard:
 
 class RateLimiter:
     """
-    Rate limiting simple en mémoire pour l'agent Iris.
+    Rate limiting simple en mémoire pour l'agent Alessio.
     En production, utiliser Redis ou autre solution distribuée.
     """
     

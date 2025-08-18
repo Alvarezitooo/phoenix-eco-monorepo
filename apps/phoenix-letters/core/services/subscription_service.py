@@ -612,5 +612,6 @@ class SubscriptionService:
             return None
         try:
             return datetime.fromisoformat(dt_str.replace('Z', '+00:00'))
-        except:
+        except (ValueError, TypeError) as e:
+            logger.warning(f"Erreur parsing datetime '{dt_str}': {e}")
             return None

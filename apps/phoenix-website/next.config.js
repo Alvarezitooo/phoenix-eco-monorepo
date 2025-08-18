@@ -14,7 +14,7 @@ const nextConfig = {
     // Autoriser explicitement les API d'origines définies via env
     if (process.env.NEXT_PUBLIC_IRIS_API_URL) {
       try {
-        const u = new URL(process.env.NEXT_PUBLIC_IRIS_API_URL);
+        const u = new URL(process.env.NEXT_PUBLIC_ALESSIO_API_URL);
         apiOrigins.push(`${u.protocol}//${u.host}`);
       } catch {}
     }

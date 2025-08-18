@@ -58,7 +58,7 @@ class PhoenixCVAlessioIntegration:
                 self.secure_client = create_secure_alessio_client(
                     app_context="phoenix-cv",
                     user_id=st.session_state.get('user_id', 'anonymous'),
-                    api_url=os.getenv('IRIS_API_URL', 'http://localhost:8003/api/v1/chat')
+                    api_url=os.getenv('ALESSIO_API_URL', 'http://localhost:8003/api/v1/chat')
                 )
                 self.security_enabled = True
                 logger.info("Phoenix CV Alessio integration initialized with security patches")
@@ -72,7 +72,7 @@ class PhoenixCVAlessioIntegration:
         if not self.security_enabled:
             self.alessio_client = AlessioStreamlitClient(
                 app_context=AlessioAppContext.CV if AlessioAppContext else None,
-                api_url=os.getenv('IRIS_API_URL', 'http://localhost:8003/api/v1/chat')
+                api_url=os.getenv('ALESSIO_API_URL', 'http://localhost:8003/api/v1/chat')
             )
     
     def render_cv_optimization_chat(self, cv_data=None, template_type=None):

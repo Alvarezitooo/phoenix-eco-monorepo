@@ -86,9 +86,10 @@ except Exception as e:
 
 def render_choice_page():
     """Affiche la page d'accueil avec message clair et parcours guidé selon Contrat V5."""
-    # Rediriger directement vers la belle page d'auth
-    st.session_state.auth_flow_choice = "login"
-    st.rerun()
+    # Rediriger directement vers la belle page d'auth (avec protection anti-boucle)
+    if st.session_state.get("auth_flow_choice") != "login":
+        st.session_state.auth_flow_choice = "login"
+        st.rerun()
 
 def render_login_page(auth_manager, subscription_service, async_runner):
     """Affiche le formulaire de connexion/inscription esthétique selon Contrat V5."""

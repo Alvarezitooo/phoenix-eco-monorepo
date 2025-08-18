@@ -23,7 +23,7 @@ class AlessioFloatingWidget:
             api_url: URL de l'API Iris (optionnel, utilise une valeur par défaut)
         """
         # URL de l'API Iris (sera configurée via variables d'environnement en prod)
-        self.api_url = api_url or st.secrets.get("IRIS_API_URL", "")
+        self.api_url = api_url or st.secrets.get("ALESSIO_API_URL", "")
         self.is_available = bool(self.api_url)
         
         # État du widget

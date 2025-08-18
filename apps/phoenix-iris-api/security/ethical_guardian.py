@@ -29,7 +29,7 @@ class EthicalGuardian:
         
         return results
 
-    def check_ethical_compliance(self, iris_response: str, user_eev: EmotionalVectorState) -> (bool, str):
+    def check_ethical_compliance(self, alessio_response: str, user_eev: EmotionalVectorState) -> (bool, str):
         is_compliant = True
         modified_response = iris_response
         
@@ -38,7 +38,7 @@ class EthicalGuardian:
         # Rule 1: Prohibition of Medical Advice/Diagnosis
         if nlp_results["medical_advice_detected"] or nlp_results["diagnosis_detected"]:
             is_compliant = False
-            modified_response = "Je ne suis pas qualifié pour donner des conseils médicaux ou poser un diagnostic. Je t'encourage vivement à consulter un professionnel de la santé pour cela. " + iris_response
+            modified_response = "Je ne suis pas qualifié pour donner des conseils médicaux ou poser un diagnostic. Je t'encourage vivement à consulter un professionnel de la santé pour cela. " + alessio_response
             # In a real system, a more sophisticated fallback or truncation might be needed
 
         # Rule 2: Non-Judgment

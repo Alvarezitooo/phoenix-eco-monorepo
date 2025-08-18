@@ -1,6 +1,6 @@
 """
-🤖 IRIS API - Assistant IA Phoenix Letters
-API FastAPI pour l'agent conversationnel Iris
+🤖 ALESSIO API - Assistant IA Phoenix Letters
+API FastAPI pour l'agent conversationnel Alessio
 
 Author: Claude Phoenix DevSecOps
 Version: 1.0.0 - Railway Deploy Ready
@@ -43,29 +43,29 @@ def anonymize_for_research_logs(text: str, user_id: str = None) -> dict:
         "anonymized_query": anonymized_text[:100],  # Première partie seulement
         "query_length": len(text),
         "timestamp": datetime.now().isoformat(),
-        "source": "iris_api"
+        "source": "alessio_api"
     }
 
 # Initialisation FastAPI
 app = FastAPI(
-    title="Phoenix Iris API",
-    description="API conversationnelle pour l'assistant IA Iris - Phoenix Letters",
+    title="Phoenix Alessio API",
+    description="API conversationnelle pour l'assistant IA Alessio - Phoenix Letters",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
 
 # Configuration CORS pilotée par variables d'environnement
-# IRIS_ALLOWED_ORIGINS peut contenir une liste séparée par des virgules
-_iris_allowed_origins_env = os.getenv(
-    "IRIS_ALLOWED_ORIGINS",
+# ALESSIO_ALLOWED_ORIGINS peut contenir une liste séparée par des virgules
+_alessio_allowed_origins_env = os.getenv(
+    "ALESSIO_ALLOWED_ORIGINS",
     "https://phoenix-eco-monorepo.vercel.app,https://phoenix-letters.streamlit.app,https://*.streamlit.app,http://localhost:3000,http://localhost:8501,http://localhost:8502",
 )
-IRIS_ALLOWED_ORIGINS = [origin.strip() for origin in _iris_allowed_origins_env.split(",") if origin.strip()]
+ALESSIO_ALLOWED_ORIGINS = [origin.strip() for origin in _alessio_allowed_origins_env.split(",") if origin.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=IRIS_ALLOWED_ORIGINS,
+    allow_origins=ALESSIO_ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
@@ -74,22 +74,22 @@ app.add_middleware(
 # --- MODELS PYDANTIC ---
 
 class ChatRequest(BaseModel):
-    """Requête de chat vers Iris"""
+    """Requête de chat vers Alessio"""
     message: str = Field(..., min_length=1, max_length=2000, description="Message utilisateur")
     user_id: Optional[str] = Field(None, description="ID utilisateur Phoenix (optionnel)")
     context: Optional[str] = Field(None, description="Contexte de la conversation")
     session_id: Optional[str] = Field(None, description="ID de session")
 
 class ChatResponse(BaseModel):
-    """Réponse d'Iris"""
-    response: str = Field(..., description="Réponse d'Iris")
+    """Réponse d'Alessio"""
+    response: str = Field(..., description="Réponse d'Alessio")
     confidence: float = Field(default=0.85, description="Niveau de confiance")
     suggestions: List[str] = Field(default_factory=list, description="Suggestions de suivi")
     timestamp: datetime = Field(default_factory=datetime.now)
 
-# --- BASE DE CONNAISSANCES IRIS ---
+# --- BASE DE CONNAISSANCES ALESSIO ---
 
-IRIS_KNOWLEDGE_BASE = {
+ALESSIO_KNOWLEDGE_BASE = {
     "reconversion": {
         "keywords": ["reconversion", "changer", "métier", "carrière", "orientation"],
         "responses": [
@@ -149,29 +149,29 @@ IRIS_KNOWLEDGE_BASE = {
 }
 
 DEFAULT_RESPONSES = [
-    "Je suis Iris, votre copilote carrière IA ! Je vous aide à réussir votre reconversion professionnelle. Parlez-moi de vos défis.",
+    "Je suis Alessio, votre copilote carrière IA ! Je vous aide à réussir votre reconversion professionnelle. Parlez-moi de vos défis.",
     "Bonjour ! En quoi puis-je vous accompagner dans votre projet de reconversion ? CV, lettre de motivation, stratégie carrière... je suis là !",
-    "Iris à votre service ! Que souhaitez-vous améliorer dans votre reconversion : votre candidature, votre préparation d'entretien ou votre stratégie ?",
+    "Alessio à votre service ! Que souhaitez-vous améliorer dans votre reconversion : votre candidature, votre préparation d'entretien ou votre stratégie ?",
     "Hello ! Prêt(e) à booster votre reconversion ? Dites-moi où vous en êtes et comment je peux vous aider à atteindre vos objectifs carrière."
 ]
 
 # --- LOGIQUE CONVERSATIONNELLE ---
 
-def get_iris_response(message: str, user_context: Optional[str] = None) -> ChatResponse:
+def get_alessio_response(message: str, user_context: Optional[str] = None) -> ChatResponse:
     """
-    Génère une réponse Iris basée sur la base de connaissances
+    Génère une réponse Alessio basée sur la base de connaissances
     """
     message_lower = message.lower()
     
     # Recherche de correspondance dans la base de connaissances
-    for topic, data in IRIS_KNOWLEDGE_BASE.items():
+    for topic, data in ALESSIO_KNOWLEDGE_BASE.items():
         for keyword in data["keywords"]:
             if keyword in message_lower:
                 import secrets
                 response_text = secrets.choice(data["responses"])
                 suggestions = data["suggestions"][:3]  # Max 3 suggestions
                 
-                logger.info(f"Iris response generated - Topic: {topic}, User: {user_context}")
+                logger.info(f"Alessio response generated - Topic: {topic}, User: {user_context}")
                 
                 return ChatResponse(
                     response=response_text,
@@ -200,7 +200,7 @@ def get_iris_response(message: str, user_context: Optional[str] = None) -> ChatR
 async def root():
     """Endpoint racine - Statut de l'API"""
     return {
-        "service": "Phoenix Iris API",
+        "service": "Phoenix Alessio API",
         "status": "✅ Opérationnel",
         "version": "1.0.0",
         "description": "Assistant IA pour reconversions professionnelles",
@@ -217,14 +217,14 @@ async def health_check():
     return {
         "status": "healthy",
         "timestamp": datetime.now(),
-        "service": "iris-api",
+        "service": "alessio-api",
         "environment": os.getenv("ENVIRONMENT", "production")
     }
 
 @app.post("/api/v1/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
     """
-    Endpoint principal de chat avec Iris
+    Endpoint principal de chat avec Alessio
     """
     try:
         # 🔬 RECHERCHE-ACTION PHOENIX - Log anonymisé pour recherche
@@ -241,13 +241,13 @@ async def chat_endpoint(request: ChatRequest):
         if len(request.message) > 2000:
             raise HTTPException(status_code=400, detail="Message trop long (max 2000 caractères)")
         
-        # Génération de la réponse Iris
-        response = get_iris_response(
+        # Génération de la réponse Alessio
+        response = get_alessio_response(
             message=request.message,
             user_context=f"User: {request.user_id}, Session: {request.session_id}"
         )
         
-        logger.info(f"Iris response generated successfully - Confidence: {response.confidence}")
+        logger.info(f"Alessio response generated successfully - Confidence: {response.confidence}")
         
         return response
         
@@ -257,14 +257,14 @@ async def chat_endpoint(request: ChatRequest):
         logger.error(f"Erreur lors du traitement chat: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail="Erreur interne du serveur Iris"
+            detail="Erreur interne du serveur Alessio"
         )
 
 @app.get("/api/v1/topics")
 async def get_topics():
-    """Liste des sujets que Iris peut traiter"""
+    """Liste des sujets que Alessio peut traiter"""
     topics = []
-    for topic, data in IRIS_KNOWLEDGE_BASE.items():
+    for topic, data in ALESSIO_KNOWLEDGE_BASE.items():
         topics.append({
             "topic": topic,
             "keywords": data["keywords"],
@@ -274,7 +274,7 @@ async def get_topics():
     return {
         "topics": topics,
         "total": len(topics),
-        "description": "Sujets maîtrisés par Iris pour les reconversions"
+        "description": "Sujets maîtrisés par Alessio pour les reconversions"
     }
 
 # --- LANCEMENT DE L'APPLICATION ---
@@ -282,8 +282,8 @@ async def get_topics():
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8003))
     
-    logger.info(f"🤖 Démarrage Iris API sur le port {port}")
-    logger.info("🚀 Phoenix Iris API - Ready to help career transitions!")
+    logger.info(f"🤖 Démarrage Alessio API sur le port {port}")
+    logger.info("🚀 Phoenix Alessio API - Ready to help career transitions!")
     
     uvicorn.run(
         "main:app",

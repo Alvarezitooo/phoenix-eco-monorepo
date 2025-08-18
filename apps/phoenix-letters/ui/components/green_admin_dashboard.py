@@ -514,11 +514,11 @@ class PhoenixGreenAdminDashboard:
                 st.error(f"❌ Erreur génération: {report.get('error')}")
 
 
-def main():
+def run_admin_dashboard():
     """Point d'entrée du dashboard admin."""
     dashboard = PhoenixGreenAdminDashboard()
     dashboard.render_dashboard()
 
 
 if __name__ == "__main__":
-    main()
+    run_admin_dashboard()

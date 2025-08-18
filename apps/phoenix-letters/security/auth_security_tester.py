@@ -336,7 +336,7 @@ class AuthSecurityTester:
             return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode(
                 "utf-8"
             )
-        except:
+        except ImportError:
             # Fallback si bcrypt pas disponible
             salt = secrets.token_hex(16)
             return hashlib.pbkdf2_hmac(
