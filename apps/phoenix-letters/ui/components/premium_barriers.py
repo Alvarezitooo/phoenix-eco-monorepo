@@ -390,8 +390,8 @@ class SmartUpgradePrompts:
         )
 
 
-class ConversionOptimizer:
-    """Optimiseur de conversion avec A/B testing."""
+class UIConversionOptimizer:
+    """Optimiseur de conversion UI avec A/B testing."""
 
     @staticmethod
     def get_cta_variant() -> dict:

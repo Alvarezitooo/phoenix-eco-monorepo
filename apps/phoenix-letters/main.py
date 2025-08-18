@@ -487,6 +487,9 @@ Je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distin
                                 st.download_button("📥 Télécharger", data=generated_letter, file_name=f"lettre_{company_name.lower().replace(' ', '_')}.txt", mime="text/plain")
                             with col_action2:
                                 if st.button("🔄 Regénérer"):
+                                    # Clear generated letter to force regeneration
+                                    if "generated_letter" in st.session_state:
+                                        del st.session_state["generated_letter"]
                                     st.rerun()
                             with col_action3:
                                 st.info("💎 Upgrader pour plus de personnalisation")

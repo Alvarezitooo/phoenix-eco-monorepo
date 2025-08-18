@@ -28,11 +28,8 @@ class ToneType(Enum):
     ASSOCIATIVE = "associatif"
 
 
-class UserTier(Enum):
-    """Niveaux d'abonnement utilisateur."""
-
-    FREE = "free"
-    PREMIUM = "premium"
+# Import UserTier from user.py to avoid duplication
+from .user import UserTier
 
 
 @dataclass(frozen=True)

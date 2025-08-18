@@ -92,7 +92,7 @@ class PhoenixLettersSessionCleaner:
                     entry_time = datetime.fromisoformat(value['timestamp'])
                     if current_time - entry_time > timedelta(minutes=max_age_minutes):
                         keys_to_clean.append(key)
-                except:
+                except (ValueError, TypeError):
                     # Timestamp invalide, nettoyer
                     keys_to_clean.append(key)
         
@@ -163,7 +163,7 @@ class PhoenixLettersSessionCleaner:
                 last_time = datetime.fromisoformat(last_cleanup)
                 if datetime.now() - last_time < timedelta(minutes=10):
                     return False, "Nettoyage récent"
-            except:
+            except (ValueError, TypeError):
                 pass
         
         # Déclencher si trop de clés

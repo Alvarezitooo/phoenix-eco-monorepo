@@ -375,7 +375,7 @@ class RGPDAuditManager:
                         ):
                             consent_found = True
                             break
-                    except:
+                    except (KeyError, AttributeError, TypeError):
                         continue
 
         if not consent_found:
@@ -415,7 +415,7 @@ class RGPDAuditManager:
                         if re.search(r"(?i)(retention|delete.*after|expir)", content):
                             retention_found = True
                             break
-                    except:
+                    except (KeyError, AttributeError, TypeError):
                         continue
 
         if not retention_found:
@@ -471,7 +471,7 @@ class RGPDAuditManager:
                                     )
                                 )
                                 break
-                    except:
+                    except (KeyError, AttributeError, TypeError):
                         continue
 
         return issues
@@ -515,7 +515,7 @@ class RGPDAuditManager:
                                     )
                                 )
                                 break
-                    except:
+                    except (KeyError, AttributeError, TypeError):
                         continue
 
         return issues
@@ -568,7 +568,7 @@ class RGPDAuditManager:
                         for pattern in patterns:
                             if re.search(pattern, content):
                                 return True
-                    except:
+                    except (KeyError, AttributeError, TypeError):
                         continue
 
         return False
@@ -662,7 +662,7 @@ class RGPDAuditManager:
                         for pattern in patterns:
                             if re.search(pattern, content):
                                 return True
-                    except:
+                    except (KeyError, AttributeError, TypeError):
                         continue
         return False
 
