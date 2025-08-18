@@ -1,116 +1,122 @@
+#!/usr/bin/env python3
 """
-🚀 Phoenix CV - Point d'Entrée Monorepo
-Implémentation de la vision stratégique avec AuthManager unifié
-et imports propres selon l'architecture définie
-
-Author: Claude Phoenix DevSecOps Guardian
-Version: 1.0.0 - Strategic Vision Implementation
+🏛️ Phoenix CV - Launcher Robuste pour Streamlit Cloud
+Garantit le démarrage de Phoenix CV indépendamment de la structure de dossiers
 """
 
 import sys
 import os
 from pathlib import Path
+import importlib.util
+import runpy
 
-# Configuration PYTHONPATH pour monorepo Poetry
-ROOT_DIR = Path(__file__).resolve().parent
-
-# Ajouter racine monorepo pour imports packages partagés
-if str(ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(ROOT_DIR))
-
-# Ajouter dossier app phoenix-cv
-APP_ROOT = ROOT_DIR / "apps" / "phoenix-cv"
-if str(APP_ROOT) not in sys.path:
-    sys.path.insert(0, str(APP_ROOT))
-
-# Configuration environnement pour Supabase et Stripe
-os.environ.setdefault("SUPABASE_URL", os.getenv("SUPABASE_URL", ""))
-os.environ.setdefault("SUPABASE_ANON_KEY", os.getenv("SUPABASE_ANON_KEY", ""))
-os.environ.setdefault("STRIPE_SECRET_KEY", os.getenv("STRIPE_SECRET_KEY", ""))
-os.environ.setdefault("STRIPE_PUBLISHABLE_KEY", os.getenv("STRIPE_PUBLISHABLE_KEY", ""))
-
-print("✅ Phoenix CV - Environnement monorepo configuré")
-print(f"📂 Racine: {ROOT_DIR}")
-print(f"📱 App: {APP_ROOT}")
-
-try:
-    # Vérifier d'abord si les secrets Supabase sont disponibles
-    supabase_url = os.getenv("SUPABASE_URL")
-    supabase_key = os.getenv("SUPABASE_ANON_KEY")
+def find_phoenix_cv_app():
+    """
+    Trouve et retourne le chemin vers l'application Phoenix CV
+    Utilise plusieurs stratégies de résolution pour garantir le succès
+    """
+    current_dir = Path(__file__).resolve().parent
     
-    if supabase_url and supabase_key:
-        # Import du service d'authentification unifié selon vision stratégique
-        from packages.phoenix_shared_auth.client import get_auth_manager
-        auth_manager = get_auth_manager()
-        print("✅ AuthManager unifié initialisé")
-    else:
-        print("⚠️ Secrets Supabase non disponibles - mode standalone activé")
-        auth_manager = None
+    # Stratégie 1: Structure monorepo standard
+    cv_app_path = current_dir / "apps" / "phoenix-cv" / "app.py"
+    if cv_app_path.exists():
+        return cv_app_path
     
-    # Import de la fonction main de Phoenix CV
-    from phoenix_cv.main import main
-    print("✅ Module Phoenix CV importé")
+    # Stratégie 2: Recherche récursive depuis la racine
+    for pattern in ["**/phoenix-cv/app.py", "**/phoenix_cv/app.py", "**/cv/app.py"]:
+        matches = list(current_dir.rglob(pattern))
+        if matches:
+            return matches[0]
     
-    if __name__ == "__main__":
-        if auth_manager:
-            print("🚀 Lancement de Phoenix CV avec authentification unifiée...")
-        else:
-            print("🚀 Lancement de Phoenix CV en mode standalone...")
-        main()
+    # Stratégie 3: Variables d'environnement
+    if env_path := os.getenv("PHOENIX_CV_APP_PATH"):
+        env_app_path = Path(env_path)
+        if env_app_path.exists():
+            return env_app_path
+    
+    # Stratégie 4: Chemins relatifs depuis différents points
+    relative_paths = [
+        "./apps/phoenix-cv/app.py",
+        "../apps/phoenix-cv/app.py", 
+        "./phoenix-cv/app.py",
+        "./cv/app.py"
+    ]
+    
+    for rel_path in relative_paths:
+        abs_path = (current_dir / rel_path).resolve()
+        if abs_path.exists():
+            return abs_path
+    
+    return None
 
-except ImportError as e:
-    print(f"❌ Erreur d'import: {e}")
-    print("🔄 Fallback vers mode standalone...")
+def setup_python_path(app_path: Path):
+    """
+    Configure le PYTHONPATH pour que tous les imports fonctionnent
+    """
+    # Ajouter la racine du monorepo
+    monorepo_root = app_path.parent.parent.parent
+    if str(monorepo_root) not in sys.path:
+        sys.path.insert(0, str(monorepo_root))
     
-    # Fallback: essayer sans packages partagés
+    # Ajouter le dossier packages pour les imports phoenix_*
+    packages_dir = monorepo_root / "packages"
+    if packages_dir.exists() and str(packages_dir) not in sys.path:
+        sys.path.insert(0, str(packages_dir))
+    
+    # Ajouter le dossier de l'app elle-même
+    app_dir = app_path.parent
+    if str(app_dir) not in sys.path:
+        sys.path.insert(0, str(app_dir))
+
+def launch_phoenix_cv():
+    """
+    Lance Phoenix CV avec gestion d'erreurs robuste
+    """
+    print("🚀 Démarrage Phoenix CV...")
+    
+    # Étape 1: Localiser l'application
+    app_path = find_phoenix_cv_app()
+    if not app_path:
+        print("❌ ERREUR: Impossible de localiser Phoenix CV app.py")
+        print("Vérifiez que le fichier existe dans apps/phoenix-cv/app.py")
+        sys.exit(1)
+    
+    print(f"✅ Phoenix CV trouvé: {app_path}")
+    
+    # Étape 2: Configuration des chemins
+    setup_python_path(app_path)
+    print(f"✅ PYTHONPATH configuré")
+    
+    # Étape 3: Variables d'environnement pour Phoenix CV
+    os.environ.setdefault("PHOENIX_APP", "cv")
+    os.environ.setdefault("STREAMLIT_SERVER_HEADLESS", "true")
+    
+    # Étape 4: Lancement avec gestion d'erreurs
     try:
-        import streamlit as st
-        from phoenix_cv.main import main
+        # Méthode 1: runpy (préférée pour Streamlit)
+        print("🎯 Lancement via runpy...")
+        os.chdir(app_path.parent)
+        runpy.run_path(str(app_path), run_name="__main__")
         
-        st.warning("⚠️ Mode standalone - Services partagés non disponibles")
-        print("🔄 Phoenix CV en mode standalone")
+    except Exception as e1:
+        print(f"⚠️ Méthode runpy échouée: {e1}")
         
-        if __name__ == "__main__":
-            main()
-            
-    except Exception as fallback_error:
-        import streamlit as st
-        st.error("❌ Erreur critique lors du chargement de Phoenix CV")
-        st.code(f"Erreur: {str(fallback_error)}")
-        st.info("💡 Vérifiez la configuration des secrets Streamlit")
-        print(f"❌ Erreur fallback: {fallback_error}")
+        try:
+            # Méthode 2: Import dynamique
+            print("🔄 Tentative import dynamique...")
+            spec = importlib.util.spec_from_file_location("phoenix_cv_app", app_path)
+            if spec and spec.loader:
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+            else:
+                raise ImportError("Impossible de créer le spec du module")
+                
+        except Exception as e2:
+            print(f"❌ ÉCHEC CRITIQUE: {e2}")
+            print(f"App path: {app_path}")
+            print(f"Working dir: {os.getcwd()}")
+            print(f"Python path: {sys.path[:3]}...")
+            sys.exit(1)
 
-except Exception as e:
-    print(f"❌ Erreur inattendue: {e}")
-    
-    try:
-        import streamlit as st
-        st.error("❌ Une erreur est survenue lors du chargement de Phoenix CV")
-        st.exception(e)
-        
-        with st.expander("🔍 Informations de débogage"):
-            st.code(f"""
-            Racine monorepo: {ROOT_DIR}
-            App Phoenix CV: {APP_ROOT}
-            Erreur: {str(e)}
-            PYTHONPATH: {sys.path[:5]}
-            Variables Supabase: SUPABASE_URL={'✅' if os.getenv('SUPABASE_URL') else '❌'}, SUPABASE_ANON_KEY={'✅' if os.getenv('SUPABASE_ANON_KEY') else '❌'}
-            """)
-            
-        # Solution alternative : afficher le bouton de configuration
-        st.markdown("---")
-        st.markdown("### 🔧 Configuration requise")
-        st.info("""
-        **Pour activer l'authentification unifiée Phoenix :**
-        
-        1. Configurez les secrets Streamlit Cloud :
-           - `SUPABASE_URL` 
-           - `SUPABASE_ANON_KEY`
-        
-        2. Redéployez l'application
-        
-        **En attendant :** L'application fonctionne en mode standalone limité.
-        """)
-    except:
-        print("❌ Impossible d'afficher l'interface Streamlit")
-        raise e
+if __name__ == "__main__":
+    launch_phoenix_cv()
