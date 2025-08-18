@@ -47,12 +47,13 @@ class Settings:
     supabase_url: Optional[str] = None
     supabase_key: Optional[str] = None
     
-    # Stripe Configuration
+    # Stripe Configuration (noms standards écosystème Phoenix)
     stripe_publishable_key: Optional[str] = None
     stripe_secret_key: Optional[str] = None
     stripe_webhook_secret: Optional[str] = None
-    stripe_price_id_premium: Optional[str] = None
-    stripe_price_id_premium_plus: Optional[str] = None
+    stripe_letters_price_id: Optional[str] = None
+    stripe_cv_price_id: Optional[str] = None
+    stripe_bundle_price_id: Optional[str] = None
 
     def __post_init__(self):
         load_dotenv(find_dotenv(), override=True)  # Force reload
@@ -93,12 +94,13 @@ class Settings:
         object.__setattr__(self, "supabase_url", self._get_required_env("SUPABASE_URL"))
         object.__setattr__(self, "supabase_key", self._get_required_env("SUPABASE_ANON_KEY"))
         
-        # Stripe configuration
+        # Stripe configuration (noms standards Phoenix)
         object.__setattr__(self, "stripe_publishable_key", os.getenv("STRIPE_PUBLISHABLE_KEY"))
         object.__setattr__(self, "stripe_secret_key", os.getenv("STRIPE_SECRET_KEY"))
         object.__setattr__(self, "stripe_webhook_secret", os.getenv("STRIPE_WEBHOOK_SECRET"))
-        object.__setattr__(self, "stripe_price_id_premium", os.getenv("STRIPE_PRICE_ID_PREMIUM"))
-        object.__setattr__(self, "stripe_price_id_premium_plus", os.getenv("STRIPE_PRICE_ID_PREMIUM_PLUS"))
+        object.__setattr__(self, "stripe_letters_price_id", os.getenv("STRIPE_LETTERS_PRICE_ID"))
+        object.__setattr__(self, "stripe_cv_price_id", os.getenv("STRIPE_CV_PRICE_ID"))
+        object.__setattr__(self, "stripe_bundle_price_id", os.getenv("STRIPE_BUNDLE_PRICE_ID"))
 
     def _get_required_env(self, key: str) -> str:
         value = os.getenv(key)

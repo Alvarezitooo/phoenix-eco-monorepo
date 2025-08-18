@@ -102,7 +102,7 @@ def get_stripe_client():
     try:
         import stripe
         
-        stripe.api_key = settings.STRIPE_SK
+        stripe.api_key = settings.STRIPE_SECRET_KEY
         
         # Test de connexion rapide
         stripe.Account.retrieve()

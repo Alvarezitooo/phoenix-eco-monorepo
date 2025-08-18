@@ -515,19 +515,10 @@ def _show_pricing_details():
 
 
 def _get_stripe_price_ids():
-    """Récupère les Price IDs Stripe pour l'intégration"""
-    try:
-        from phoenix_shared_auth.entities.phoenix_subscription import STRIPE_PRICE_IDS, BUNDLE_PRICE_IDS, PhoenixApp, SubscriptionTier
-        
-        return {
-            "cv_premium": STRIPE_PRICE_IDS[PhoenixApp.CV][SubscriptionTier.PREMIUM],
-            "letters_premium": STRIPE_PRICE_IDS[PhoenixApp.LETTERS][SubscriptionTier.PREMIUM], 
-            "pack_cv_letters": BUNDLE_PRICE_IDS["phoenix_pack_cv_letters"]
-        }
-    except ImportError:
-        # Fallback avec les vrais IDs
-        return {
-            "cv_premium": "price_1RraUoDcM3VIYgvy0NXiKmKV",
-            "letters_premium": "price_1RraAcDcM3VIYgvyEBNFXfbR",
-            "pack_cv_letters": "price_1RraWhDcM3VIYgvyGykPghCc"
-        }
+    """Récupère les price IDs Stripe depuis les variables d'environnement (standard Phoenix)"""
+    import os
+    return {
+        "cv_premium": os.getenv("STRIPE_CV_PRICE_ID", "price_1RraUoDcM3VIYgvy0NXiKmKV"),
+        "letters_premium": os.getenv("STRIPE_LETTERS_PRICE_ID", "price_1RraAcDcM3VIYgvyEBNFXfbR"),
+        "pack_cv_letters": os.getenv("STRIPE_BUNDLE_PRICE_ID", "price_1RraWhDcM3VIYgvyGykPghCc")
+    }

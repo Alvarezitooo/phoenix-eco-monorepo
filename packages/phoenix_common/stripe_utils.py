@@ -16,12 +16,12 @@ def get_stripe_client():
     """
     settings = get_settings()
     
-    if not settings.STRIPE_PK or not settings.STRIPE_SK:
+    if not settings.STRIPE_PUBLISHABLE_KEY or not settings.STRIPE_SECRET_KEY:
         raise RuntimeError("Configuration Stripe incomplète")
     
     try:
         import stripe
-        stripe.api_key = settings.STRIPE_SK
+        stripe.api_key = settings.STRIPE_SECRET_KEY
         return stripe
     except ImportError:
         raise RuntimeError("Package stripe non installé")

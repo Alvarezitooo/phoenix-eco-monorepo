@@ -21,8 +21,8 @@ class Settings:
     # Core services
     SUPABASE_URL: str = ""
     SUPABASE_ANON_KEY: str = ""
-    STRIPE_PK: str = ""
-    STRIPE_SK: str = ""          # ⚠️ idéalement côté backend seulement
+    STRIPE_PUBLISHABLE_KEY: str = ""
+    STRIPE_SECRET_KEY: str = ""          # ⚠️ idéalement côté backend seulement
     GEMINI_API_KEY: str = ""
 
     # Runtime
@@ -39,8 +39,8 @@ def get_settings() -> Settings:
     return Settings(
         SUPABASE_URL=_get("SUPABASE_URL"),
         SUPABASE_ANON_KEY=_get("SUPABASE_ANON_KEY"),
-        STRIPE_PK=_get("STRIPE_PK"),
-        STRIPE_SK=_get("STRIPE_SK"),
+        STRIPE_PUBLISHABLE_KEY=_get("STRIPE_PUBLISHABLE_KEY"),
+        STRIPE_SECRET_KEY=_get("STRIPE_SECRET_KEY"),
         GEMINI_API_KEY=_get("GEMINI_API_KEY"),
         ENV=_get("ENV", "dev"),
         PHOENIX_SAFE_MODE=_get("PHOENIX_SAFE_MODE", "0") == "1",
