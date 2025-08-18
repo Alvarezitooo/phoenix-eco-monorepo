@@ -117,15 +117,13 @@ class SubscriptionService:
         self.validator = input_validator
         
         # 🔧 CLIENT ADMIN pour bypasser RLS selon Oracle
-        import os
-        from supabase import create_client
-        service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-        if service_role_key:
-            self.admin_client = create_client(settings.supabase_url, service_role_key)
-            logger.info("SubscriptionService: Client admin SERVICE_ROLE initialisé")
-        else:
+        from phoenix_shared_auth.client import get_supabase_client
+        try:
+            self.admin_client = get_supabase_client()
+            logger.info("SubscriptionService: Client centralisé initialisé")
+        except Exception as e:
             self.admin_client = None
-            logger.warning("SubscriptionService: SERVICE_ROLE_KEY manquante - utilisation client standard")
+            logger.warning(f"SubscriptionService: Erreur client centralisé: {e}")
         
         # Limites par tier
         self.tier_limits = {

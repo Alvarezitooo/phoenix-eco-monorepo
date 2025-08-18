@@ -33,6 +33,18 @@ class Settings:
     SENTRY_DSN: str = ""
     POSTHOG_KEY: str = ""
     POSTHOG_HOST: str = "https://app.posthog.com"
+    
+    def has_supabase(self) -> bool:
+        """Vérifie si la configuration Supabase est complète"""
+        return bool(self.SUPABASE_URL and self.SUPABASE_ANON_KEY)
+    
+    def has_gemini(self) -> bool:
+        """Vérifie si la clé API Gemini est configurée"""
+        return bool(self.GEMINI_API_KEY)
+    
+    def has_stripe(self) -> bool:
+        """Vérifie si la configuration Stripe est complète"""
+        return bool(self.STRIPE_PUBLISHABLE_KEY and self.STRIPE_SECRET_KEY)
 
 def get_settings() -> Settings:
     """Construit l'objet Settings à partir de l'environnement."""

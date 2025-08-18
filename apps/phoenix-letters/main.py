@@ -633,8 +633,8 @@ Je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distin
                     st.error("❌ SUPABASE_SERVICE_ROLE_KEY manquante")
                     return
                 
-                from supabase import create_client
-                admin_client = create_client(settings.supabase_url, service_role_key)
+                from phoenix_shared_auth.client import get_supabase_client
+                admin_client = get_supabase_client()  # ⚠️ Note: utilise ANON_KEY pas SERVICE_ROLE
                 
                 admin_subscription = {
                     "user_id": current_user["id"],
@@ -705,6 +705,18 @@ def main():
         logger.warning(f"Services de paiement non disponibles: {e}")
         stripe_service = None
         subscription_service = None
+
+    # 🔎 DIAGNOSTIC SUPABASE (temporaire pour debug)
+    with st.expander("🔎 Diagnostic Supabase", expanded=False):
+        try:
+            from phoenix_shared_auth.client import get_supabase_client
+            sb = get_supabase_client()
+            # Test simple de connexion
+            out = sb.table("profiles").select("id").limit(1).execute()
+            st.success(f"✅ Connecté Supabase – test query OK (rows: {len(out.data)})")
+        except Exception as e:
+            st.error(f"❌ Supabase KO: {e!s}")
+            st.caption("Vérifie secrets et policies RLS.")
 
     # Récupération de l'utilisateur courant (si déjà authentifié dans la session)
     current_user = None

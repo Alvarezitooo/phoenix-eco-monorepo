@@ -1,18 +1,41 @@
 """
-🔐 Phoenix Shared Auth - AuthManager Unifié
-Implémentation de la vision stratégique d'authentification unique
-pour tout l'écosystème Phoenix avec user_id comme stream_id
+🔐 Phoenix Shared Auth - Client Supabase Centralisé + AuthManager
+Client unique robuste pour éviter les double init et garantir la stabilité
 
 Author: Claude Phoenix DevSecOps Guardian  
-Version: 1.0.0 - Strategic Vision Implementation
+Version: 2.0.0 - Centralized Client + Auth
 """
 
+from __future__ import annotations
 import os
 import logging
 from typing import Optional, Dict, Any, Tuple
-from supabase import create_client, Client
+from functools import lru_cache
 
 logger = logging.getLogger(__name__)
+
+def _get_secret(name: str) -> str | None:
+    """Récupère un secret depuis Streamlit ou variables d'environnement"""
+    # Streamlit Cloud expose st.secrets; fallback env en local.
+    try:
+        import streamlit as st  # type: ignore
+        v = st.secrets.get(name)
+        if v: return str(v)
+    except Exception:
+        pass
+    return os.environ.get(name)
+
+@lru_cache(maxsize=1)
+def get_supabase_client():
+    """
+    Client unique, réutilisable, safe pour Streamlit (évite double init).
+    """
+    url = _get_secret("SUPABASE_URL")
+    anon = _get_secret("SUPABASE_ANON_KEY")
+    if not url or not anon:
+        raise RuntimeError("SUPABASE_URL / SUPABASE_ANON_KEY manquants")
+    from supabase import create_client  # import tardif pour éviter side-effects
+    return create_client(url, anon)
 
 class AuthManager:
     """
@@ -23,18 +46,12 @@ class AuthManager:
     """
     
     def __init__(self):
-        """Initialise le client Supabase Auth"""
-        url = os.environ.get("SUPABASE_URL")
-        key = os.environ.get("SUPABASE_ANON_KEY")  # Clé publique pour auth
-        
-        if not url or not key:
-            raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY must be set in environment")
-        
+        """Initialise AuthManager avec le client centralisé"""
         try:
-            self.client: Client = create_client(url, key)
-            logger.info("✅ AuthManager initialized with Supabase")
+            self.client = get_supabase_client()
+            logger.info("✅ AuthManager initialized with centralized Supabase client")
         except Exception as e:
-            logger.error(f"❌ Failed to initialize Supabase client: {e}")
+            logger.error(f"❌ Failed to initialize AuthManager: {e}")
             raise
     
     def sign_up(self, email: str, password: str, metadata: Optional[Dict[str, Any]] = None) -> Tuple[bool, str, Optional[str]]:

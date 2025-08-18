@@ -102,7 +102,8 @@ class PhoenixEventBridge:
             self.supabase_key = "mock_key"
             self.supabase = None
         else:
-            self.supabase: Client = create_client(self.supabase_url, self.supabase_key)
+            from phoenix_shared_auth.client import get_supabase_client
+            self.supabase = get_supabase_client()
         
         logger.info("✅ PhoenixEventBridge initialisé" + (" (mode dégradé)" if self.degraded_mode else ""))
 
