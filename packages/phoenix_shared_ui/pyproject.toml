@@ -1,13 +1,18 @@
-[project]
+[tool.poetry]
 name = "phoenix-shared-ui"
 version = "0.1.0"
-requires-python = ">=3.11"
-dependencies = []
+description = "UI partagée (Streamlit/React) pour l'écosystème Phoenix"
+authors = ["Phoenix Team <team@phoenix.com>"]
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["phoenix_shared_ui*"]
+# 🔴 Le point clé qui manquait :
+packages = [
+  { include = "phoenix_shared_ui" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+streamlit = ">=1.30.0"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.9.0"]
 build-backend = "poetry.core.masonry.api"

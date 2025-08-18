@@ -10,6 +10,7 @@ Version: Smart-Deploy - Adaptive Entry Point
 
 import logging
 import os
+import time
 from datetime import datetime, timezone
 
 # === IMPORTS ABSOLUS - CONTRÔLE TOTAL DU CONTEXTE ===
@@ -432,7 +433,69 @@ def render_main_app(current_user, auth_manager, settings, db_connection, initial
                         st.balloons()
                         st.info("🎉 Passez à Premium pour débloquer l'analyse ATS !")
                 
+                # === GÉNÉRATEUR GRATUIT IMMÉDIAT ===
+                st.markdown("---")
+                st.markdown("### 🆓 Générateur Gratuit - Testez Phoenix Letters")
+                
+                with st.form("quick_letter_generator"):
+                    st.write("**Générez votre première lettre gratuitement :**")
+                    
+                    col_input1, col_input2 = st.columns(2)
+                    with col_input1:
+                        company_name = st.text_input("🏢 Nom de l'entreprise", placeholder="Ex: Google, Microsoft...")
+                        position = st.text_input("💼 Poste visé", placeholder="Ex: Développeur, Manager...")
+                    
+                    with col_input2:
+                        your_name = st.text_input("👤 Votre nom", placeholder="Votre nom complet")
+                        experience = st.selectbox("📈 Votre expérience", ["Débutant (0-2 ans)", "Intermédiaire (2-5 ans)", "Senior (5+ ans)"])
+                    
+                    motivation = st.text_area("✨ Pourquoi cette entreprise vous intéresse ?", 
+                                            placeholder="Expliquez en quelques lignes pourquoi vous voulez rejoindre cette entreprise...", 
+                                            height=100)
+                    
+                    generate_button = st.form_submit_button("🚀 Générer ma lettre gratuite", use_container_width=True, type="primary")
+                
+                if generate_button:
+                    if company_name and position and your_name and motivation:
+                        with st.spinner("✨ Génération de votre lettre personnalisée..."):
+                            time.sleep(2)  # Simulation
+                            
+                            # Génération simple et immédiate
+                            generated_letter = f"""Objet : Candidature pour le poste de {position}
+
+Madame, Monsieur,
+
+Je me permets de vous adresser ma candidature pour le poste de {position} au sein de {company_name}.
+
+{motivation}
+
+Fort(e) de mon expérience en tant que profil {experience.lower()}, je suis convaincu(e) que mes compétences et ma motivation seront des atouts précieux pour votre équipe.
+
+Je serais ravi(e) de vous rencontrer pour discuter de cette opportunité et vous démontrer ma motivation.
+
+Je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.
+
+{your_name}"""
+                            
+                            st.success("✅ Lettre générée avec succès !")
+                            st.markdown("### 📄 Votre lettre de motivation :")
+                            st.text_area("", value=generated_letter, height=300, key="generated_letter_display")
+                            
+                            col_action1, col_action2, col_action3 = st.columns(3)
+                            with col_action1:
+                                st.download_button("📥 Télécharger", data=generated_letter, file_name=f"lettre_{company_name.lower().replace(' ', '_')}.txt", mime="text/plain")
+                            with col_action2:
+                                if st.button("🔄 Regénérer"):
+                                    st.rerun()
+                            with col_action3:
+                                st.info("💎 Upgrader pour plus de personnalisation")
+                                
+                    else:
+                        st.error("❌ Veuillez remplir tous les champs obligatoires")
+                
                 # Teasers Smart Coach et Trajectory Builder
+                st.markdown("---")
+                st.markdown("### 💎 Fonctionnalités Premium")
                 col3, col4 = st.columns(2)
                 
                 with col3:
