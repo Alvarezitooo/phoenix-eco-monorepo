@@ -11,8 +11,8 @@ class CVTier(Enum):
     PREMIUM = "premium"
     EXECUTIVE = "executive"
 
-class CVTemplate(Enum):
-    """Templates de CV disponibles"""
+class CVTemplateType(Enum):
+    """Types de templates de CV disponibles"""
     MODERN = "modern"
     CLASSIC = "classic"
     CREATIVE = "creative"

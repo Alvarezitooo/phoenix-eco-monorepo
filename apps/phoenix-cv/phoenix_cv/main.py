@@ -175,6 +175,18 @@ def main_modern():
         
         st.markdown("---")
     
+    # 🔎 DIAGNOSTIC SUPABASE (temporaire pour debug)
+    with st.expander("🔎 Diagnostic Supabase", expanded=False):
+        try:
+            from phoenix_shared_auth.client import get_supabase_client
+            sb = get_supabase_client()
+            # Test simple de connexion
+            out = sb.table("profiles").select("id").limit(1).execute()
+            st.success(f"✅ Connecté Supabase – test query OK (rows: {len(out.data)})")
+        except Exception as e:
+            st.error(f"❌ Supabase KO: {e!s}")
+            st.caption("Vérifie secrets et policies RLS.")
+
     # Authentification
     if not handle_authentication_check():
         return
