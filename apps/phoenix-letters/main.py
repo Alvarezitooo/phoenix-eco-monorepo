@@ -706,6 +706,15 @@ def main():
         stripe_service = None
         subscription_service = None
 
+    # 🧹 AUTO-NETTOYAGE SESSION pour prévenir memory bloat
+    try:
+        from utils.session_cleaner import auto_cleanup
+        was_cleaned, cleanup_msg = auto_cleanup()
+        if was_cleaned:
+            st.info(f"🧹 {cleanup_msg}")
+    except ImportError:
+        pass  # Session cleaner optionnel
+
     # 🔎 DIAGNOSTIC SUPABASE (temporaire pour debug)
     with st.expander("🔎 Diagnostic Supabase", expanded=False):
         try:
@@ -717,6 +726,19 @@ def main():
         except Exception as e:
             st.error(f"❌ Supabase KO: {e!s}")
             st.caption("Vérifie secrets et policies RLS.")
+        
+        # Stats session Letters
+        try:
+            from utils.session_cleaner import PhoenixLettersSessionCleaner
+            stats = PhoenixLettersSessionCleaner.get_session_stats()
+            st.markdown("**📊 Session Stats:**")
+            st.write(f"- Clés totales: {stats['total_keys']}")
+            st.write(f"- Clés protégées: {stats['protected_keys']}")
+            st.write(f"- Clés temporaires: {stats['temporary_keys']}")
+            if stats['total_keys'] > 40:
+                st.warning("⚠️ Session volumineuse - nettoyage recommandé")
+        except ImportError:
+            pass
 
     # Récupération de l'utilisateur courant (si déjà authentifié dans la session)
     current_user = None

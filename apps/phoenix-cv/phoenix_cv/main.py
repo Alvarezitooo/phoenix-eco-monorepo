@@ -139,6 +139,15 @@ def main_modern():
     # CSS global Phoenix
     inject_phoenix_css()
     
+    # 🧹 AUTO-NETTOYAGE SESSION pour prévenir memory bloat
+    try:
+        from phoenix_cv.utils.session_cleaner import auto_cleanup
+        was_cleaned, cleanup_msg = auto_cleanup()
+        if was_cleaned:
+            st.info(f"🧹 {cleanup_msg}")
+    except ImportError:
+        pass  # Session cleaner optionnel
+    
     # 🏛️ ORACLE PATTERN: Diagnostic transparent des services
     if not SERVICES_AVAILABLE:
         st.error("🚨 Services Intelligents Indisponibles - Mode Dégradé Activé")
@@ -172,6 +181,19 @@ def main_modern():
             }
             for var, status in env_vars.items():
                 st.write(f"**{var}:** {status}")
+            
+            # Stats session
+            try:
+                from phoenix_cv.utils.session_cleaner import PhoenixSessionCleaner
+                stats = PhoenixSessionCleaner.get_session_stats()
+                st.markdown("**📊 Session Stats:**")
+                st.write(f"- Clés totales: {stats['total_keys']}")
+                st.write(f"- Clés protégées: {stats['protected_keys']}")
+                st.write(f"- Clés temporaires: {stats['temporary_keys']}")
+                if stats['total_keys'] > 40:
+                    st.warning("⚠️ Session volumineuse - nettoyage recommandé")
+            except ImportError:
+                pass
         
         st.markdown("---")
     
@@ -1055,12 +1077,12 @@ def render_create_cv_page():
         )
 
         if submitted:
-            # Tracking action pour Smart Coach
+            # Tracking action pour Smart Coach (avec limitation memory bloat)
             st.session_state["current_action"] = "cv_generation_started"
             st.session_state["form_progress"] = 1.0
-            st.session_state["interaction_count"] = (
-                st.session_state.get("interaction_count", 0) + 1
-            )
+            # Limiter interaction_count pour éviter memory bloat
+            current_count = st.session_state.get("interaction_count", 0)
+            st.session_state["interaction_count"] = min(current_count + 1, 100)  # Cap à 100
 
             if (
                 not prenom
