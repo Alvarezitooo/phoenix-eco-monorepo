@@ -16,11 +16,17 @@ export const IrisWidget: React.FC<IrisWidgetProps> = ({ authToken, className }) 
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
 
+  // Configuration sécurisée avec validation
   const irisConfig = {
-    apiUrl: process.env.NEXT_PUBLIC_ALESSIO_API_URL || 'http://localhost:8003/api/v1/chat',
+    apiUrl: process.env.NEXT_PUBLIC_ALESSIO_API_URL || 'https://phoenix-iris-api.vercel.app/api/v1/chat',
     appContext: 'phoenix-website' as const,
     timeout: 60000,
   };
+
+  // Vérification de la disponibilité de l'API
+  if (!process.env.NEXT_PUBLIC_ALESSIO_API_URL) {
+    console.warn('NEXT_PUBLIC_ALESSIO_API_URL not configured, using production default');
+  }
 
   const toggleWidget = () => {
     setIsOpen(!isOpen);
@@ -50,7 +56,7 @@ export const IrisWidget: React.FC<IrisWidgetProps> = ({ authToken, className }) 
           <div className="bg-gradient-to-r from-purple-500 to-blue-500 text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Bot className="w-6 h-6" />
-              <span className="font-semibold">Iris Assistant</span>
+              <span className="font-semibold">Alessio Assistant</span>
             </div>
             <div className="flex items-center gap-1">
               <Button
@@ -91,7 +97,7 @@ export const IrisWidget: React.FC<IrisWidgetProps> = ({ authToken, className }) 
           {isMinimized && (
             <div className="p-4 text-center">
               <Bot className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-              <p className="text-sm text-gray-600">Iris est prêt à vous aider !</p>
+              <p className="text-sm text-gray-600">Alessio est prêt à vous aider !</p>
               <Button
                 size="sm"
                 onClick={toggleMinimize}

@@ -26,7 +26,9 @@ export default function ContactPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Ici vous pourriez intégrer avec Formspree, Netlify Forms, ou votre backend
-    console.log('Form submitted:', formData);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Form submitted:', formData);
+    }
     alert('Merci pour votre message ! Nous vous répondrons rapidement.');
   };
 

@@ -17,7 +17,7 @@ export default function IrisPage() {
             className="bg-purple-100 text-purple-700 px-6 py-3 text-lg mb-6"
           >
             <Bot className="w-5 h-5 mr-2" />
-            Iris - Intelligence Artificielle Phoenix
+            Alessio - Assistant IA Phoenix
           </Badge>
 
           <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
@@ -25,7 +25,7 @@ export default function IrisPage() {
           </h1>
 
           <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Iris vous accompagne 24h/24 dans votre transformation professionnelle avec des conseils
+            Alessio vous accompagne 24h/24 dans votre transformation professionnelle avec des conseils
             personnalisés et une expertise IA de pointe
           </p>
 
@@ -50,7 +50,7 @@ export default function IrisPage() {
       <section className="py-16 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">
-            Les super-pouvoirs d&apos;Iris dans l&apos;écosystème Phoenix
+            Les super-pouvoirs d&apos;Alessio dans l&apos;écosystème Phoenix
           </h2>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -59,7 +59,7 @@ export default function IrisPage() {
                 <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white mb-4">
                   ✍️
                 </div>
-                <CardTitle className="text-purple-700">Iris Letters</CardTitle>
+                <CardTitle className="text-purple-700">Alessio Letters</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">
@@ -146,7 +146,7 @@ export default function IrisPage() {
       <section className="py-16 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">
-            Ce que disent nos utilisateurs d&apos;Iris
+            Ce que disent nos utilisateurs d&apos;Alessio
           </h2>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -200,7 +200,7 @@ export default function IrisPage() {
                   </div>
                 </div>
                 <p className="text-gray-600 italic">
-                  &quot;Le soutien émotionnel d&apos;Iris pendant ma reconversion a été précieux. Je
+                  &quot;Le soutien émotionnel d&apos;Alessio pendant ma reconversion a été précieux. Je
                   recommande à 100% !&quot;
                 </p>
                 <div className="flex text-yellow-400 mt-3">⭐⭐⭐⭐⭐</div>

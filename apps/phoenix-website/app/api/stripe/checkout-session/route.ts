@@ -3,16 +3,26 @@ import Stripe from 'stripe';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: '2025-07-30.basil', // Version Stripe API la plus récente compatible
+// Validation des variables d'environnement requises
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('STRIPE_SECRET_KEY is required for checkout session creation');
+}
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: '2025-07-30.basil',
 });
 
 export async function POST(req: NextRequest) {
   try {
     const cookieStore = cookies();
+    // Validation des variables d'environnement Supabase
+    if (!process.env.SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      throw new Error('SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are required');
+    }
+
     const supabase = createServerClient(
-      process.env.SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      process.env.SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       {
         cookies: {
           get(name: string) {
@@ -60,8 +70,32 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ id: session.id, url: session.url });
-  } catch (error: any) {
-    console.error('Stripe checkout session creation failed:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    // Error handling spécifique
+    if (error instanceof Stripe.errors.StripeError) {
+      console.error('Stripe API Error:', {
+        type: error.type,
+        code: error.code,
+        message: error.message,
+      });
+      return NextResponse.json(
+        { error: 'Payment processing error', details: error.message },
+        { status: 400 }
+      );
+    }
+
+    if (error instanceof Error && error.message.includes('required')) {
+      console.error('Configuration Error:', error.message);
+      return NextResponse.json(
+        { error: 'Service configuration error' },
+        { status: 500 }
+      );
+    }
+
+    console.error('Unexpected error in checkout session:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

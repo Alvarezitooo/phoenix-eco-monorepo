@@ -48,7 +48,7 @@ export const IrisSection: React.FC<IrisSectionProps> = ({
     {
       icon: <Users className="w-6 h-6" />,
       title: 'Multi-Applications',
-      description: 'Iris vous accompagne sur Letters, CV, Rise et toutes les apps Phoenix',
+      description: 'Alessio vous accompagne sur Letters, CV, Rise et toutes les apps Phoenix',
     },
   ];
 
@@ -138,7 +138,7 @@ export const IrisSection: React.FC<IrisSectionProps> = ({
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
                   <Button variant="outline" className="border-purple-300 hover:bg-purple-50">
-                    Iris Letters - Lettres de motivation
+                    Alessio Letters - Lettres de motivation
                   </Button>
                   <Button variant="outline" className="border-blue-300 hover:bg-blue-50">
                     Iris CV - Optimisation carrière

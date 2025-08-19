@@ -4,16 +4,28 @@ import Stripe from 'stripe';
 import { Readable } from 'stream';
 import { createClient } from '@supabase/supabase-js';
 
+// Validation des variables d'environnement requises
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('STRIPE_SECRET_KEY is required for webhook processing');
+}
+
 // Initialiser Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2025-07-30.basil',
 });
 
+// Validation des variables d'environnement requises
+if (!process.env.SUPABASE_URL) {
+  throw new Error('SUPABASE_URL is required for webhook processing');
+}
+if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for webhook processing');
+}
+
 // Initialiser le client Supabase admin pour l'écriture en BDD
-// 🚨 SÉCURITÉ: Variables d'environnement requises - pas de fallback hardcodé
 const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
 // Fonction pour buffer la requête
@@ -25,8 +37,11 @@ async function buffer(readable: Readable): Promise<Buffer> {
   return Buffer.concat(chunks);
 }
 
-// Le secret du webhook
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+// Le secret du webhook - validation requise
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+if (!webhookSecret) {
+  throw new Error('STRIPE_WEBHOOK_SECRET is required for webhook processing');
+}
 
 // Helper pour trouver l'user_id à partir du customer_id Stripe
 const getUserIdFromCustomerId = async (customerId: string): Promise<string | null> => {
@@ -63,7 +78,10 @@ export async function POST(req: NextRequest) {
     const eventObject = event.data.object as any;
     let phoenixEvent = null;
 
-    console.log(`✅ Webhook Stripe reçu et validé: ${eventType}`);
+    // Log uniquement en développement
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`✅ Webhook Stripe reçu et validé: ${eventType}`);
+    }
 
     switch (eventType) {
       case 'checkout.session.completed':
@@ -134,7 +152,9 @@ export async function POST(req: NextRequest) {
         break;
 
       default:
-        console.log(`-> Événement non traité: ${eventType}`);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`-> Événement non traité: ${eventType}`);
+        }
         break;
     }
 
@@ -144,9 +164,11 @@ export async function POST(req: NextRequest) {
         console.error('Erreur insertion événement Phoenix:', error);
         return NextResponse.json({ error: 'Failed to record Phoenix event' }, { status: 500 });
       }
-      console.log(
-        `✅ Événement Phoenix [${phoenixEvent.event_type}] publié pour l'utilisateur ${phoenixEvent.stream_id}`,
-      );
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          `✅ Événement Phoenix [${phoenixEvent.event_type}] publié pour l'utilisateur ${phoenixEvent.stream_id}`,
+        );
+      }
     }
 
     return NextResponse.json({ received: true });

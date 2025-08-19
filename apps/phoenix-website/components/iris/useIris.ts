@@ -1,10 +1,10 @@
-// 🤖 IRIS REACT HOOK - Hook personnalisé pour intégrer Iris dans Phoenix Website
+// 🤖 ALESSIO REACT HOOK - Hook personnalisé pour intégrer Alessio dans Phoenix Website
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
 import { IrisMessage, IrisResponse, IrisConfig } from './IrisTypes';
 
-export const useIris = (config: IrisConfig) => {
+export const useAlessio = (config: IrisConfig) => {
   const [messages, setMessages] = useState<IrisMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,8 +44,8 @@ export const useIris = (config: IrisConfig) => {
         }
 
         const data = await response.json();
-        const irisResponse: IrisResponse = {
-          reply: data.reply,
+        const alessioResponse: IrisResponse = {
+          reply: data.response, // API retourne 'response', pas 'reply'
           status: 'success',
           app_context: config.appContext,
           rate_limit_remaining: parseInt(response.headers.get('X-RateLimit-Remaining') || '0'),

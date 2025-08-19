@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useIris } from './useIris';
+import { useAlessio } from './useIris';
 import { IrisConfig } from './IrisTypes';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,7 +17,7 @@ interface IrisChatProps {
 }
 
 export const IrisChat: React.FC<IrisChatProps> = ({ config, authToken, className }) => {
-  const { messages, isLoading, error, sendMessage } = useIris(config);
+  const { messages, isLoading, error, sendMessage } = useAlessio(config);
   const [inputMessage, setInputMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,12 +30,12 @@ export const IrisChat: React.FC<IrisChatProps> = ({ config, authToken, className
 
   const getAppTitle = () => {
     const titles = {
-      'phoenix-letters': '🤖 Iris Lettres - Expert Lettres de Motivation',
-      'phoenix-cv': '🤖 Iris CV - Optimisation CV & Carrière',
-      'phoenix-rise': '🤖 Iris Coach - Accompagnement Reconversion',
-      'phoenix-website': '🤖 Iris Phoenix - Guide Écosystème',
+      'phoenix-letters': '🤖 Alessio Lettres - Expert Lettres de Motivation',
+      'phoenix-cv': '🤖 Alessio CV - Optimisation CV & Carrière',
+      'phoenix-rise': '🤖 Alessio Coach - Accompagnement Reconversion',
+      'phoenix-website': '🤖 Alessio Phoenix - Guide Écosystème',
     };
-    return titles[config.appContext as keyof typeof titles] || '🤖 Iris Assistant';
+    return titles[config.appContext as keyof typeof titles] || '🤖 Alessio Assistant';
   };
 
   const getSuggestions = () => {
@@ -69,16 +69,16 @@ export const IrisChat: React.FC<IrisChatProps> = ({ config, authToken, className
       <Card className={`iris-auth-prompt ${className}`}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-yellow-800">
-            🔒 Connectez-vous pour accéder à Iris
+            🔒 Connectez-vous pour accéder à Alessio
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-yellow-700">
-            Iris vous aide à optimiser votre stratégie avec des conseils personnalisés.
+            Alessio vous aide à optimiser votre stratégie avec des conseils personnalisés.
           </p>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-medium text-blue-800 mb-2">
-              💡 Aperçu des capacités d&apos;Iris :
+              💡 Aperçu des capacités d&apos;Alessio :
             </h4>
             <ul className="text-blue-700 space-y-1">
               {getSuggestions()
@@ -109,7 +109,7 @@ export const IrisChat: React.FC<IrisChatProps> = ({ config, authToken, className
           {messages.length === 0 ? (
             <div className="text-center text-gray-500 py-8">
               <Bot className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-              <p>Bonjour ! Je suis Iris, votre assistant IA Phoenix.</p>
+              <p>Bonjour ! Je suis Alessio, votre assistant IA Phoenix.</p>
               <p className="text-sm">Posez-moi vos questions sur l&apos;écosystème Phoenix !</p>
             </div>
           ) : (
