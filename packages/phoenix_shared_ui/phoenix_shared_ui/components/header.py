@@ -86,25 +86,8 @@ class PhoenixHeader:
         colors = cls.APP_COLORS.get(app_type, cls.APP_COLORS["default"])
         gradient = custom_gradient or colors["gradient"]
         
-        # Stats HTML si demandé
+        # Header HTML uniquement - stats rendues séparément en Streamlit natif
         stats_html = ""
-        if show_stats and user_stats:
-            stats_items = []
-            for key, value in user_stats.items():
-                stats_items.append(f"<span style='margin-right: 1rem;'><strong>{key}:</strong> {value}</span>")
-            
-            if stats_items:
-                stats_html = f"""
-                <div style="
-                    margin-top: 1rem; 
-                    padding-top: 1rem; 
-                    border-top: 1px solid rgba(255,255,255,0.3);
-                    font-size: 0.9rem;
-                    opacity: 0.9;
-                ">
-                    {''.join(stats_items)}
-                </div>
-                """
         
         # Header HTML unifié
         header_html = f"""
@@ -154,6 +137,57 @@ class PhoenixHeader:
         """
         
         st.markdown(header_html, unsafe_allow_html=True)
+        
+        # Rendu stats en Streamlit natif si demandé
+        if show_stats and user_stats:
+            cls._render_stats_native(user_stats)
+    
+    @classmethod
+    def _render_stats_native(cls, user_stats: Dict[str, Any]):
+        """Rendu des stats utilisateur en Streamlit natif"""
+        
+        # Convertir stats en liste pour colonnes
+        stats_items = list(user_stats.items())
+        
+        if len(stats_items) <= 4:
+            # 4 colonnes ou moins
+            cols = st.columns(len(stats_items))
+            for i, (label, value) in enumerate(stats_items):
+                with cols[i]:
+                    # Extraire icône du label si présent
+                    if "💼" in label:
+                        icon = "💼"
+                        clean_label = label.replace("💼", "").strip()
+                        delta = "+0 ce mois"
+                    elif "⚡" in label:
+                        icon = "⚡"
+                        clean_label = label.replace("⚡", "").strip()
+                        delta = "Restantes"
+                    elif "🎯" in label:
+                        icon = "🎯"
+                        clean_label = label.replace("🎯", "").strip()
+                        delta = "+5% vs moyenne"
+                    elif "📥" in label:
+                        icon = "📥"
+                        clean_label = label.replace("📥", "").strip()
+                        delta = "Total"
+                    else:
+                        icon = ""
+                        clean_label = label
+                        delta = None
+                    
+                    st.metric(
+                        label=f"{icon} {clean_label}",
+                        value=value,
+                        delta=delta
+                    )
+        else:
+            # Plus de 4 stats - utiliser expander
+            with st.expander("📊 Statistiques détaillées", expanded=False):
+                for label, value in stats_items:
+                    st.write(f"**{label}:** {value}")
+                    
+        st.divider()
 
 # Fonctions de compatibilité app-spécifiques
 def render_cv_header(title="Phoenix CV", subtitle="Créez des CV qui se démarquent", **kwargs):

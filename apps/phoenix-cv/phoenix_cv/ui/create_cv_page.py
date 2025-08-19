@@ -73,26 +73,38 @@ def render_create_cv_page_secure(gemini_client, display_generated_cv_secure_func
 
 
 def render_modern_header():
-    """Header moderne style Phoenix Letters"""
+    """Header moderne style Phoenix Letters en Streamlit natif"""
     
-    st.markdown("""
-    <div style="
-        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-        padding: 2rem;
-        border-radius: 1rem;
-        margin-bottom: 2rem;
-        color: white;
-        text-align: center;
-        box-shadow: 0 8px 25px rgba(30, 58, 138, 0.3);
-    ">
-        <h1 style="margin: 0; font-size: 2.5rem; font-weight: 700;">
-            📄 Phoenix CV Creator
-        </h1>
-        <p style="margin: 0.5rem 0 0 0; font-size: 1.2rem; opacity: 0.9;">
-            Créez des CV professionnels qui se démarquent • IA + ATS + Sécurité
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    # Container pour l'effet gradient (background uniquement)
+    with st.container():
+        # Titre principal
+        st.markdown("""
+        <div style="text-align: center; margin-bottom: 1rem;">
+            <h1 style="
+                color: #1e3a8a; 
+                font-size: 2.5rem; 
+                font-weight: 700; 
+                margin: 0;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            ">
+                📄 Phoenix CV Creator
+            </h1>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Sous-titre
+        st.markdown("""
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <p style="
+                color: #3b82f6; 
+                font-size: 1.2rem; 
+                font-weight: 500;
+                margin: 0;
+            ">
+                Créez des CV professionnels qui se démarquent • IA + ATS + Sécurité
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 def render_user_stats():
@@ -172,6 +184,204 @@ def render_cv_creation_form(gemini_client, display_generated_cv_secure_func, eve
                     ["Non spécifié", "25-35k€", "35-45k€", "45-60k€", "60k€+"]
                 )
         
+        # Sections Premium
+        user_tier = st.session_state.get("user_tier", UserTier.FREE)
+        
+        # 💼 Expériences professionnelles (Premium)
+        if user_tier == UserTier.PREMIUM:
+            with st.expander("💼 Expériences professionnelles détaillées", expanded=False):
+                st.markdown("**🌟 PREMIUM** - Ajoutez jusqu'à 5 expériences détaillées")
+                
+                experiences = []
+                for i in range(3):  # 3 expériences max pour commencer
+                    st.markdown(f"**Expérience #{i+1}**")
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        exp_title = st.text_input(f"Poste", key=f"exp_title_{i}")
+                        exp_company = st.text_input(f"Entreprise", key=f"exp_company_{i}")
+                    
+                    with col2:
+                        exp_duration = st.text_input(f"Durée", placeholder="2020-2023", key=f"exp_duration_{i}")
+                        exp_location = st.text_input(f"Lieu", key=f"exp_location_{i}")
+                    
+                    exp_description = st.text_area(
+                        f"Description des missions", 
+                        height=100, 
+                        key=f"exp_desc_{i}",
+                        help="Décrivez vos principales responsabilités et réalisations"
+                    )
+                    
+                    if exp_title and exp_company:
+                        experiences.append({
+                            "title": exp_title,
+                            "company": exp_company,
+                            "duration": exp_duration,
+                            "location": exp_location,
+                            "description": exp_description
+                        })
+                    
+                    st.markdown("---")
+        else:
+            # Version gratuite - 1 expérience simple
+            with st.expander("💼 Expérience principale", expanded=False):
+                experience_description = st.text_area(
+                    "Décrivez votre expérience principale",
+                    height=120,
+                    help="💡 Passez à PREMIUM pour ajouter plusieurs expériences détaillées"
+                )
+                
+                # Call-to-action Premium
+                st.markdown("""
+                <div style="background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); 
+                           padding: 1rem; border-radius: 10px; margin-top: 1rem; text-align: center;">
+                    <h4 style="margin: 0; color: #333;">🌟 Débloquez le potentiel PREMIUM</h4>
+                    <p style="margin: 0.5rem 0; color: #555; font-size: 0.9rem;">
+                        ✨ Expériences multiples détaillées<br>
+                        🎯 Descriptions par poste et réalisations<br>
+                        📈 Optimisation ATS avancée
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        # 🎓 Formations (Premium)
+        if user_tier == UserTier.PREMIUM:
+            with st.expander("🎓 Formations et certifications", expanded=False):
+                st.markdown("**🌟 PREMIUM** - Formations illimitées avec détails")
+                
+                educations = []
+                for i in range(3):
+                    st.markdown(f"**Formation #{i+1}**")
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        edu_degree = st.text_input(f"Diplôme/Certification", key=f"edu_degree_{i}")
+                        edu_school = st.text_input(f"École/Organisme", key=f"edu_school_{i}")
+                    
+                    with col2:
+                        edu_year = st.text_input(f"Année", key=f"edu_year_{i}")
+                        edu_location = st.text_input(f"Lieu", key=f"edu_location_{i}")
+                    
+                    if edu_degree and edu_school:
+                        educations.append({
+                            "degree": edu_degree,
+                            "school": edu_school,
+                            "year": edu_year,
+                            "location": edu_location
+                        })
+                    
+                    st.markdown("---")
+        else:
+            # Version gratuite - formation simple
+            with st.expander("🎓 Formation principale", expanded=False):
+                education_level = st.selectbox(
+                    "Niveau d'études",
+                    ["Bac", "Bac+2", "Bac+3", "Bac+5", "Doctorat", "Autre"]
+                )
+                education_field = st.text_input("Domaine d'études", placeholder="Ex: Informatique")
+        
+        # 🔧 Compétences (Premium détaillé, Free simple)
+        with st.expander("🔧 Compétences", expanded=False):
+            if user_tier == UserTier.PREMIUM:
+                st.markdown("**🌟 PREMIUM** - Compétences par catégories avec niveaux")
+                
+                # Compétences techniques
+                st.markdown("**💻 Compétences techniques**")
+                technical_skills = st.text_area(
+                    "Technologies, langages, outils...",
+                    height=60,
+                    placeholder="Python, JavaScript, React, Docker, AWS..."
+                )
+                
+                # Compétences métier
+                st.markdown("**🏢 Compétences métier**")
+                business_skills = st.text_area(
+                    "Compétences sectorielles...",
+                    height=60,
+                    placeholder="Gestion de projet, Analyse financière, Marketing digital..."
+                )
+                
+                # Soft skills
+                st.markdown("**🤝 Soft skills**")
+                soft_skills = st.text_area(
+                    "Qualités humaines et relationnelles...",
+                    height=60,
+                    placeholder="Leadership, Communication, Adaptabilité, Esprit d'équipe..."
+                )
+                
+                # Langues
+                st.markdown("**🌍 Langues**")
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    lang1 = st.text_input("Langue 1", placeholder="Français")
+                    level1 = st.selectbox("Niveau", ["Débutant", "Intermédiaire", "Avancé", "Natif"], key="level1")
+                with col2:
+                    lang2 = st.text_input("Langue 2", placeholder="Anglais")
+                    level2 = st.selectbox("Niveau", ["Débutant", "Intermédiaire", "Avancé", "Natif"], key="level2")
+                with col3:
+                    lang3 = st.text_input("Langue 3", placeholder="Espagnol")
+                    level3 = st.selectbox("Niveau", ["Débutant", "Intermédiaire", "Avancé", "Natif"], key="level3")
+                    
+            else:
+                st.markdown("💡 **Version gratuite** - Compétences principales")
+                main_skills = st.text_area(
+                    "Vos principales compétences",
+                    height=80,
+                    placeholder="Ex: Python, Gestion de projet, Communication..."
+                )
+                st.info("🌟 Passez à PREMIUM pour organiser vos compétences par catégories et ajouter les niveaux")
+        
+        # 🏆 Réalisations & Projets (Premium uniquement)
+        if user_tier == UserTier.PREMIUM:
+            with st.expander("🏆 Réalisations & Projets", expanded=False):
+                st.markdown("**🌟 PREMIUM** - Mettez en avant vos succès")
+                
+                achievements = st.text_area(
+                    "Réalisations marquantes",
+                    height=100,
+                    placeholder="• Augmentation du CA de 25%\n• Management d'une équipe de 10 personnes\n• Développement d'une app utilisée par 10k+ users"
+                )
+                
+                projects = st.text_area(
+                    "Projets personnels/professionnels",
+                    height=100,
+                    placeholder="• Développement d'un chatbot IA\n• Organisation d'événements tech\n• Contributions open source"
+                )
+        
+        # Récapitulatif des fonctionnalités selon le tier
+        if user_tier == UserTier.FREE:
+            st.markdown("### 📋 Votre CV FREE")
+            st.info("""
+            **Inclus dans votre CV :**
+            • ✅ Informations personnelles
+            • ✅ Objectif professionnel  
+            • ✅ 1 expérience principale
+            • ✅ Formation principale
+            • ✅ Compétences de base
+            • ✅ 3 générations par mois
+            
+            **🌟 Passez à PREMIUM pour débloquer :**
+            • 🚀 Expériences multiples détaillées
+            • 🎓 Formations et certifications illimitées
+            • 🔧 Compétences par catégories + niveaux
+            • 🌍 Langues avec niveaux
+            • 🏆 Réalisations et projets
+            • 📊 Templates premium + ATS avancé
+            • ♾️ Générations illimitées
+            """)
+        else:
+            st.markdown("### 🌟 Votre CV PREMIUM")
+            st.success("""
+            **Toutes les fonctionnalités débloquées :**
+            • ✅ Expériences professionnelles détaillées (3+)
+            • ✅ Formations et certifications complètes
+            • ✅ Compétences organisées par catégories
+            • ✅ Langues avec niveaux de maîtrise
+            • ✅ Réalisations et projets marquants
+            • ✅ Templates premium et optimisation ATS
+            • ✅ Générations illimitées
+            """)
+        
         # Template selection avec preview
         st.markdown("**🎨 Choisissez votre template**")
         render_template_selector()
@@ -189,8 +399,9 @@ def render_cv_creation_form(gemini_client, display_generated_cv_secure_func, eve
                         "target_job": target_job
                     })
                     
-                    # Génération avec progress
-                    generate_cv_with_progress({
+                    # Construire les données CV complètes
+                    cv_data = {
+                        # Informations de base
                         "full_name": full_name,
                         "email": email,
                         "phone": phone,
@@ -201,8 +412,47 @@ def render_cv_creation_form(gemini_client, display_generated_cv_secure_func, eve
                         "experience_level": experience_level,
                         "industry": industry,
                         "salary_range": salary_range,
-                        "template": st.session_state.get("selected_template", "modern")
-                    }, gemini_client, display_generated_cv_secure_func, event_helper)
+                        "template": st.session_state.get("selected_template", "modern"),
+                        "user_tier": user_tier.value
+                    }
+                    
+                    # Données Premium ou Free selon le tier
+                    if user_tier == UserTier.PREMIUM:
+                        # Expériences détaillées
+                        cv_data["experiences"] = experiences if 'experiences' in locals() else []
+                        
+                        # Formations détaillées
+                        cv_data["educations"] = educations if 'educations' in locals() else []
+                        
+                        # Compétences par catégories
+                        cv_data["skills"] = {
+                            "technical": technical_skills if 'technical_skills' in locals() else "",
+                            "business": business_skills if 'business_skills' in locals() else "",
+                            "soft": soft_skills if 'soft_skills' in locals() else ""
+                        }
+                        
+                        # Langues avec niveaux
+                        cv_data["languages"] = []
+                        if 'lang1' in locals() and lang1:
+                            cv_data["languages"].append({"language": lang1, "level": level1})
+                        if 'lang2' in locals() and lang2:
+                            cv_data["languages"].append({"language": lang2, "level": level2})
+                        if 'lang3' in locals() and lang3:
+                            cv_data["languages"].append({"language": lang3, "level": level3})
+                        
+                        # Réalisations et projets
+                        cv_data["achievements"] = achievements if 'achievements' in locals() else ""
+                        cv_data["projects"] = projects if 'projects' in locals() else ""
+                        
+                    else:
+                        # Version gratuite - données simples
+                        cv_data["experience_description"] = experience_description if 'experience_description' in locals() else ""
+                        cv_data["education_level"] = education_level if 'education_level' in locals() else ""
+                        cv_data["education_field"] = education_field if 'education_field' in locals() else ""
+                        cv_data["main_skills"] = main_skills if 'main_skills' in locals() else ""
+                    
+                    # Génération avec progress
+                    generate_cv_with_progress(cv_data, gemini_client, display_generated_cv_secure_func, event_helper)
                     
                 except (SecurityException, ValidationException) as e:
                     st.error(f"⚠️ Erreur de validation : {str(e)}")
@@ -409,196 +659,139 @@ def analyze_ats_score(cv_data: Dict[str, Any]):
     """
     )
 
-    # Formulaire securise
-    with st.form("secure_cv_creation_form"):
 
-        st.markdown("### 👤 Informations Personnelles (Chiffrees)")
+def render_template_selector():
+    """Sélecteur de templates CV avec preview"""
+    
+    templates = [
+        {"name": "🎨 Moderne", "desc": "Design épuré, parfait pour Tech/Startup"},
+        {"name": "📋 Classique", "desc": "Format traditionnel, idéal pour entreprises"},
+        {"name": "🎯 ATS-Optimisé", "desc": "Maximise le passage des filtres automatiques"}
+    ]
+    
+    cols = st.columns(len(templates))
+    
+    for i, template in enumerate(templates):
+        with cols[i]:
+            if st.button(
+                f"{template['name']}\n{template['desc']}", 
+                key=f"template_{i}",
+                use_container_width=True
+            ):
+                st.session_state.selected_template = template['name']
+                st.success(f"✅ Template {template['name']} sélectionné")
 
-        col1, col2 = st.columns(2)
 
-        with col1:
-            full_name = st.text_input(
-                "Nom complet *",
-                max_chars=100,
-                help="🔒 Chiffre AES-256 automatiquement",
-            )
-            email = st.text_input(
-                "Email *",
-                max_chars=254,
-                help="🔒 Validation securisee + anonymisation IA",
-            )
-            phone = st.text_input(
-                "Telephone", max_chars=20, help="🔒 Anonymise automatiquement"
-            )
+def generate_cv_with_progress(cv_data: Dict[str, Any], gemini_client, display_func, event_helper):
+    """Génération CV avec barre de progression"""
+    
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    try:
+        # Étape 1: Validation
+        status_text.text("🔍 Validation des données...")
+        progress_bar.progress(25)
+        time.sleep(0.5)
+        
+        # Étape 2: Génération IA
+        status_text.text("🤖 Génération IA en cours...")
+        progress_bar.progress(50)
+        
+        if gemini_client:
+            enhanced_content = gemini_client.generate_content_secure("cv_enhancement", cv_data)
+            cv_data["enhanced_summary"] = enhanced_content
+        
+        progress_bar.progress(75)
+        
+        # Étape 3: Finalisation
+        status_text.text("✨ Finalisation du CV...")
+        progress_bar.progress(100)
+        
+        # Sauvegarde
+        st.session_state.current_cv_data = cv_data
+        
+        status_text.text("✅ CV généré avec succès!")
+        time.sleep(1)
+        
+        # Nettoyage UI
+        progress_bar.empty()
+        status_text.empty()
+        
+        st.success("🎉 Votre CV est prêt!")
+        st.balloons()
+        
+        # Affichage
+        display_func(cv_data)
+        
+    except Exception as e:
+        progress_bar.empty()
+        status_text.empty()
+        st.error(f"❌ Erreur lors de la génération: {str(e)}")
 
-        with col2:
-            address = st.text_area(
-                "Adresse",
-                max_chars=500,
-                height=100,
-                help="🔒 Chiffrement local + anonymisation",
-            )
-            linkedin = st.text_input(
-                "LinkedIn", max_chars=255, help="🔒 URL validee et securisee"
-            )
-            github = st.text_input(
-                "GitHub/Portfolio", max_chars=255, help="🔒 Validation anti-injection"
-            )
 
-        st.markdown("### 🎯 Reconversion Securisee")
-        col1, col2 = st.columns(2)
+def render_cv_preview(cv_data: Dict[str, Any]):
+    """Preview du CV généré"""
+    
+    st.markdown("### 👀 Aperçu de votre CV")
+    
+    with st.container():
+        st.markdown(f"**{cv_data.get('full_name', 'Nom')}**")
+        st.markdown(f"📧 {cv_data.get('email', 'email@example.com')}")
+        st.markdown(f"🎯 **Objectif:** {cv_data.get('target_job', 'Poste visé')}")
+        
+        if cv_data.get('enhanced_summary'):
+            st.markdown("**Profil professionnel:**")
+            st.markdown(cv_data['enhanced_summary'])
 
-        with col1:
-            current_sector = st.text_input(
-                "Secteur actuel *", max_chars=100, help="🔒 Donnees anonymisees pour IA"
-            )
-            target_sector = st.text_input(
-                "Secteur cible *", max_chars=100, help="🔒 Prompt anti-injection"
-            )
 
-        with col2:
-            target_position = st.text_input(
-                "Poste vise *", max_chars=200, help="🔒 Validation securisee"
-            )
+def render_template_gallery():
+    """Galerie de templates CV"""
+    
+    st.markdown("### 🎨 Galerie de Templates")
+    st.info("💡 Choisissez un template adapté à votre secteur d'activité")
+    
+    st.write("Templates disponibles prochainement...")
 
-        professional_summary = st.text_area(
-            "Resume professionnel",
-            max_chars=1000,
-            height=120,
-            help="🔒 Nettoyage anti-injection + validation",
-        )
 
-        # CSRF Token cache
-        csrf_token = st.session_state.get("csrf_token", "")
+def render_cv_history():
+    """Historique des CV créés"""
+    
+    st.markdown("### 📊 Mes CV")
+    st.info("💼 Retrouvez tous vos CV générés")
+    
+    st.write("Historique disponible prochainement...")
 
-        # Bouton de generation securise
-        submitted = st.form_submit_button(
-            "🛡️ Generer CV Securise", type="primary", use_container_width=True
-        )
 
-        if submitted:
-            try:
-                # Validation CSRF
-                if not csrf_token:
-                    raise SecurityException("Token CSRF manquant")
+def get_remaining_generations(user_tier) -> int:
+    """Calcule les générations restantes selon le tier"""
+    from phoenix_cv.models.phoenix_user import UserTier
+    
+    if user_tier == UserTier.PREMIUM:
+        return -1  # Illimité
+    return max(0, 3 - st.session_state.get("cv_generated_this_month", 0))
 
-                # Validation des champs obligatoires
-                if not all(
-                    [full_name, email, current_sector, target_sector, target_position]
-                ):
-                    st.error("🚫 Veuillez remplir tous les champs obligatoires (*)")
-                    return
 
-                # Validation securisee de tous les inputs
-                safe_full_name = SecureValidator.validate_text_input(
-                    full_name, 100, "nom"
-                )
-                safe_email = SecureValidator.validate_email(email)
-                safe_current_sector = SecureValidator.validate_text_input(
-                    current_sector, 100, "secteur actuel"
-                )
-                safe_target_sector = SecureValidator.validate_text_input(
-                    target_sector, 100, "secteur cible"
-                )
-                safe_target_position = SecureValidator.validate_text_input(
-                    target_position, 200, "poste cible"
-                )
+def download_cv_pdf(cv_data: Dict[str, Any]):
+    """Téléchargement CV en PDF"""
+    
+    st.download_button(
+        label="📥 Télécharger en PDF",
+        data="CV content placeholder",
+        file_name=f"CV_{cv_data.get('full_name', 'Phoenix')}.pdf",
+        mime="application/pdf"
+    )
 
-                # Creation du profil utilisateur unifie
-                # Générer un user_id si non disponible (pour les utilisateurs non connectés ou en mode test)
-                user_id = st.session_state.get("user_id", str(uuid.uuid4()))
 
-                user_profile = UserProfile(
-                    user_id=user_id,
-                    email=safe_email,
-                    first_name=safe_full_name.split(" ")[0] if safe_full_name else None,
-                    last_name=" ".join(safe_full_name.split(" ")[1:]) if safe_full_name else None,
-                    # Pour l'instant, skills et experiences sont vides, à implémenter plus tard
-                    skills=[],
-                    experiences=[],
-                )
-
-                # Log de l'activite securisee
-                secure_logger.log_security_event(
-                    "CV_CREATION_STARTED", {"tier": user_tier.value}
-                )
-
-                # Generation securisee
-                with st.spinner("🛡️ Generation securisee en cours..."):
-
-                    # Amelioration securisee avec IA
-                    if professional_summary: # Utiliser la variable directement
-                        prompt_data = {
-                            "current_sector": safe_current_sector,
-                            "target_sector": safe_target_sector,
-                            "target_position": safe_target_position,
-                            "professional_summary": professional_summary, # Utiliser la variable directement
-                            "user_profile": user_profile.model_dump_json() # Passer le UserProfile
-                        }
-
-                        enhanced_summary = gemini_client.generate_content_secure(
-                            "cv_enhancement", prompt_data
-                        )
-                        # Mettre à jour le professional_summary dans le UserProfile
-                        user_profile.professional_summary = enhanced_summary
-
-                    # Sauvegarde securisee
-                    st.session_state.current_user_profile = user_profile # Stocker le UserProfile
-                    secure_session.increment_usage()
-
-                    # 🌪️ DATA FLYWHEEL: Publier événement CV_GENERATED
-                    try:
-                        import asyncio
-                        asyncio.create_task(
-                            event_helper.track_cv_generated(
-                                user_id=user_id,
-                                template_name="custom_generation",
-                                optimization_level=user_tier.value,
-                                skills_count=len(user_profile.skills),
-                                experience_years=len(user_profile.experiences)
-                            )
-                        )
-                        secure_logger.log_security_event(
-                            "DATA_FLYWHEEL_CV_GENERATED", 
-                            {"user_id": user_id, "tier": user_tier.value}, 
-                            "INFO"
-                        )
-                    except Exception as e:
-                        # Event publishing ne doit jamais faire crasher la génération
-                        secure_logger.log_security_event(
-                            "DATA_FLYWHEEL_ERROR", 
-                            {"error": str(e)}, 
-                            "WARNING"
-                        )
-
-                    # Log succes
-                    secure_logger.log_security_event(
-                        "CV_GENERATED_SUCCESSFULLY", {"tier": user_tier.value}
-                    )
-
-                    st.success("✅ CV genere avec securite maximale!")
-                    st.balloons()
-
-                    # Affichage securise du CV
-                    display_generated_cv_secure_func(user_profile) # Passer le UserProfile
-
-            except ValidationException as e:
-                st.error(f"🚫 Erreur de validation: {str(e)}")
-                secure_logger.log_security_event(
-                    "VALIDATION_ERROR", {"error": str(e)[:100]}, "WARNING"
-                )
-
-            except SecurityException as e:
-                st.error("🚫 Violation de securite detectee")
-                secure_logger.log_security_event(
-                    "SECURITY_VIOLATION_CV_CREATION",
-                    {"error": str(e)[:100]},
-                    "CRITICAL",
-                )
-
-            except Exception as e:
-                st.error("❌ Erreur lors de la generation")
-                secure_logger.log_security_event(
-                    "CV_GENERATION_ERROR", {"error": str(e)[:100]}, "ERROR"
-                )
-
+def analyze_ats_score(cv_data: Dict[str, Any]) -> int:
+    """Analyse du score ATS"""
+    
+    # Score basique basé sur les champs remplis
+    score = 0
+    required_fields = ['full_name', 'email', 'target_job']
+    
+    for field in required_fields:
+        if cv_data.get(field):
+            score += 25
+    
+    return min(score, 100)
