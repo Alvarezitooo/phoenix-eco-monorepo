@@ -60,8 +60,5 @@ USER phoenix
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:$PORT/_stcore/health || exit 1
 
-# Set working directory to app
-WORKDIR /app/apps/phoenix-cv
-
-# Commande de démarrage Railway
-CMD streamlit run main.py --server.port=$PORT --server.address=0.0.0.0
+# Commande de démarrage Railway avec chemin absolu
+CMD streamlit run apps/phoenix-cv/main.py --server.port=$PORT --server.address=0.0.0.0

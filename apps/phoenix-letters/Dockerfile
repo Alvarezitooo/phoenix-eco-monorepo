@@ -57,8 +57,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 # Expose port (Railway utilise $PORT)
 EXPOSE $PORT
 
-# Set working directory to Phoenix Letters app
-WORKDIR /app/apps/phoenix-letters
-
-# Start command avec port Railway dynamique
-CMD streamlit run main.py --server.port=$PORT --server.address=0.0.0.0
+# Start command avec chemin absolu depuis la racine
+CMD streamlit run apps/phoenix-letters/main.py --server.port=$PORT --server.address=0.0.0.0
