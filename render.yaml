@@ -1,10 +1,9 @@
 # ===================================================================
-# PHOENIX ECOSYSTEM - INFRASTRUCTURE BLUEPRINT V1.1
+# PHOENIX ECOSYSTEM - INFRASTRUCTURE BLUEPRINT V1.2 (SYNTAXE VALIDÉE)
 # ===================================================================
-# Source: Render Blueprint Spec & Monorepo Support Docs
-# Mainteneur: Matthieu Rubia
 
 # Active la création d'environnements de test pour chaque Pull Request.
+# Source: Render Preview Environments Documentation
 previewsEnabled: true
 
 services:
@@ -18,13 +17,14 @@ services:
     dockerCommand: "streamlit run ./apps/phoenix-letters/main.py --server.port 80 --server.address=0.0.0.0"
     healthCheckPath: /_stcore/health
     
-    # Déclenche un déploiement automatique uniquement si les fichiers concernés sont modifiés.
-    autoDeploy:
-      enabled: true
-      paths:
-        - "apps/phoenix-letters/**"
-        - "packages/**"
-        
+    # 'autoDeploy' est un simple booléen.
+    autoDeploy: true
+    # 'paths' est une directive séparée qui filtre les déclenchements de l'autoDeploy.
+    # Source: Render Monorepo Support Documentation
+    paths:
+      - "apps/phoenix-letters/**"
+      - "packages/**"
+      
     envVars:
       - fromSecretGroup: phoenix-secrets
 
@@ -36,11 +36,10 @@ services:
     dockerCommand: "streamlit run ./apps/phoenix-cv/main.py --server.port 80 --server.address=0.0.0.0"
     healthCheckPath: /_stcore/health
     
-    autoDeploy:
-      enabled: true
-      paths:
-        - "apps/phoenix-cv/**"
-        - "packages/**"
+    autoDeploy: true
+    paths:
+      - "apps/phoenix-cv/**"
+      - "packages/**"
 
     envVars:
       - fromSecretGroup: phoenix-secrets
@@ -53,11 +52,10 @@ services:
     dockerCommand: "python ./apps/phoenix-backend-unified/app.py"
     healthCheckPath: /health
     
-    autoDeploy:
-      enabled: true
-      paths:
-        - "apps/phoenix-backend-unified/**"
-        - "packages/**"
+    autoDeploy: true
+    paths:
+      - "apps/phoenix-backend-unified/**"
+      - "packages/**"
 
     envVars:
       - fromSecretGroup: phoenix-secrets
@@ -74,11 +72,10 @@ services:
     dockerCommand: "python ./apps/phoenix-iris-api/main.py"
     healthCheckPath: /health
     
-    autoDeploy:
-      enabled: true
-      paths:
-        - "apps/phoenix-iris-api/**"
-        - "packages/**"
+    autoDeploy: true
+    paths:
+      - "apps/phoenix-iris-api/**"
+      - "packages/**"
 
     envVars:
       - fromSecretGroup: phoenix-secrets
@@ -91,11 +88,10 @@ services:
     dockerCommand: "python ./apps/agent_ia/main.py"
     healthCheckPath: /health
     
-    autoDeploy:
-      enabled: true
-      paths:
-        - "apps/agent_ia/**"
-        - "packages/**"
+    autoDeploy: true
+    paths:
+      - "apps/agent_ia/**"
+      - "packages/**"
 
     envVars:
       - fromSecretGroup: phoenix-secrets
@@ -113,11 +109,10 @@ services:
     dockerfilePath: ./Dockerfile
     dockerCommand: "python ./infrastructure/data-pipeline/app.py"
     
-    autoDeploy:
-      enabled: true
-      paths:
-        - "infrastructure/data-pipeline/**"
-        - "packages/**"
+    autoDeploy: true
+    paths:
+      - "infrastructure/data-pipeline/**"
+      - "packages/**"
 
     envVars:
       - fromSecretGroup: phoenix-secrets
@@ -133,11 +128,10 @@ services:
     dockerfilePath: ./Dockerfile
     dockerCommand: "python ./infrastructure/data-pipeline/app.py"
     
-    autoDeploy:
-      enabled: true
-      paths:
-        - "infrastructure/data-pipeline/**"
-        - "packages/**"
+    autoDeploy: true
+    paths:
+      - "infrastructure/data-pipeline/**"
+      - "packages/**"
 
     envVars:
       - fromSecretGroup: phoenix-secrets
@@ -145,13 +139,10 @@ services:
         value: "user_profile"
 
   # --- INFRASTRUCTURE (BASE DE DONNÉES) ------------------------------
-
+  
   - type: pserv
     name: phoenix-db
     env: postgres
     plan: starter
     postgresMajorVersion: 15
-
-# NOTE: Le site vitrine (phoenix-website) n'est pas inclus ici car il est
-# stratégiquement hébergé sur Vercel pour des performances optimales avec Next.js.
 
