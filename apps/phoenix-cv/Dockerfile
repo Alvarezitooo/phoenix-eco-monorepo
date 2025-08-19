@@ -36,8 +36,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Installation streamlit et dépendances CV
 RUN pip install streamlit>=1.28.0 pypdf2 python-docx reportlab
 
-# 🚀 ARCHITECTURE MONOREPO - Copie TOUT le monorepo
-COPY . .
+# 🚀 ARCHITECTURE MONOREPO - Copie depuis la racine du repo
+COPY ../../. .
 
 # Install shared packages
 RUN if [ -d "packages/phoenix_shared_auth" ]; then pip install -e packages/phoenix_shared_auth; fi && \

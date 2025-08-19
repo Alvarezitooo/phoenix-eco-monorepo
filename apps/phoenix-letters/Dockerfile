@@ -28,15 +28,15 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first (for layer caching)
-COPY apps/phoenix-letters/requirements.txt .
+COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# 🚀 ARCHITECTURE MONOREPO - Copie TOUT le monorepo
-# Cela donne accès à la "boîte à outils commune" (packages/)
-COPY . .
+# 🚀 ARCHITECTURE MONOREPO - Copie depuis la racine du repo
+# Remonte au niveau supérieur puis copie tout
+COPY ../../. .
 
 # Install shared packages
 RUN if [ -d "packages/phoenix_shared_auth" ]; then pip install -e packages/phoenix_shared_auth; fi && \
