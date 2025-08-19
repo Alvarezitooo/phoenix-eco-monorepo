@@ -1,21 +1,20 @@
+# ===================================================================  
+# PHOENIX ECOSYSTEM - DOCKERFILE RAILWAY V2.0
 # ===================================================================
-# PHOENIX ECOSYSTEM - DOCKERFILE MONOREPO V1.0
-# ===================================================================
-# Dockerfile universel pour tous les services Phoenix
-# Compatible avec la syntaxe dockerCommand de Render Blueprint
+# Dockerfile universel optimisé pour Railway
+# Support: Streamlit + FastAPI + Workers
 
 FROM python:3.11-slim
 
 # Metadata
 LABEL maintainer="Phoenix Team <contact@phoenix.app>"
-LABEL version="2.0.0"
-LABEL description="Phoenix Ecosystem - Monorepo Universal Container"
+LABEL version="2.1.0"  
+LABEL description="Phoenix Ecosystem - Railway Monorepo Container"
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    STREAMLIT_SERVER_PORT=80 \
-    STREAMLIT_SERVER_ADDRESS=0.0.0.0 \
+    PYTHONPATH="/app:/app/packages" \
     STREAMLIT_SERVER_HEADLESS=true \
     STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
 
