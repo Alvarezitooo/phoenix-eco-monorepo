@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 # 3. Copie des packages partagés
-COPY ../../packages/ /app/packages/
+COPY packages/ /app/packages/
 
 # 4. Copie du code de l'application
 COPY . /app/

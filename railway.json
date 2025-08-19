@@ -6,7 +6,8 @@
       "rootDirectory": "apps/phoenix-letters",
       "build": {
         "builder": "DOCKERFILE",
-        "dockerfilePath": "Dockerfile"
+        "dockerfilePath": "Dockerfile",
+        "buildCommand": "cp -r ../packages ./"
       },
       "deploy": {
         "numReplicas": 1,
@@ -19,7 +20,8 @@
       "rootDirectory": "apps/phoenix-cv",
       "build": {
         "builder": "DOCKERFILE",
-        "dockerfilePath": "Dockerfile"
+        "dockerfilePath": "Dockerfile",
+        "buildCommand": "cp -r ../packages ./"
       },
       "deploy": {
         "numReplicas": 1,
@@ -32,7 +34,8 @@
       "rootDirectory": "apps/phoenix-backend-unified",
       "build": {
         "builder": "DOCKERFILE",
-        "dockerfilePath": "Dockerfile"
+        "dockerfilePath": "Dockerfile",
+        "buildCommand": "cp -r ../packages ./"
       },
       "deploy": {
         "numReplicas": 1,
@@ -45,7 +48,8 @@
       "rootDirectory": "apps/phoenix-iris-api",
       "build": {
         "builder": "DOCKERFILE",
-        "dockerfilePath": "Dockerfile"
+        "dockerfilePath": "Dockerfile",
+        "buildCommand": "cp -r ../packages ./"
       },
       "deploy": {
         "numReplicas": 1,

@@ -11,7 +11,7 @@ RUN pip install "poetry==$POETRY_VERSION"
 
 # 3. Installation des dépendances
 COPY pyproject.toml poetry.lock* ./ 
-COPY ../../packages/ /app/packages/
+COPY packages/ /app/packages/
 RUN poetry install --no-interaction --no-ansi --only main
 
 # 4. Copie du code de l'application
