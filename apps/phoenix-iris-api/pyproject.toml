@@ -1,26 +1,27 @@
 [tool.poetry]
-name = "iris-api"
-version = "0.1.0"
-description = "The Iris API, serving the Alessio AI consciousness of the Phoenix ecosystem."
-authors = ["Your Name <you@example.com>"]
+name = "phoenix-iris-api"
+version = "2.0.0"
+description = "Phoenix Iris API - Secured AI Assistant for Phoenix Ecosystem"
+authors = ["Phoenix DevSecOps Team"]
 package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
+# Framework web
 fastapi = "^0.116"
-uvicorn = "^0.35"
+uvicorn = {extras = ["standard"], version = "^0.35"}
 pydantic = "^2.6"
-httpx = "^0.26"
-google-generativeai = "^0.4.1"
-phoenix_event_bridge = {path = "../../packages/phoenix_event_bridge", develop = true}
-phoenix_shared_auth = {path = "../../packages/phoenix-shared-auth", develop = true}
+# IA et traitement
+google-generativeai = "^0.8.0"
 # Sécurité et authentification
 pyjwt = "^2.8.0"
 bcrypt = "^4.1.0"
-# Monitoring et logging
+# Base de données
+supabase = "^2.9.0"
+# Monitoring et rate limiting
 slowapi = "^0.1.9"
-# Base de données (si nécessaire pour l'auth)
-supabase = "^2.0.0"
+# Utilities
+httpx = "^0.27.0"
 
 [build-system]
 requires = ["poetry-core"]

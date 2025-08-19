@@ -31,9 +31,9 @@ def get_supabase_client():
     Client unique, réutilisable, safe pour Streamlit (évite double init).
     """
     url = _get_secret("SUPABASE_URL")
-    anon = _get_secret("SUPABASE_ANON_KEY")
+    anon = _get_secret("SUPABASE_KEY")
     if not url or not anon:
-        raise RuntimeError("SUPABASE_URL / SUPABASE_ANON_KEY manquants")
+        raise RuntimeError("SUPABASE_URL / SUPABASE_KEY manquants")
     from supabase import create_client  # import tardif pour éviter side-effects
     return create_client(url, anon)
 

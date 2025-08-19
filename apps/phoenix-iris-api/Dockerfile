@@ -1,26 +1,51 @@
-# Use an official Python runtime as a parent image
+# Phoenix Iris API - Production Dockerfile
 FROM python:3.11-slim
 
-# Install poetry globally
-RUN pip install poetry
+# Métadonnées
+LABEL maintainer="Phoenix DevSecOps Team"
+LABEL description="Iris AI Assistant API for Phoenix Ecosystem"
+LABEL version="2.0.0"
 
-# Set the working directory specifically for the agent
-WORKDIR /app/packages/iris-agent
+# Variables d'environnement
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PIP_NO_CACHE_DIR=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Copy only the necessary configuration for Iris
-COPY ./packages/iris-agent/pyproject.toml ./packages/iris-agent/poetry.lock* ./
+# Répertoire de travail
+WORKDIR /app
 
-# Copy the dependency package that Iris needs
-# This assumes phoenix_event_bridge is a local dependency
-COPY ./packages/phoenix_event_bridge /app/packages/phoenix_event_bridge
+# Installation des dépendances système
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies for Iris ONLY
-# This is a more robust way to install in a monorepo context
-RUN poetry config virtualenvs.create false &&     poetry install --only main --no-interaction --no-ansi --no-root
+# Installation de Poetry
+RUN pip install poetry==1.7.1
 
-# Copy the application source code for Iris
-COPY ./packages/iris-agent/ .
+# Configuration Poetry
+RUN poetry config virtualenvs.create false
 
-# Command to run the application from the correct directory
+# Copier les fichiers de configuration
+COPY pyproject.toml poetry.lock* ./
+
+# Installation des dépendances Python
+RUN poetry install --only main --no-interaction --no-ansi
+
+# Copier le code source
+COPY . .
+
+# Créer un utilisateur non-root pour la sécurité
+RUN useradd --create-home --shell /bin/bash iris && \
+    chown -R iris:iris /app
+USER iris
+
+# Vérification de santé
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:$PORT/health || exit 1
+
+# Port d'exposition (Railway utilise la variable PORT)
+EXPOSE 8000
+
+# Commande de démarrage
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-

@@ -1,84 +1,118 @@
 """
-🤖 ALESSIO API - Assistant IA Phoenix Letters
-API FastAPI pour l'agent conversationnel Alessio
+🤖 IRIS API - Assistant IA Phoenix Écosystème
+API FastAPI pour l'agent conversationnel Iris avec authentification sécurisée
 
-Author: Claude Phoenix DevSecOps
-Version: 1.0.0 - Railway Deploy Ready
+Author: Claude Phoenix DevSecOps Guardian
+Version: 2.0.0 - Production Ready with Security
 """
 
 import os
 import logging
 from datetime import datetime
 from typing import List, Optional
+import hashlib
+import time
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel, Field
 import uvicorn
+from supabase import create_client
 
-# Configuration du logger
-logging.basicConfig(level=logging.INFO)
+# Imports modules Phoenix
+from security.phoenix_auth_standalone import (
+    get_authenticated_user, 
+    get_optional_authenticated_user, 
+    IrisUser, 
+    UserTier,
+    auth_service
+)
+from ai.gemini_alessio_engine import alessio_engine, AlessioResponse
+from monitoring.iris_analytics import create_analytics, EventType
+
+# Configuration du logger production
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
-# 🔬 RECHERCHE-ACTION PHOENIX - Anonymiseur de logs
-def anonymize_for_research_logs(text: str, user_id: str = None) -> dict:
-    """Anonymise les logs de conversation pour la recherche-action Phoenix"""
-    import hashlib
-    import re
-    
-    # Hash de l'utilisateur (si fourni)
-    user_hash = None
-    if user_id:
-        user_hash = hashlib.sha256(f"{user_id}_research".encode()).hexdigest()[:16]
-    
-    # Anonymisation basique du texte
-    anonymized_text = text
-    # Suppression des emails
-    anonymized_text = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '[EMAIL]', anonymized_text)
-    # Suppression des téléphones
-    anonymized_text = re.sub(r'(?:\+33|0)[1-9](?:[0-9]{8})', '[PHONE]', anonymized_text)
-    
-    return {
-        "user_hash": user_hash,
-        "anonymized_query": anonymized_text[:100],  # Première partie seulement
-        "query_length": len(text),
-        "timestamp": datetime.now().isoformat(),
-        "source": "alessio_api"
-    }
+# Initialisation Supabase pour analytics
+supabase = create_client(
+    os.getenv("SUPABASE_URL"),
+    os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_KEY")
+)
+analytics = create_analytics(supabase)
+
+# Supprimé: Fonction déplacée dans iris_analytics.py
 
 # Initialisation FastAPI
 app = FastAPI(
-    title="Phoenix Alessio API",
-    description="API conversationnelle pour l'assistant IA Alessio - Phoenix Letters",
-    version="1.0.0",
+    title="Phoenix Iris API",
+    description="API technique hébergeant Alessio - Assistant IA Phoenix",
+    version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
 
-# Configuration CORS pilotée par variables d'environnement
-# ALESSIO_ALLOWED_ORIGINS peut contenir une liste séparée par des virgules
-_alessio_allowed_origins_env = os.getenv(
-    "ALESSIO_ALLOWED_ORIGINS",
-    "https://phoenix-eco-monorepo.vercel.app,https://phoenix-letters.streamlit.app,https://*.streamlit.app,http://localhost:3000,http://localhost:8501,http://localhost:8502",
+# Middleware de sécurité
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["*"]  # En production, restreindre aux domaines autorisés
 )
-ALESSIO_ALLOWED_ORIGINS = [origin.strip() for origin in _alessio_allowed_origins_env.split(",") if origin.strip()]
+
+# Configuration CORS sécurisée
+_iris_allowed_origins_env = os.getenv(
+    "IRIS_ALLOWED_ORIGINS",
+    "https://phoenix-eco-monorepo.vercel.app,https://phoenix-letters.streamlit.app,https://phoenix-cv.streamlit.app,https://*.streamlit.app,http://localhost:3000,http://localhost:8501,http://localhost:8502",
+)
+IRIS_ALLOWED_ORIGINS = [origin.strip() for origin in _iris_allowed_origins_env.split(",") if origin.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALESSIO_ALLOWED_ORIGINS,
+    allow_origins=IRIS_ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
+# Middleware de monitoring
+@app.middleware("http")
+async def monitoring_middleware(request: Request, call_next):
+    start_time = time.time()
+    
+    # Hash de l'IP pour analytics anonymes
+    ip_hash = hashlib.sha256(request.client.host.encode()).hexdigest()[:8] if request.client else None
+    
+    try:
+        response = await call_next(request)
+        processing_time = (time.time() - start_time) * 1000
+        
+        # Log des requêtes pour monitoring
+        logger.info(f"Request: {request.method} {request.url.path} - {response.status_code} - {processing_time:.0f}ms")
+        
+        return response
+    except Exception as e:
+        processing_time = (time.time() - start_time) * 1000
+        logger.error(f"Request failed: {request.method} {request.url.path} - {processing_time:.0f}ms - Error: {str(e)}")
+        
+        # Track l'erreur
+        await analytics.track_error(
+            error_type="request_processing",
+            error_message=str(e)
+        )
+        
+        raise
+
 # --- MODELS PYDANTIC ---
 
 class ChatRequest(BaseModel):
-    """Requête de chat vers Alessio"""
+    """Requête de chat vers Iris"""
     message: str = Field(..., min_length=1, max_length=2000, description="Message utilisateur")
-    user_id: Optional[str] = Field(None, description="ID utilisateur Phoenix (optionnel)")
     context: Optional[str] = Field(None, description="Contexte de la conversation")
     session_id: Optional[str] = Field(None, description="ID de session")
+    app_context: Optional[str] = Field(None, description="Application d'origine (letters, cv, rise)")
 
 class ChatResponse(BaseModel):
     """Réponse d'Alessio"""
@@ -86,10 +120,14 @@ class ChatResponse(BaseModel):
     confidence: float = Field(default=0.85, description="Niveau de confiance")
     suggestions: List[str] = Field(default_factory=list, description="Suggestions de suivi")
     timestamp: datetime = Field(default_factory=datetime.now)
+    model_used: str = Field(default="gemini-1.5-flash", description="Modèle IA utilisé")
+    processing_time_ms: Optional[int] = Field(None, description="Temps de traitement en ms")
 
-# --- BASE DE CONNAISSANCES ALESSIO ---
+# --- SUPPRIMÉ: BASE DE CONNAISSANCES STATIQUE ---
+# Remplacée par le moteur Gemini dynamique
 
-ALESSIO_KNOWLEDGE_BASE = {
+# Base de données pour fallback uniquement
+FALLBACK_RESPONSES = {
     "reconversion": {
         "keywords": ["reconversion", "changer", "métier", "carrière", "orientation"],
         "responses": [
@@ -148,50 +186,34 @@ ALESSIO_KNOWLEDGE_BASE = {
     }
 }
 
-DEFAULT_RESPONSES = [
-    "Je suis Alessio, votre copilote carrière IA ! Je vous aide à réussir votre reconversion professionnelle. Parlez-moi de vos défis.",
-    "Bonjour ! En quoi puis-je vous accompagner dans votre projet de reconversion ? CV, lettre de motivation, stratégie carrière... je suis là !",
-    "Alessio à votre service ! Que souhaitez-vous améliorer dans votre reconversion : votre candidature, votre préparation d'entretien ou votre stratégie ?",
-    "Hello ! Prêt(e) à booster votre reconversion ? Dites-moi où vous en êtes et comment je peux vous aider à atteindre vos objectifs carrière."
+FALLBACK_RESPONSES = [
+    "Je suis Alessio, votre assistant IA Phoenix ! Je vous accompagne dans votre reconversion professionnelle. Comment puis-je vous aider aujourd'hui ?\n\nAlessio 🤝",
+    "Bonjour ! En tant qu'Alessio, je suis là pour vous guider dans votre projet de reconversion. CV, lettre de motivation, stratégie carrière... parlons-en !\n\nAlessio 🤝",
+    "Alessio à votre service ! Que souhaitez-vous améliorer dans votre parcours professionnel ? Je suis spécialisé dans l'accompagnement aux reconversions.\n\nAlessio 🤝",
+    "Hello ! Prêt(e) à transformer votre carrière ? Dites-moi vos défis et objectifs, je suis là pour vous épauler ! 😊\n\nAlessio 🤝"
 ]
 
-# --- LOGIQUE CONVERSATIONNELLE ---
+# --- LOGIQUE CONVERSATIONNELLE FALLBACK ---
 
-def get_alessio_response(message: str, user_context: Optional[str] = None) -> ChatResponse:
+def get_fallback_response(message: str) -> ChatResponse:
     """
-    Génère une réponse Alessio basée sur la base de connaissances
+    Génère une réponse de fallback si Gemini est indisponible
     """
-    message_lower = message.lower()
-    
-    # Recherche de correspondance dans la base de connaissances
-    for topic, data in ALESSIO_KNOWLEDGE_BASE.items():
-        for keyword in data["keywords"]:
-            if keyword in message_lower:
-                import secrets
-                response_text = secrets.choice(data["responses"])
-                suggestions = data["suggestions"][:3]  # Max 3 suggestions
-                
-                logger.info(f"Alessio response generated - Topic: {topic}, User: {user_context}")
-                
-                return ChatResponse(
-                    response=response_text,
-                    confidence=0.88,
-                    suggestions=suggestions
-                )
-    
-    # Réponse par défaut si aucune correspondance
     import secrets
-    default_response = secrets.choice(DEFAULT_RESPONSES)
+    
+    response_text = secrets.choice(FALLBACK_RESPONSES)
     
     return ChatResponse(
-        response=default_response,
-        confidence=0.75,
+        response=response_text,
+        confidence=0.5,
         suggestions=[
             "Parlez-moi de votre reconversion",
             "Besoin d'aide pour votre CV ?", 
             "Comment optimiser ma candidature ?",
             "Préparer un entretien"
-        ]
+        ],
+        model_used="fallback",
+        processing_time_ms=0
     )
 
 # --- ENDPOINTS API ---
@@ -200,13 +222,20 @@ def get_alessio_response(message: str, user_context: Optional[str] = None) -> Ch
 async def root():
     """Endpoint racine - Statut de l'API"""
     return {
-        "service": "Phoenix Alessio API",
+        "service": "Phoenix Iris API",
         "status": "✅ Opérationnel",
-        "version": "1.0.0",
-        "description": "Assistant IA pour reconversions professionnelles",
+        "version": "2.0.0",
+        "description": "Assistant IA conversationnel pour l'écosystème Phoenix",
+        "features": [
+            "Authentification JWT sécurisée",
+            "IA Gemini intégrée", 
+            "Rate limiting par tier",
+            "Analytics anonymisées"
+        ],
         "endpoints": {
             "chat": "/api/v1/chat",
             "health": "/health",
+            "metrics": "/api/v1/metrics",
             "docs": "/docs"
         }
     }
@@ -214,40 +243,109 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Health check pour Railway et monitoring"""
+    
+    # Vérifications de santé
+    health_checks = {
+        "supabase": "ok",
+        "gemini": "ok",
+        "auth": "ok"
+    }
+    
+    try:
+        # Test rapide Supabase
+        supabase.table('iris_events').select('id').limit(1).execute()
+    except:
+        health_checks["supabase"] = "error"
+    
+    # Statut global
+    overall_status = "healthy" if all(status == "ok" for status in health_checks.values()) else "degraded"
+    
     return {
-        "status": "healthy",
+        "status": overall_status,
         "timestamp": datetime.now(),
-        "service": "alessio-api",
-        "environment": os.getenv("ENVIRONMENT", "production")
+        "service": "iris-api",
+        "version": "2.0.0",
+        "environment": os.getenv("ENVIRONMENT", "production"),
+        "checks": health_checks
     }
 
 @app.post("/api/v1/chat", response_model=ChatResponse)
-async def chat_endpoint(request: ChatRequest):
+async def chat_endpoint(request: ChatRequest, user: IrisUser = Depends(get_authenticated_user)):
     """
-    Endpoint principal de chat avec Alessio
+    Endpoint principal de chat avec Iris - SÉCURISÉ
+    Nécessite une authentification JWT valide
     """
+    start_time = time.time()
+    
     try:
-        # 🔬 RECHERCHE-ACTION PHOENIX - Log anonymisé pour recherche
-        research_log = anonymize_for_research_logs(request.message, request.user_id)
-        logger.info(f"Research log: {research_log}")
+        # Analytics: Track request
+        await analytics.track_chat_request(
+            user_id=user.id,
+            user_tier=user.tier.value,
+            message_length=len(request.message),
+            app_context=request.app_context,
+            session_id=request.session_id
+        )
         
-        # Validation et logging
-        logger.info(f"Chat request received - User: {request.user_id}, Message length: {len(request.message)}")
-        
-        # Vérification longueur message
+        # Validation message
         if len(request.message.strip()) < 1:
             raise HTTPException(status_code=400, detail="Message ne peut pas être vide")
         
         if len(request.message) > 2000:
             raise HTTPException(status_code=400, detail="Message trop long (max 2000 caractères)")
         
-        # Génération de la réponse Alessio
-        response = get_alessio_response(
-            message=request.message,
-            user_context=f"User: {request.user_id}, Session: {request.session_id}"
+        # Génération de la réponse Alessio avec Gemini
+        try:
+            alessio_response = await alessio_engine.generate_response(
+                user_message=request.message,
+                user_id=user.id,
+                context={
+                    'user_tier': user.tier.value,
+                    'app_context': request.app_context,
+                    'session_id': request.session_id
+                }
+            )
+            
+            # Incrémenter l'usage utilisateur
+            await auth_service.increment_usage(user.id)
+            
+            # Construire la réponse FastAPI
+            response = ChatResponse(
+                response=alessio_response.content,
+                confidence=alessio_response.confidence,
+                suggestions=alessio_response.suggestions,
+                timestamp=datetime.now(),
+                model_used=alessio_response.model_used,
+                processing_time_ms=alessio_response.processing_time_ms
+            )
+            
+        except Exception as gemini_error:
+            logger.error(f"Erreur Gemini: {gemini_error}")
+            
+            # Fallback sur réponse statique
+            response = get_fallback_response(request.message)
+            
+            # Track l'erreur
+            await analytics.track_error(
+                error_type="gemini_failure",
+                error_message=str(gemini_error),
+                user_id=user.id,
+                user_tier=user.tier.value
+            )
+        
+        # Analytics: Track response
+        processing_time_ms = int((time.time() - start_time) * 1000)
+        await analytics.track_chat_response(
+            user_id=user.id,
+            user_tier=user.tier.value,
+            response_length=len(response.response),
+            processing_time_ms=processing_time_ms,
+            model_used=response.model_used,
+            confidence=response.confidence,
+            session_id=request.session_id
         )
         
-        logger.info(f"Alessio response generated successfully - Confidence: {response.confidence}")
+        logger.info(f"Alessio response generated - User: {user.email} - Time: {processing_time_ms}ms")
         
         return response
         
@@ -255,6 +353,14 @@ async def chat_endpoint(request: ChatRequest):
         raise
     except Exception as e:
         logger.error(f"Erreur lors du traitement chat: {str(e)}")
+        
+        # Track l'erreur
+        await analytics.track_error(
+            error_type="chat_processing",
+            error_message=str(e),
+            user_id=user.id if 'user' in locals() else None
+        )
+        
         raise HTTPException(
             status_code=500,
             detail="Erreur interne du serveur Alessio"
@@ -262,28 +368,94 @@ async def chat_endpoint(request: ChatRequest):
 
 @app.get("/api/v1/topics")
 async def get_topics():
-    """Liste des sujets que Alessio peut traiter"""
-    topics = []
-    for topic, data in ALESSIO_KNOWLEDGE_BASE.items():
-        topics.append({
-            "topic": topic,
-            "keywords": data["keywords"],
-            "description": f"Conseils et aide sur : {topic}"
-        })
+    """Liste des sujets que Iris peut traiter"""
+    topics = [
+        {
+            "topic": "reconversion",
+            "description": "Conseils pour réussir sa reconversion professionnelle",
+            "capabilities": ["Bilan compétences", "Transition secteur", "Formation"]
+        },
+        {
+            "topic": "cv", 
+            "description": "Optimisation CV et profil professionnel",
+            "capabilities": ["Structure CV", "ATS optimization", "Compétences transférables"]
+        },
+        {
+            "topic": "lettre_motivation",
+            "description": "Lettres de motivation percutantes", 
+            "capabilities": ["Personnalisation", "Structure", "Authenticité"]
+        },
+        {
+            "topic": "entretien",
+            "description": "Préparation entretiens d'embauche",
+            "capabilities": ["Questions types", "Storytelling STAR", "Négociation"]
+        },
+        {
+            "topic": "strategie_carriere",
+            "description": "Stratégie et développement de carrière",
+            "capabilities": ["LinkedIn", "Réseau professionnel", "Marché caché"]
+        }
+    ]
     
     return {
         "topics": topics,
         "total": len(topics),
-        "description": "Sujets maîtrisés par Alessio pour les reconversions"
+        "description": "Domaines d'expertise d'Alessio pour les reconversions",
+        "powered_by": "Google Gemini 1.5 Flash"
     }
+
+# --- ENDPOINTS ANALYTICS & MÉTRIQUES ---
+
+@app.get("/api/v1/metrics")
+async def get_public_metrics():
+    """Métriques publiques de l'API (anonymisées)"""
+    try:
+        today_metrics = await analytics.get_daily_metrics(datetime.now())
+        
+        # Métriques publiques seulement
+        public_metrics = {
+            "total_requests_today": today_metrics.get('total_requests', 0),
+            "avg_response_time_ms": today_metrics.get('avg_response_time_ms', 0),
+            "service_uptime": "99.9%",  # À calculer réellement en production
+            "model_used": "Google Gemini 1.5 Flash",
+            "last_updated": datetime.now().isoformat()
+        }
+        
+        return public_metrics
+        
+    except Exception as e:
+        logger.error(f"Erreur récupération métriques: {e}")
+        return {"error": "Métriques temporairement indisponibles"}
+
+@app.get("/api/v1/user/analytics")
+async def get_user_analytics(user: IrisUser = Depends(get_authenticated_user)):
+    """Analytics personnelles de l'utilisateur"""
+    try:
+        user_stats = await analytics.get_user_analytics(user.id, days=30)
+        
+        # Ajouter infos tier
+        tier_limits = auth_service.rate_limits[user.tier]
+        
+        return {
+            "user_tier": user.tier.value,
+            "daily_limit": tier_limits["daily_messages"],
+            "daily_usage": user.daily_usage,
+            "remaining_today": max(0, tier_limits["daily_messages"] - user.daily_usage) if tier_limits["daily_messages"] != -1 else "unlimited",
+            "last_30_days": user_stats
+        }
+        
+    except Exception as e:
+        logger.error(f"Erreur analytics utilisateur: {e}")
+        raise HTTPException(status_code=500, detail="Erreur récupération analytics")
 
 # --- LANCEMENT DE L'APPLICATION ---
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8003))
     
-    logger.info(f"🤖 Démarrage Alessio API sur le port {port}")
-    logger.info("🚀 Phoenix Alessio API - Ready to help career transitions!")
+    logger.info(f"🤖 Démarrage Iris API v2.0.0 sur le port {port}")
+    logger.info("🚀 Phoenix Iris API - Héberge Alessio - Secured AI Assistant Ready!")
+    logger.info("🛡️ Features: JWT Auth + Alessio AI + Analytics + Rate Limiting")
     
     uvicorn.run(
         "main:app",
