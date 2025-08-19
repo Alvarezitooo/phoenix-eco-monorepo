@@ -1,51 +1,37 @@
-# Phoenix Iris API - Production Dockerfile
+# ✅ Phoenix Iris API - Dockerfile Monorepo Optimisé pour Railway
 FROM python:3.11-slim
 
-# Métadonnées
-LABEL maintainer="Phoenix DevSecOps Team"
-LABEL description="Iris AI Assistant API for Phoenix Ecosystem"
-LABEL version="2.0.0"
+# 1. Configuration de base
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    POETRY_VERSION=1.7.1 \
+    POETRY_VIRTUALENVS_CREATE=false \
+    PYTHONPATH="/app:/app/packages"
 
-# Variables d'environnement
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PIP_NO_CACHE_DIR=1
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-
-# Répertoire de travail
 WORKDIR /app
 
-# Installation des dépendances système
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# 2. Installation de Poetry
+RUN pip install "poetry==$POETRY_VERSION"
 
-# Installation de Poetry
-RUN pip install poetry==1.7.1
+# 3. Installation des dépendances
+COPY apps/phoenix-iris-api/pyproject.toml apps/phoenix-iris-api/poetry.lock* ./
+COPY packages/ /app/packages/
+RUN poetry install --no-interaction --no-ansi --only main
 
-# Configuration Poetry
-RUN poetry config virtualenvs.create false
+# 4. Copie du code de l'application
+COPY apps/phoenix-iris-api/ /app/
 
-# Copier les fichiers de configuration
-COPY pyproject.toml poetry.lock* ./
-
-# Installation des dépendances Python
-RUN poetry install --only main --no-interaction --no-ansi
-
-# Copier le code source
-COPY . .
-
-# Créer un utilisateur non-root pour la sécurité
+# 5. Configuration de production
 RUN useradd --create-home --shell /bin/bash iris && \
     chown -R iris:iris /app
 USER iris
 
-# Vérification de santé
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:$PORT/health || exit 1
+# Le port est exposé dynamiquement
+EXPOSE ${PORT:-8000}
 
-# Port d'exposition (Railway utilise la variable PORT)
-EXPOSE 8000
+# Le Health Check utilise aussi le port dynamique
+HEALTHCHECK CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
-# Commande de démarrage
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Le CMD utilise le port dynamique fourni par Railway
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}"]

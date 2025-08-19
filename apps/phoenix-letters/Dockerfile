@@ -1,61 +1,36 @@
-# 🚀 Phoenix Letters - Production Dockerfile for Render
-# Optimized for fast deployment and security
-
+# ✅ Phoenix Letters - Dockerfile Monorepo Optimisé pour Railway
 FROM python:3.11-slim
 
-# Metadata
-LABEL maintainer="Phoenix Team <contact@phoenix.app>"
-LABEL version="1.0.0"
-LABEL description="Phoenix Letters - AI-Powered Cover Letter Generator"
-
-# Set environment variables
+# 1. Configuration de base
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
     PYTHONPATH="/app:/app/packages" \
     STREAMLIT_SERVER_HEADLESS=true \
     STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
 
-# Create app user for security
-RUN groupadd -r phoenix && useradd -r -g phoenix phoenix
-
-# Set work directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# 2. Installation des dépendances
+COPY apps/phoenix-letters/requirements.txt .
+RUN pip install -r requirements.txt
 
-# Copy requirements first (for layer caching)
-COPY requirements.txt .
+# 3. Copie des packages partagés
+COPY packages/ /app/packages/
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# 4. Copie du code de l'application
+COPY apps/phoenix-letters/ /app/
 
-# 🚀 ARCHITECTURE MONOREPO - Copie depuis la racine du repo
-# Remonte au niveau supérieur puis copie tout
-COPY ../../. .
-
-# Install shared packages
-RUN if [ -d "packages/phoenix_shared_auth" ]; then pip install -e packages/phoenix_shared_auth; fi && \
-    if [ -d "packages/phoenix_shared_ui" ]; then pip install -e packages/phoenix_shared_ui; fi && \
-    if [ -d "packages/phoenix_shared_models" ]; then pip install -e packages/phoenix_shared_models; fi
-
-# Create necessary directories
-RUN mkdir -p /app/logs /app/temp && \
+# 5. Configuration de production
+RUN useradd --create-home --shell /bin/bash phoenix && \
     chown -R phoenix:phoenix /app
-
-# Switch to non-root user
 USER phoenix
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8501/_stcore/health || exit 1
+# Le port est exposé dynamiquement
+EXPOSE ${PORT:-8501}
 
-# Expose port (Railway utilise $PORT)
-EXPOSE $PORT
+# Le Health Check utilise aussi le port dynamique
+HEALTHCHECK CMD curl -f http://localhost:${PORT:-8501}/_stcore/health || exit 1
 
-# Debug : vérifier la structure puis lancer streamlit
-CMD ls -la && ls -la apps/ && ls -la apps/phoenix-letters/ && streamlit run apps/phoenix-letters/main.py --server.port=$PORT --server.address=0.0.0.0
+# Le CMD utilise le port dynamique fourni par Railway
+CMD ["streamlit", "run", "main.py", "--server.port=${PORT:-8501}", "--server.address=0.0.0.0"]

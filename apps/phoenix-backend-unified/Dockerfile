@@ -1,48 +1,35 @@
-# 🔥 Phoenix Backend Unifié - Dockerfile Production
+# ✅ Phoenix Backend Unifié - Dockerfile Monorepo Optimisé pour Railway
 FROM python:3.11-slim
 
-# Métadonnées
-LABEL maintainer="Phoenix DevSecOps Team"
-LABEL version="1.0.0"
-LABEL description="Phoenix Backend Unifié - FastAPI pour Aube, Rise et CV"
+# 1. Configuration de base
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONPATH="/app:/app/packages"
 
-# Variables d'environnement
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PIP_NO_CACHE_DIR=1
-
-# Utilisateur non-root pour sécurité
-RUN groupadd -r phoenix && useradd -r -g phoenix phoenix
-
-# Installation dépendances système
-RUN apt-get update && apt-get install -y \
-    curl \
-    gcc \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
-
-# Répertoire de travail
 WORKDIR /app
 
-# Copie et installation requirements
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# 2. Installation des dépendances
+COPY apps/phoenix-backend-unified/requirements.txt .
+RUN pip install -r requirements.txt
 
-# Copie du code source
-COPY . .
+# 3. Copie des packages partagés
+COPY packages/ /app/packages/
 
-# Changement de propriétaire
-RUN chown -R phoenix:phoenix /app
+# 4. Copie du code de l'application
+COPY apps/phoenix-backend-unified/ /app/
 
-# Port d'exposition
-EXPOSE 8000
-
-# Utilisateur non-root
+# 5. Configuration de production
+RUN useradd --create-home --shell /bin/bash phoenix && \
+    chown -R phoenix:phoenix /app
 USER phoenix
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:8000/health || exit 1
+# Le port est exposé dynamiquement
+EXPOSE ${PORT:-8000}
 
-# Commande de démarrage
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+# Le Health Check utilise aussi le port dynamique
+HEALTHCHECK CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
+
+# Le CMD utilise le port dynamique fourni par Railway
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}"]
+"]
