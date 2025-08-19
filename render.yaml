@@ -1,16 +1,15 @@
 # ===================================================================
-# PHOENIX ECOSYSTEM - INFRASTRUCTURE BLUEPRINT V1.0
+# PHOENIX ECOSYSTEM - INFRASTRUCTURE BLUEPRINT V1.1
 # ===================================================================
-# Ce fichier est la source de vérité pour toute l'infrastructure
-# de l'écosystème Phoenix sur Render.
+# Source: Render Blueprint Spec & Monorepo Support Docs
 # Mainteneur: Matthieu Rubia
 
-# Active la création d'un environnement de test pour chaque Pull Request.
-previews: true
+# Active la création d'environnements de test pour chaque Pull Request.
+previewsEnabled: true
 
 services:
   # --- APPLICATIONS UTILISATEUR (WEB SERVICES) -----------------------
-  
+
   - type: web
     name: phoenix-letters
     env: docker
@@ -18,10 +17,14 @@ services:
     dockerfilePath: ./Dockerfile
     dockerCommand: "streamlit run ./apps/phoenix-letters/main.py --server.port 80 --server.address=0.0.0.0"
     healthCheckPath: /_stcore/health
-    autoDeploy: true
-    paths:
-      - "apps/phoenix-letters/**"
-      - "packages/**"
+    
+    # Déclenche un déploiement automatique uniquement si les fichiers concernés sont modifiés.
+    autoDeploy:
+      enabled: true
+      paths:
+        - "apps/phoenix-letters/**"
+        - "packages/**"
+        
     envVars:
       - fromSecretGroup: phoenix-secrets
 
@@ -32,10 +35,13 @@ services:
     dockerfilePath: ./Dockerfile
     dockerCommand: "streamlit run ./apps/phoenix-cv/main.py --server.port 80 --server.address=0.0.0.0"
     healthCheckPath: /_stcore/health
-    autoDeploy: true
-    paths:
-      - "apps/phoenix-cv/**"
-      - "packages/**"
+    
+    autoDeploy:
+      enabled: true
+      paths:
+        - "apps/phoenix-cv/**"
+        - "packages/**"
+
     envVars:
       - fromSecretGroup: phoenix-secrets
 
@@ -46,10 +52,13 @@ services:
     dockerfilePath: ./Dockerfile
     dockerCommand: "python ./apps/phoenix-backend-unified/app.py"
     healthCheckPath: /health
-    autoDeploy: true
-    paths:
-      - "apps/phoenix-backend-unified/**"
-      - "packages/**"
+    
+    autoDeploy:
+      enabled: true
+      paths:
+        - "apps/phoenix-backend-unified/**"
+        - "packages/**"
+
     envVars:
       - fromSecretGroup: phoenix-secrets
       - key: ALLOWED_ORIGINS
@@ -64,10 +73,13 @@ services:
     dockerfilePath: ./Dockerfile
     dockerCommand: "python ./apps/phoenix-iris-api/main.py"
     healthCheckPath: /health
-    autoDeploy: true
-    paths:
-      - "apps/phoenix-iris-api/**"
-      - "packages/**"
+    
+    autoDeploy:
+      enabled: true
+      paths:
+        - "apps/phoenix-iris-api/**"
+        - "packages/**"
+
     envVars:
       - fromSecretGroup: phoenix-secrets
 
@@ -78,10 +90,13 @@ services:
     dockerfilePath: ./Dockerfile
     dockerCommand: "python ./apps/agent_ia/main.py"
     healthCheckPath: /health
-    autoDeploy: true
-    paths:
-      - "apps/agent_ia/**"
-      - "packages/**"
+    
+    autoDeploy:
+      enabled: true
+      paths:
+        - "apps/agent_ia/**"
+        - "packages/**"
+
     envVars:
       - fromSecretGroup: phoenix-secrets
       - key: MAX_RESPONSE_TIME
@@ -97,10 +112,13 @@ services:
     plan: starter
     dockerfilePath: ./Dockerfile
     dockerCommand: "python ./infrastructure/data-pipeline/app.py"
-    autoDeploy: true
-    paths:
-      - "infrastructure/data-pipeline/**"
-      - "packages/**"
+    
+    autoDeploy:
+      enabled: true
+      paths:
+        - "infrastructure/data-pipeline/**"
+        - "packages/**"
+
     envVars:
       - fromSecretGroup: phoenix-secrets
       - key: WORKER_TYPE
@@ -114,20 +132,25 @@ services:
     plan: starter
     dockerfilePath: ./Dockerfile
     dockerCommand: "python ./infrastructure/data-pipeline/app.py"
-    autoDeploy: true
-    paths:
-      - "infrastructure/data-pipeline/**"
-      - "packages/**"
+    
+    autoDeploy:
+      enabled: true
+      paths:
+        - "infrastructure/data-pipeline/**"
+        - "packages/**"
+
     envVars:
       - fromSecretGroup: phoenix-secrets
       - key: WORKER_TYPE
         value: "user_profile"
 
   # --- INFRASTRUCTURE (BASE DE DONNÉES) ------------------------------
-  
-databases:
-  - name: phoenix-db
+
+  - type: pserv
+    name: phoenix-db
+    env: postgres
     plan: starter
+    postgresMajorVersion: 15
 
 # NOTE: Le site vitrine (phoenix-website) n'est pas inclus ici car il est
 # stratégiquement hébergé sur Vercel pour des performances optimales avec Next.js.
