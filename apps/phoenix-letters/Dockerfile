@@ -57,5 +57,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 # Expose port (Railway utilise $PORT)
 EXPOSE $PORT
 
-# Start command avec chemin absolu depuis la racine
-CMD streamlit run apps/phoenix-letters/main.py --server.port=$PORT --server.address=0.0.0.0
+# Debug : vérifier la structure puis lancer streamlit
+CMD ls -la && ls -la apps/ && ls -la apps/phoenix-letters/ && streamlit run apps/phoenix-letters/main.py --server.port=$PORT --server.address=0.0.0.0
