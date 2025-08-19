@@ -57,5 +57,5 @@ USER phoenix
 # Expose les ports standards (Render gère automatiquement le mapping)
 EXPOSE 80 8000 8501
 
-# Le CMD est défini dans render.yaml via dockerCommand
-# Cela permet une flexibilité maximale par service
+# CMD par défaut pour Railway (peut être surchargé par Start Command)
+CMD ["echo", "Railway service ready - Use Start Command to specify which app to run"]
