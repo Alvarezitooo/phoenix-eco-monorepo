@@ -1,12 +1,10 @@
-# 🚀 Phoenix Ecosystem - Configuration Render COMPLÈTE
+# Phoenix Ecosystem - Configuration Render Production
 # Architecture Monorepo avec Web Services + Background Workers + APIs
 
 services:
-  # ===========================================
   # WEB SERVICES (Applications utilisateurs)
-  # ===========================================
   
-  # Service 1: Phoenix Letters - Générateur de lettres IA
+  # Service 1: Phoenix Letters - Generateur de lettres IA
   - type: web
     name: phoenix-letters
     env: docker
@@ -15,7 +13,7 @@ services:
       - APP_NAME=phoenix-letters
     plan: starter
     envVars:
-      # Variables critiques (à configurer dans Render Dashboard)
+      # Variables critiques (a configurer dans Render Dashboard)
       - key: GOOGLE_API_KEY
         sync: false
       - key: SUPABASE_URL
@@ -34,7 +32,7 @@ services:
         sync: false
     healthCheckPath: "/_stcore/health"
 
-  # Service 2: Phoenix CV - Générateur CV IA  
+  # Service 2: Phoenix CV - Generateur CV IA  
   - type: web
     name: phoenix-cv
     env: docker
@@ -43,14 +41,14 @@ services:
       - APP_NAME=phoenix-cv
     plan: starter
     envVars:
-      # Partage les mêmes variables que Letters
+      # Partage les memes variables que Letters
       - fromService: phoenix-letters
         name: GOOGLE_API_KEY
       - fromService: phoenix-letters
         name: SUPABASE_URL
       - fromService: phoenix-letters
         name: SUPABASE_ANON_KEY
-      # Variables spécifiques CV
+      # Variables specifiques CV
       - key: STRIPE_CV_PRICE_ID
         sync: false
     healthCheckPath: "/_stcore/health"
@@ -68,11 +66,9 @@ services:
       - key: NEXT_PUBLIC_API_URL
         value: https://phoenix-backend-unified.onrender.com
 
-  # ===========================================
   # API SERVICES (Backend APIs)
-  # ===========================================
 
-  # Service 4: Phoenix Backend Unifié - API centrale
+  # Service 4: Phoenix Backend Unifie - API centrale
   - type: web
     name: phoenix-backend-unified
     env: docker
@@ -112,11 +108,9 @@ services:
         sync: false
     healthCheckPath: "/health"
 
-  # ===========================================
   # BACKGROUND WORKERS (Services backend)
-  # ===========================================
 
-  # Service 6: Event Bridge - Processeur d'événements
+  # Service 6: Event Bridge - Processeur d'evenements
   - type: worker
     name: phoenix-event-bridge
     env: docker
@@ -167,24 +161,16 @@ services:
         value: "true"
     healthCheckPath: "/health"
 
-  # ===========================================
-  # DATABASES & EXTERNAL SERVICES
-  # ===========================================
+# DATABASES & EXTERNAL SERVICES
   
 databases:
-  # Supabase externe - pas de config nécessaire ici
-  # Les variables SUPABASE_* pointent vers votre instance
-
   # Redis pour cache (optionnel)
   - name: phoenix-redis
     plan: free
-    # Sera accessible via REDIS_URL automatiquement
 
-# ===========================================
 # CONFIGURATION GLOBALE
-# ===========================================
 
-# Variables partagées par tous les services
+# Variables partagees par tous les services
 envVars:
   - key: PYTHON_ENV
     value: "production"

@@ -1,0 +1,52 @@
+# 🚀 Phoenix Ecosystem - Version Simplifiée pour Test
+# Seulement 3 services critiques pour commencer
+
+services:
+  # Service 1: Phoenix Letters
+  - type: web
+    name: phoenix-letters
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerBuildArgs:
+      - APP_NAME=phoenix-letters
+    plan: starter
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+    healthCheckPath: "/_stcore/health"
+
+  # Service 2: Phoenix CV
+  - type: web
+    name: phoenix-cv
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerBuildArgs:
+      - APP_NAME=phoenix-cv
+    plan: starter
+    envVars:
+      - fromService: phoenix-letters
+        name: GOOGLE_API_KEY
+      - fromService: phoenix-letters
+        name: SUPABASE_URL
+      - fromService: phoenix-letters
+        name: SUPABASE_ANON_KEY
+    healthCheckPath: "/_stcore/health"
+
+  # Service 3: Backend API
+  - type: web
+    name: phoenix-backend-unified
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerBuildArgs:
+      - APP_NAME=phoenix-backend-unified
+    plan: starter
+    envVars:
+      - fromService: phoenix-letters
+        name: SUPABASE_URL
+      - key: JWT_SECRET_KEY
+        sync: false
+    healthCheckPath: "/health"
