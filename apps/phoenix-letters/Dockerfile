@@ -11,8 +11,7 @@ LABEL description="Phoenix Letters - AI-Powered Cover Letter Generator"
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    STREAMLIT_SERVER_PORT=8501 \
-    STREAMLIT_SERVER_ADDRESS=0.0.0.0 \
+    PYTHONPATH="/app:/app/packages" \
     STREAMLIT_SERVER_HEADLESS=true \
     STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
 
@@ -39,6 +38,11 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Cela donne accès à la "boîte à outils commune" (packages/)
 COPY . .
 
+# Install shared packages
+RUN if [ -d "packages/phoenix_shared_auth" ]; then pip install -e packages/phoenix_shared_auth; fi && \
+    if [ -d "packages/phoenix_shared_ui" ]; then pip install -e packages/phoenix_shared_ui; fi && \
+    if [ -d "packages/phoenix_shared_models" ]; then pip install -e packages/phoenix_shared_models; fi
+
 # Create necessary directories
 RUN mkdir -p /app/logs /app/temp && \
     chown -R phoenix:phoenix /app
@@ -50,11 +54,11 @@ USER phoenix
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8501/_stcore/health || exit 1
 
-# Expose port
-EXPOSE 8501
+# Expose port (Railway utilise $PORT)
+EXPOSE $PORT
 
 # Set working directory to Phoenix Letters app
 WORKDIR /app/apps/phoenix-letters
 
-# Start command
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Start command avec port Railway dynamique
+CMD streamlit run main.py --server.port=$PORT --server.address=0.0.0.0
