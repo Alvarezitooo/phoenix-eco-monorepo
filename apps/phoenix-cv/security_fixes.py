@@ -261,10 +261,10 @@ def apply_security_headers():
         """Force le mode production et désactive le mode DEV"""
         print("\n🔧 MODE PRODUCTION")
 
-        app_file = self.project_root / "app.py"
+        app_file = self.project_root / "phoenix_cv" / "main.py"
 
         if not app_file.exists():
-            print("  ⚠️ Fichier app.py non trouvé")
+            print("  ⚠️ Fichier main.py non trouvé")
             return
 
         try:
