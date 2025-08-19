@@ -1,165 +1,134 @@
-# Phoenix Ecosystem - Configuration Render Production
-# Architecture Monorepo avec Web Services + Background Workers + APIs
+# ===================================================================
+# PHOENIX ECOSYSTEM - INFRASTRUCTURE BLUEPRINT V1.0
+# ===================================================================
+# Ce fichier est la source de vérité pour toute l'infrastructure
+# de l'écosystème Phoenix sur Render.
+# Mainteneur: Matthieu Rubia
+
+# Active la création d'un environnement de test pour chaque Pull Request.
+previews: true
 
 services:
-  # WEB SERVICES (Applications utilisateurs)
+  # --- APPLICATIONS UTILISATEUR (WEB SERVICES) -----------------------
   
-  # Service 1: Phoenix Letters - Generateur de lettres IA
   - type: web
     name: phoenix-letters
     env: docker
-    dockerfilePath: ./Dockerfile
-    dockerBuildArgs:
-      - APP_NAME=phoenix-letters
     plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerCommand: "streamlit run ./apps/phoenix-letters/main.py --server.port 80 --server.address=0.0.0.0"
+    healthCheckPath: /_stcore/health
+    autoDeploy: true
+    paths:
+      - "apps/phoenix-letters/**"
+      - "packages/**"
     envVars:
-      # Variables critiques (a configurer dans Render Dashboard)
-      - key: GOOGLE_API_KEY
-        sync: false
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_ANON_KEY
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-      - key: STRIPE_SECRET_KEY
-        sync: false
-      - key: STRIPE_PUBLISHABLE_KEY
-        sync: false
-      - key: JWT_SECRET_KEY
-        sync: false
-      - key: JWT_REFRESH_SECRET
-        sync: false
-    healthCheckPath: "/_stcore/health"
+      - fromSecretGroup: phoenix-secrets
 
-  # Service 2: Phoenix CV - Generateur CV IA  
   - type: web
     name: phoenix-cv
     env: docker
-    dockerfilePath: ./Dockerfile
-    dockerBuildArgs:
-      - APP_NAME=phoenix-cv
     plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerCommand: "streamlit run ./apps/phoenix-cv/main.py --server.port 80 --server.address=0.0.0.0"
+    healthCheckPath: /_stcore/health
+    autoDeploy: true
+    paths:
+      - "apps/phoenix-cv/**"
+      - "packages/**"
     envVars:
-      # Variables critiques
-      - key: GOOGLE_API_KEY
-        sync: false
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_ANON_KEY
-        sync: false
-      - key: STRIPE_CV_PRICE_ID
-        sync: false
-    healthCheckPath: "/_stcore/health"
+      - fromSecretGroup: phoenix-secrets
 
-  # Service 3: Phoenix Backend Unifie - API centrale
   - type: web
     name: phoenix-backend-unified
     env: docker
-    dockerfilePath: ./Dockerfile
-    dockerBuildArgs:
-      - APP_NAME=phoenix-backend-unified
     plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerCommand: "python ./apps/phoenix-backend-unified/app.py"
+    healthCheckPath: /health
+    autoDeploy: true
+    paths:
+      - "apps/phoenix-backend-unified/**"
+      - "packages/**"
     envVars:
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-      - key: JWT_SECRET_KEY
-        sync: false
+      - fromSecretGroup: phoenix-secrets
       - key: ALLOWED_ORIGINS
         value: "https://phoenix-aube.vercel.app,https://phoenix-rise.vercel.app"
       - key: ENVIRONMENT
         value: "production"
-    healthCheckPath: "/health"
 
-  # Service 4: Phoenix Iris API - Assistant IA
   - type: web
     name: phoenix-iris-api
     env: docker
-    dockerfilePath: ./Dockerfile
-    dockerBuildArgs:
-      - APP_NAME=phoenix-iris-api
     plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerCommand: "python ./apps/phoenix-iris-api/main.py"
+    healthCheckPath: /health
+    autoDeploy: true
+    paths:
+      - "apps/phoenix-iris-api/**"
+      - "packages/**"
     envVars:
-      - key: GOOGLE_API_KEY
-        sync: false
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-      - key: OPENAI_API_KEY
-        sync: false
-    healthCheckPath: "/health"
+      - fromSecretGroup: phoenix-secrets
 
-  # Service 5: Agents IA - Smart Router & Security Guardian
   - type: web
     name: phoenix-agents-ai
     env: docker
-    dockerfilePath: ./Dockerfile
-    dockerBuildArgs:
-      - APP_NAME=agent_ia
     plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerCommand: "python ./apps/agent_ia/main.py"
+    healthCheckPath: /health
+    autoDeploy: true
+    paths:
+      - "apps/agent_ia/**"
+      - "packages/**"
     envVars:
-      - key: GOOGLE_API_KEY
-        sync: false
+      - fromSecretGroup: phoenix-secrets
       - key: MAX_RESPONSE_TIME
         value: "30"
       - key: ENABLE_CLOUD_FALLBACK
         value: "true"
-    healthCheckPath: "/health"
 
-  # Service 6: Event Bridge - Worker
+  # --- SERVICES BACKEND (WORKERS) -----------------------------------
+  
   - type: worker
     name: phoenix-event-bridge
     env: docker
+    plan: starter
     dockerfilePath: ./Dockerfile
-    dockerBuildArgs:
-      - APP_NAME=phoenix-event-bridge
-    plan: free
+    dockerCommand: "python ./infrastructure/data-pipeline/app.py"
+    autoDeploy: true
+    paths:
+      - "infrastructure/data-pipeline/**"
+      - "packages/**"
     envVars:
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-      - key: ENABLE_EVENT_PROCESSING
-        value: "true"
+      - fromSecretGroup: phoenix-secrets
       - key: WORKER_TYPE
         value: "event_bridge"
+      - key: ENABLE_EVENT_PROCESSING
+        value: "true"
 
-  # Service 7: User Profile Service - Worker
-  - type: worker  
+  - type: worker
     name: phoenix-user-profile
     env: docker
+    plan: starter
     dockerfilePath: ./Dockerfile
-    dockerBuildArgs:
-      - APP_NAME=phoenix-user-profile
-    plan: free
+    dockerCommand: "python ./infrastructure/data-pipeline/app.py"
+    autoDeploy: true
+    paths:
+      - "infrastructure/data-pipeline/**"
+      - "packages/**"
     envVars:
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
+      - fromSecretGroup: phoenix-secrets
       - key: WORKER_TYPE
         value: "user_profile"
 
-  # Service 8: Phoenix Website - Landing page
-  - type: web
-    name: phoenix-website
-    env: docker
-    dockerfilePath: ./Dockerfile
-    dockerBuildArgs:
-      - APP_NAME=phoenix-website
-    plan: free
-    envVars:
-      - key: STRIPE_PUBLISHABLE_KEY
-        sync: false
-      - key: NEXT_PUBLIC_API_URL
-        value: "https://phoenix-backend-unified.onrender.com"
-
-# DATABASES & EXTERNAL SERVICES
+  # --- INFRASTRUCTURE (BASE DE DONNÉES) ------------------------------
+  
 databases:
-  # Redis pour cache
-  - name: phoenix-redis
-    plan: free
+  - name: phoenix-db
+    plan: starter
+
+# NOTE: Le site vitrine (phoenix-website) n'est pas inclus ici car il est
+# stratégiquement hébergé sur Vercel pour des performances optimales avec Next.js.
 
