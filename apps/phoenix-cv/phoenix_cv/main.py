@@ -128,16 +128,27 @@ def main_modern():
     Utilise les nouveaux composants UI style Phoenix Letters
     """
     
-    # Configuration page Streamlit
-    st.set_page_config(
-        page_title="Phoenix CV - Créateur de CV IA",
-        page_icon="📄",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
-    
-    # CSS global Phoenix
-    inject_phoenix_css()
+    try:
+        # Configuration page Streamlit
+        st.set_page_config(
+            page_title="Phoenix CV - Créateur de CV IA",
+            page_icon="📄",
+            layout="wide",
+            initial_sidebar_state="expanded"
+        )
+        
+        # TEST DEBUG - Affichage minimal pour identifier le crash
+        st.title("🔍 Phoenix CV - Mode Debug")
+        st.success("✅ main_modern() s'exécute correctement")
+        
+        # CSS global Phoenix
+        inject_phoenix_css()
+        st.success("✅ CSS injecté avec succès")
+        
+    except Exception as e:
+        st.error(f"💥 CRASH dans main_modern(): {str(e)}")
+        st.code(f"Traceback:\n{traceback.format_exc()}")
+        return
     
     # 🧹 AUTO-NETTOYAGE SESSION pour prévenir memory bloat
     try:
