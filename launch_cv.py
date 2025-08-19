@@ -17,13 +17,13 @@ def find_phoenix_cv_app():
     """
     current_dir = Path(__file__).resolve().parent
     
-    # Stratégie 1: Structure monorepo standard
-    cv_app_path = current_dir / "apps" / "phoenix-cv" / "app.py"
+    # Stratégie 1: Structure monorepo standard - Phoenix CV main.py
+    cv_app_path = current_dir / "apps" / "phoenix-cv" / "phoenix_cv" / "main.py"
     if cv_app_path.exists():
         return cv_app_path
     
     # Stratégie 2: Recherche récursive depuis la racine
-    for pattern in ["**/phoenix-cv/app.py", "**/phoenix_cv/app.py", "**/cv/app.py"]:
+    for pattern in ["**/phoenix_cv/main.py", "**/phoenix-cv/main.py"]:
         matches = list(current_dir.rglob(pattern))
         if matches:
             return matches[0]
