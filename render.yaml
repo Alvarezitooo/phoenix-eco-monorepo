@@ -73,6 +73,93 @@ services:
         value: "production"
     healthCheckPath: "/health"
 
-# Simplification pour déploiement initial - 3 services essentiels
-# Les autres services peuvent être ajoutés progressivement
+  # Service 4: Phoenix Iris API - Assistant IA
+  - type: web
+    name: phoenix-iris-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerBuildArgs:
+      - APP_NAME=phoenix-iris-api
+    plan: starter
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+    healthCheckPath: "/health"
+
+  # Service 5: Agents IA - Smart Router & Security Guardian
+  - type: web
+    name: phoenix-agents-ai
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerBuildArgs:
+      - APP_NAME=agent_ia
+    plan: starter
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: MAX_RESPONSE_TIME
+        value: "30"
+      - key: ENABLE_CLOUD_FALLBACK
+        value: "true"
+    healthCheckPath: "/health"
+
+  # Service 6: Event Bridge - Worker
+  - type: worker
+    name: phoenix-event-bridge
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerBuildArgs:
+      - APP_NAME=phoenix-event-bridge
+    plan: free
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: ENABLE_EVENT_PROCESSING
+        value: "true"
+      - key: WORKER_TYPE
+        value: "event_bridge"
+
+  # Service 7: User Profile Service - Worker
+  - type: worker  
+    name: phoenix-user-profile
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerBuildArgs:
+      - APP_NAME=phoenix-user-profile
+    plan: free
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: WORKER_TYPE
+        value: "user_profile"
+
+  # Service 8: Phoenix Website - Landing page
+  - type: web
+    name: phoenix-website
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerBuildArgs:
+      - APP_NAME=phoenix-website
+    plan: free
+    envVars:
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: NEXT_PUBLIC_API_URL
+        value: "https://phoenix-backend-unified.onrender.com"
+
+# DATABASES & EXTERNAL SERVICES
+databases:
+  # Redis pour cache
+  - name: phoenix-redis
+    plan: free
 
