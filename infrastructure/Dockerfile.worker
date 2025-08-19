@@ -1,0 +1,67 @@
+# 🚀 Phoenix Infrastructure - Dockerfile Worker Spécialisé
+# Pour Event Bridge et User Profile Service
+
+FROM python:3.11-slim
+
+# Build argument pour spécifier le type de worker
+ARG WORKER_TYPE=event_bridge
+
+# Metadata
+LABEL maintainer="Phoenix Team <contact@phoenix.app>"
+LABEL version="1.0.0"
+LABEL description="Phoenix Data Pipeline Worker"
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    WORKER_TYPE=${WORKER_TYPE}
+
+# Create app user for security
+RUN groupadd -r phoenix && useradd -r -g phoenix phoenix
+
+# Set work directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first (for layer caching)
+COPY infrastructure/data-pipeline/requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# 🚀 ARCHITECTURE MONOREPO - Copie TOUT le monorepo
+COPY . .
+
+# Install shared packages
+RUN if [ -d "packages/phoenix_shared_auth" ]; then pip install -e packages/phoenix_shared_auth; fi && \
+    if [ -d "packages/phoenix_shared_models" ]; then pip install -e packages/phoenix_shared_models; fi && \
+    if [ -d "packages/phoenix_event_bridge" ]; then pip install -e packages/phoenix_event_bridge; fi
+
+# Set Python path to include monorepo structure
+ENV PYTHONPATH="/app:/app/packages:${PYTHONPATH}"
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/temp && \
+    chown -R phoenix:phoenix /app
+
+# Switch to non-root user
+USER phoenix
+
+# Health check pour workers
+HEALTHCHECK --interval=60s --timeout=10s --start-period=120s --retries=3 \
+    CMD python -c "print('Worker health check OK')" || exit 1
+
+# Expose port pour monitoring (optionnel)
+EXPOSE 8080
+
+# Set working directory to data pipeline
+WORKDIR /app/infrastructure/data-pipeline
+
+# Start worker command
+CMD ["python", "app.py"]

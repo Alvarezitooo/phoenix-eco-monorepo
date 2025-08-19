@@ -1,0 +1,31 @@
+# ===== PHOENIX DATA PIPELINE - DEPENDENCIES =====
+# Services Event Bridge et User Profile
+
+# === CORE ASYNC ===
+asyncio>=3.4.3
+aiohttp>=3.8.5
+
+# === DATABASE & STORAGE ===
+supabase>=1.2.0
+asyncpg>=0.29.0
+psycopg2-binary>=2.9.7
+
+# === EVENT PROCESSING ===
+pydantic>=2.5.0
+python-dateutil>=2.8.2
+
+# === LOGGING & MONITORING ===
+structlog>=23.2.0
+python-json-logger>=2.0.4
+
+# === SECURITY ===
+cryptography>=41.0.3
+python-jose>=3.3.0
+
+# === UTILITIES ===
+python-dotenv>=1.0.0
+click>=8.1.6
+
+# === DEVELOPMENT ===
+pytest>=7.4.0
+pytest-asyncio>=0.21.0

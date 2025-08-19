@@ -1,0 +1,39 @@
+# ===== PHOENIX IRIS API - DEPENDENCIES =====
+# API FastAPI pour l'assistant IA Iris
+
+# === CORE FASTAPI ===
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+
+# === AI & ML ===
+google-generativeai>=0.3.0
+openai>=1.3.0
+langchain>=0.1.0
+
+# === HTTP & ASYNC ===
+httpx>=0.25.2
+aiohttp>=3.8.5
+
+# === DATABASE & STORAGE ===
+supabase>=1.2.0
+psycopg2-binary>=2.9.7
+
+# === AUTHENTICATION & SECURITY ===
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+
+# === DATA PROCESSING ===
+pandas>=2.0.3
+numpy>=1.24.3
+
+# === MONITORING ===
+structlog>=23.2.0
+prometheus-client>=0.19.0
+
+# === ENVIRONMENT ===
+python-dotenv>=1.0.0
+
+# === DEVELOPMENT ===
+pytest>=7.4.0
+pytest-asyncio>=0.21.0

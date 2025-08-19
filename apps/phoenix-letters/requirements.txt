@@ -1,0 +1,56 @@
+# 🚀 Phoenix Letters - Dependencies for Docker Deployment
+# Optimized for Render Platform - Production Ready
+# Generated: 2025-08-19
+
+# 🎨 Core Streamlit Interface
+streamlit>=1.30.0
+
+# 🤖 AI & Language Processing  
+google-generativeai>=0.3.2
+
+# 🛡️ Security & Authentication
+bcrypt>=4.0.0
+passlib[bcrypt]>=1.7.4
+cryptography>=41.0.0
+pyjwt[cryptography]>=2.8.0
+
+# 🗄️ Database & Backend
+supabase>=2.0.0
+asyncpg>=0.29.0
+
+# 💳 Payment Processing
+stripe>=8.0.0
+
+# 📄 Document Processing
+PyPDF2>=3.0.0
+python-docx>=1.1.0
+bleach>=6.0.0
+
+# 🌐 HTTP & API
+requests>=2.31.0
+python-multipart>=0.0.12
+tenacity>=8.0.0
+
+# ✅ Data Validation
+pydantic>=2.5.0
+marshmallow>=3.20.0
+
+# ⚙️ Configuration & Environment
+python-dotenv>=1.0.0
+typing-extensions>=4.0.0
+
+# 📅 Date & Utilities
+python-dateutil>=2.8.2
+
+# 🔄 Async Support
+asyncio-mqtt>=0.11.0
+
+# 📊 Data Processing (Light)
+pandas>=2.0.0
+plotly>=5.15.0
+
+# 🛠️ Build & Deployment
+wheel>=0.40.0
+setuptools>=75.0.0
+
+# Note: phoenix_shared_auth et phoenix_shared_ui seront installés via Dockerfile
