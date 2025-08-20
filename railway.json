@@ -6,8 +6,7 @@
       "rootDirectory": "apps/phoenix-letters",
       "build": {
         "builder": "DOCKERFILE",
-        "dockerfilePath": "Dockerfile",
-        "buildCommand": "cp -r ../packages ./"
+        "dockerfilePath": "Dockerfile"
       },
       "deploy": {
         "numReplicas": 1,
@@ -20,8 +19,7 @@
       "rootDirectory": "apps/phoenix-cv",
       "build": {
         "builder": "DOCKERFILE",
-        "dockerfilePath": "Dockerfile",
-        "buildCommand": "cp -r ../packages ./"
+        "dockerfilePath": "Dockerfile"
       },
       "deploy": {
         "numReplicas": 1,
@@ -34,8 +32,7 @@
       "rootDirectory": "apps/phoenix-backend-unified",
       "build": {
         "builder": "DOCKERFILE",
-        "dockerfilePath": "Dockerfile",
-        "buildCommand": "cp -r ../packages ./"
+        "dockerfilePath": "Dockerfile"
       },
       "deploy": {
         "numReplicas": 1,
@@ -48,8 +45,20 @@
       "rootDirectory": "apps/phoenix-iris-api",
       "build": {
         "builder": "DOCKERFILE",
-        "dockerfilePath": "Dockerfile",
-        "buildCommand": "cp -r ../packages ./"
+        "dockerfilePath": "Dockerfile"
+      },
+      "deploy": {
+        "numReplicas": 1,
+        "sleepApplication": false,
+        "restartPolicyType": "ON_FAILURE"
+      }
+    },
+    {
+      "name": "phoenix-agent-ia",
+      "rootDirectory": "agent_ia",
+      "build": {
+        "builder": "DOCKERFILE",
+        "dockerfilePath": "Dockerfile"
       },
       "deploy": {
         "numReplicas": 1,

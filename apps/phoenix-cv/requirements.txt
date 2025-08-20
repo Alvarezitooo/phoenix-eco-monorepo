@@ -68,3 +68,9 @@ aiohttp>=3.8.5
 
 # === ENVIRONMENT DETECTION ===
 python-multipart>=0.0.6
+
+# 📦 Phoenix Shared Packages (Git Subdirectory)
+git+https://github.com/mattvaness/phoenix-eco-monorepo@main#subdirectory=packages/phoenix-shared-models
+git+https://github.com/mattvaness/phoenix-eco-monorepo@main#subdirectory=packages/phoenix-shared-auth
+git+https://github.com/mattvaness/phoenix-eco-monorepo@main#subdirectory=packages/phoenix-event-bridge
+git+https://github.com/mattvaness/phoenix-eco-monorepo@main#subdirectory=packages/phoenix-shared-ui

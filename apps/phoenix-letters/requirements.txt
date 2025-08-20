@@ -53,4 +53,8 @@ plotly>=5.15.0
 wheel>=0.40.0
 setuptools>=75.0.0
 
-# Note: phoenix_shared_auth et phoenix_shared_ui seront installés via Dockerfile
+# 📦 Phoenix Shared Packages (Git Subdirectory)
+git+https://github.com/mattvaness/phoenix-eco-monorepo@main#subdirectory=packages/phoenix-shared-models
+git+https://github.com/mattvaness/phoenix-eco-monorepo@main#subdirectory=packages/phoenix-shared-auth
+git+https://github.com/mattvaness/phoenix-eco-monorepo@main#subdirectory=packages/phoenix-event-bridge
+git+https://github.com/mattvaness/phoenix-eco-monorepo@main#subdirectory=packages/phoenix-shared-ui

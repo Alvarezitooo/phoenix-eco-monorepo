@@ -22,6 +22,10 @@ supabase = "^2.9.0"
 slowapi = "^0.1.9"
 # Utilities
 httpx = "^0.27.0"
+# Phoenix Shared Packages
+phoenix-shared-models = { git = "https://github.com/mattvaness/phoenix-eco-monorepo.git", rev = "main", subdirectory = "packages/phoenix-shared-models" }
+phoenix-shared-auth = { git = "https://github.com/mattvaness/phoenix-eco-monorepo.git", rev = "main", subdirectory = "packages/phoenix-shared-auth" }
+phoenix-event-bridge = { git = "https://github.com/mattvaness/phoenix-eco-monorepo.git", rev = "main", subdirectory = "packages/phoenix-event-bridge" }
 
 [build-system]
 requires = ["poetry-core"]

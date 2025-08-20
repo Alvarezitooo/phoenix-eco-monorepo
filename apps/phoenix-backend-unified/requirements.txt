@@ -39,3 +39,8 @@ python-dotenv>=1.0.0
 # === DEVELOPMENT ===
 pytest>=7.4.0
 pytest-asyncio>=0.21.0
+
+# 📦 Phoenix Shared Packages (Git Subdirectory)
+git+https://github.com/mattvaness/phoenix-eco-monorepo@main#subdirectory=packages/phoenix-shared-models
+git+https://github.com/mattvaness/phoenix-eco-monorepo@main#subdirectory=packages/phoenix-shared-auth
+git+https://github.com/mattvaness/phoenix-eco-monorepo@main#subdirectory=packages/phoenix-event-bridge

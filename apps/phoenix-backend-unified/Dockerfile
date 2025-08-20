@@ -2,7 +2,7 @@
 FROM python:3.11-slim
 
 # 1. Configuration de base
-ENV PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1     PIP_NO_CACHE_DIR=1     PYTHONPATH="/app:/app/packages"
+ENV PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1     PIP_NO_CACHE_DIR=1     PYTHONPATH="/app"
 
 WORKDIR /app
 
@@ -10,8 +10,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# 3. Copie des packages partagés
-COPY packages/ /app/packages/
+# 3. Packages partagés installés via pip (Git subdirectory)
 
 # 4. Copie du code de l'application
 COPY . /app/
